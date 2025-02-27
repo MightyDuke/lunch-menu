@@ -1,4 +1,4 @@
-name: Create and publish the Docker image
+name: Build and publish
 
 on:
   workflow_dispatch:
@@ -12,6 +12,7 @@ env:
 
 jobs:
   build-and-push-image:
+    name: Build and push image
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +30,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
+          flavor: |
+            latest=true
+          tags: |
+            type=sha
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push

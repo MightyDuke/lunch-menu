@@ -10,13 +10,8 @@ blueprint.static("/static", "lunch_menu/static/", name = "static")
 def days_of_week():
     now = date.today()
     monday = now - timedelta(days = now.isoweekday() - 1)
-    result = []
 
-    for i in range(5):
-        d = monday + timedelta(days = i)
-        result.append((d.strftime("%A").title(), d))
-
-    return result
+    return [monday + timedelta(days = i) for i in range(5)]
 
 @blueprint.get("/")
 async def index(request: Request, lunch_menu_provider: LunchMenuProvider):

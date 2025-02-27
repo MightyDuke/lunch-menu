@@ -1,14 +1,15 @@
-FROM python:3.13
+FROM python:3.13-slim
 
+WORKDIR /app
 RUN apt update && \
     apt install -y locales-all && \
     pip install pipenv
 
-WORKDIR /app
 COPY . .
 RUN pipenv install --system
 
-ENTRYPOINT sanic app \
+ENV LC_TIME="cs_CZ"
+ENTRYPOINT sanic lunch_menu.app \
     --fast \
     --host 0.0.0.0 \
     --port 80

@@ -3,7 +3,7 @@ from sanic import Sanic
 from lunch_menu.routes import blueprint
 from lunch_menu.services import LunchMenuProvider
 
-locale.setlocale(locale.LC_TIME, "cs_CZ")
+locale.setlocale(locale.LC_TIME, "")
 
 app = Sanic("lunch_menu")
 app.config.OAS = False
