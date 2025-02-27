@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kam na oběd?</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.3/css/bulma.min.css">
+    <link rel="icon" href="/static/favicon.png">
+</head>
+
+<body class="is-clipped">
+    <div class="hero has-background-black-ter">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <div class="title">
+                    Kam na oběd?
+                </div>
+                <div class="subtitle">
+                    {{ selected_date.strftime("%A, %x")|title }}
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-foot">
+            <nav class="tabs is-centered is-boxed">
+                <ul>
+                    {% for name, date in days_of_week %}
+                        <li{% if date == selected_date %} class="is-active"{% endif %}>
+                            <a href="/date/{{date}}">
+                                {{ name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container py-6">
+        <div class="columns is-tablet is-multiline is-8">
+            {% for provider in providers %}
+            <div class="column is-half">
+                <table class="table has-background-inherit is-fullwidth is-hoverable">
+                    <tr>
+                        <td>
+                            <a href="{{ provider.url }}" target="_blank" class="is-size-4">
+                                {{ provider.name }}
+                            </a>
+                        </td>
+                        <td>
+
+                        </td>
+                    </tr>
+                    {% if provider.menu %}
+                        {% if selected_date in provider.menu %}
+                            {% for item in provider.menu[selected_date] %}
+                                <tr>
+                                    <td>
+                                        {{ item.name }}
+                                    </td>
+
+                                    <td class="has-text-right">
+                                        {% if item.price %}
+                                        {{ item.price }}&nbsp;Kč
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td>
+                                    Menu není pro dnešní den k dispozici.
+                                </td>
+
+                                <td class="has-text-right">
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% else %}
+                        <tr>
+                            <td>
+                                Nepodařilo se načíst menu.
+                            </td>
+
+                            <td class="has-text-right">
+                            </td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
+</html>
