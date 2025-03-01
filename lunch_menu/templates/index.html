@@ -28,7 +28,7 @@
                 <ul>
                     {% for date in days_of_week %}
                         <li{% if date == selected_date %} class="is-active"{% endif %}>
-                            <a href="/date/{{date}}">
+                            <a href="/{{date}}">
                                 {{ date.strftime("%A")|title }}
                             </a>
                         </li>
@@ -93,6 +93,16 @@
             {% endfor %}
         </div>
     </div>
+
+    <footer class="footer has-text-centered">
+        <div>
+            &copy; {{ now.strftime("%Y") }} Josef Macháč
+        </div> 
+        <div>
+            <a href="https://github.com/MightyDuke/lunch-menu" target="_blank">GitHub</a> 
+            &bull; <a href="/api/menu" target="_blank">API</a> 
+        </div>
+    </footer>
 </body>
 
 </html>
