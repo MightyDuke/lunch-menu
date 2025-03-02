@@ -9,7 +9,10 @@ COPY . .
 RUN pipenv install --system
 
 ENV LC_TIME="cs_CZ"
-ENTRYPOINT sanic lunch_menu.app \
-    --fast \
-    --host 0.0.0.0 \
-    --port 80
+
+ENTRYPOINT [ \
+    "sanic", "lunch_menu.app", \
+    "--fast", \
+    "--host", "0.0.0.0", \
+    "--port", "80" \
+]
