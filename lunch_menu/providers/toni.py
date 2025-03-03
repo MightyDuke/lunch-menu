@@ -4,7 +4,8 @@ class ToniProvider(Provider):
     name = "Toni"
     url = "https://www.restauracetoni.cz"
 
-    async def generate_menu(self, menu: Menu):
+    async def generate_menu(self):
+        menu = Menu()
         soup = await self.fetch("https://www.restauracetoni.cz/")
 
         for element in soup.find_all(class_ = "menublok"):
@@ -18,3 +19,5 @@ class ToniProvider(Provider):
                     content[0].strip() if i > 0 else f"Polévka {content[0][0].lower() + content[0][1:]}",
                     parse_price(content[1])
                 )
+
+        return menu

@@ -5,7 +5,8 @@ class BleskProvider(Provider):
     name = "Hasičárna Blesk"
     url = "https://www.hasicarnableskostrava.cz"
 
-    async def generate_menu(self, menu: Menu):
+    async def generate_menu(self):
+        menu = Menu()
         soup = await self.fetch("https://www.hasicarnableskostrava.cz/poledni-menu")
 
         for element in soup.body.find_all(class_ = "food-section"):
@@ -28,3 +29,5 @@ class BleskProvider(Provider):
                     name.strip(), 
                     parse_price(price)
                 )
+
+        return menu

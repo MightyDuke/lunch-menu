@@ -59,7 +59,7 @@ class Provider:
     client = AsyncClient()
     cache = Cache(Path(gettempdir()) / "lunch_menu_cache")
 
-    def __init__(self, expire: int = 3600):
+    def __init__(self, expire: int = 600):
         self.expire = expire
 
     @property
@@ -67,15 +67,19 @@ class Provider:
         return self.__class__.__name__
 
     async def get_menu(self):
-        menu = Menu()
-        await self.generate_menu(menu)
+        result = await self.generate_menu()
 
-        return menu.serialize()
+        if isinstance(result, Menu):
+            return result.serialize()
+        else:
+            return result
 
     async def generate_menu(self, menu: Menu):
         pass
 
     async def fetch(self, url: str) -> BeautifulSoup:
+        self.cache.expire()
+
         if item := self.cache.get(self.class_name):
             response = item
         else:

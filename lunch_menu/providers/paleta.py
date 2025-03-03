@@ -4,7 +4,8 @@ class PaletaProvider(Provider):
     name = "Paleta"
     url = "https://www.paletarestaurant.cz"
 
-    async def generate_menu(self, menu: Menu):
+    async def generate_menu(self):
+        menu = Menu()
         soup = await self.fetch("https://www.paletarestaurant.cz/menu/menu.php")
 
         for element in soup.body.find_all("h3"):
@@ -22,3 +23,5 @@ class PaletaProvider(Provider):
                     name.strip(),
                     parse_price(price) if price else None
                 )
+
+        return menu

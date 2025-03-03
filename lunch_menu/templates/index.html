@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="cs">
 
+{% set formatted_date = selected_date.strftime("%A, %x")|title %}
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>
-        Kam na oběd? - {{ selected_date.strftime("%A, %x")|title }}
+        Kam na oběd? - {{ formatted_date }}
     </title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.3/css/bulma.min.css">
+    <link rel="stylesheet" href="/static/overrides.css">
     <link rel="icon" href="/static/favicon.png">
 </head>
 
@@ -19,8 +22,9 @@
                 <div class="title">
                     Kam na oběd?
                 </div>
+
                 <div class="subtitle">
-                    {{ selected_date.strftime("%A, %x")|title }}
+                    {{ formatted_date }}
                 </div>
             </div>
         </div>
@@ -29,7 +33,7 @@
             <nav class="tabs is-centered is-boxed">
                 <ul>
                     {% for date in days_of_week %}
-                        <li{% if date == selected_date %} class="is-active"{% endif %}>
+                        <li class="px-1{% if date == selected_date %} is-active{% endif %}">
                             <a href="/{{date}}">
                                 {{ date.strftime("%A")|title }}
                             </a>
@@ -43,55 +47,45 @@
     <div class="container py-6">
         <div class="columns is-tablet is-multiline is-8">
             {% for provider in providers %}
-            <div class="column is-half">
-                <table class="table has-background-inherit is-fullwidth">
-                    <tr>
-                        <td>
+                <div class="column is-half">
+                    <table class="table has-background-inherit is-fullwidth is-hoverable">
+                        <div class="px-3 py-2">
                             <a href="{{ provider.url }}" target="_blank" class="is-size-4">
                                 {{ provider.name }}
                             </a>
-                        </td>
-                        <td>
+                        </div>
 
-                        </td>
-                    </tr>
-                    {% if provider.menu %}
-                        {% if selected_date in provider.menu %}
-                            {% for item in provider.menu[selected_date] %}
+                        {% if provider.menu is not string %}
+                            {% if provider.menu and selected_date in provider.menu %}
+                                {% for item in provider.menu[selected_date] %}
+                                    <tr>
+                                        <td>
+                                            {{ item.name }}
+                                        </td>
+
+                                        <td class="has-text-right">
+                                            {% if item.price %}
+                                            {{ item.price }}&nbsp;Kč
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
                                 <tr>
                                     <td>
-                                        {{ item.name }}
-                                    </td>
-
-                                    <td class="has-text-right">
-                                        {% if item.price %}
-                                        {{ item.price }}&nbsp;Kč
-                                        {% endif %}
+                                        Menu není pro dnešní den k dispozici.
                                     </td>
                                 </tr>
-                            {% endfor %}
+                            {% endif %}
                         {% else %}
                             <tr>
                                 <td>
-                                    Menu není pro dnešní den k dispozici.
-                                </td>
-
-                                <td class="has-text-right">
+                                    <a href="{{ provider.menu }}" target="_blank">Odkaz na menu</a>
                                 </td>
                             </tr>
                         {% endif %}
-                    {% else %}
-                        <tr>
-                            <td>
-                                Nepodařilo se načíst menu.
-                            </td>
-
-                            <td class="has-text-right">
-                            </td>
-                        </tr>
-                    {% endif %}
-                </table>
-            </div>
+                    </table>
+                </div>
             {% endfor %}
         </div>
     </div>

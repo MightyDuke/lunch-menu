@@ -11,5 +11,5 @@ app.config.TEMPLATING_PATH_TO_TEMPLATES = [
     "lunch_menu/templates/"
 ]
 
-app.ext.dependency(LunchMenuProvider())
+app.ext.dependency(LunchMenuProvider(app.config.get("FETCH_EXPIRE", 600)))
 app.blueprint(blueprint)
