@@ -1,4 +1,4 @@
-from . import Menu, Provider, parse_date, parse_price
+from . import Menu, Provider, parse_date, parse_price, parse_name
 
 class PaletaProvider(Provider):
     name = "Paleta"
@@ -12,16 +12,15 @@ class PaletaProvider(Provider):
             date = parse_date(element.text)
             day = menu.create_day(date)
 
-            for i, item in enumerate(element.find_next_sibling("table").find_all("tr")):
+            for item in element.find_next_sibling("table").find_all("tr"):
+                price = parse_price(item.find(class_ = "meal-price").text)
                 name = item.find(class_ = "meal-name").text
-                price = item.find(class_ = "meal-price").text
 
-                if i == 0:
+                if price is None:
                     name = name.replace("( polévka k menu ZDARMA )", "")
 
-                day.add_item(
-                    name.strip(),
-                    parse_price(price) if price else None
-                )
+                name = parse_name(name, price)
+
+                day.add_item(name, price)
 
         return menu

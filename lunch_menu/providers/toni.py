@@ -1,4 +1,4 @@
-from . import Menu, Provider, find_strings, parse_date, parse_price
+from . import Menu, Provider, find_strings, parse_date, parse_price, parse_name
 
 class ToniProvider(Provider):
     name = "Toni"
@@ -12,12 +12,11 @@ class ToniProvider(Provider):
             date = parse_date(element.find(class_ = "denmenu").text)
             day = menu.create_day(date)
             
-            for i, item in enumerate(element.find_all(class_ = "menu-post-content")):
+            for item in element.find_all(class_ = "menu-post-content"):
                 content = find_strings(item)
+                price = parse_price(content[1])
+                name = parse_name(content[0], price)
 
-                day.add_item(
-                    content[0].strip() if i > 0 else f"Polévka {content[0][0].lower() + content[0][1:]}",
-                    parse_price(content[1])
-                )
+                day.add_item(name, price)
 
         return menu

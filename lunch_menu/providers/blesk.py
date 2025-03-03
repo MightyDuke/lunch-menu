@@ -1,4 +1,4 @@
-from . import Menu, Provider, parse_date, parse_price
+from . import Menu, Provider, parse_date, parse_price, parse_name
 import re
 
 class BleskProvider(Provider):
@@ -19,15 +19,12 @@ class BleskProvider(Provider):
             sibling = element
 
             while (sibling := sibling.find_next_sibling()) and sibling.name == "div":
-                name = sibling.find("h3").text
-                price = sibling.find("span").text
+                price = parse_price(sibling.find("span").text)
+                name = parse_name(sibling.find("h3").text, price)
 
                 if match := re.match(r"(?:\d+\.)?(.*)\s*\(", name):
                     name = match.group(1)
 
-                day.add_item(
-                    name.strip(), 
-                    parse_price(price)
-                )
+                day.add_item(name, price)
 
         return menu

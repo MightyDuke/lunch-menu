@@ -11,7 +11,6 @@
     </title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.3/css/bulma.min.css">
-    <link rel="stylesheet" href="/static/overrides.css">
     <link rel="icon" href="/static/favicon.png">
 </head>
 
@@ -65,15 +64,15 @@
 
                                         <td class="has-text-right">
                                             {% if item.price %}
-                                            {{ item.price }}&nbsp;Kč
+                                                {{ item.price }}&nbsp;Kč
                                             {% endif %}
                                         </td>
                                     </tr>
                                 {% endfor %}
                             {% else %}
                                 <tr>
-                                    <td>
-                                        Menu není pro dnešní den k dispozici.
+                                    <td style="color: var(--bulma-text);">
+                                        Menu není k dispozici.
                                     </td>
                                 </tr>
                             {% endif %}
@@ -93,7 +92,8 @@
     <div class="footer has-text-centered">
         <div>
             &copy; {{ now.strftime("%Y") }} Josef Macháč
-        </div> 
+        </div>
+
         <div>
             <a href="https://github.com/MightyDuke/lunch-menu" target="_blank">GitHub</a> 
             &bull; <a href="/api/menu" target="_blank">API</a> 
