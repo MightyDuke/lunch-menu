@@ -23,7 +23,7 @@ class BleskProvider(Provider):
                 name = parse_name(sibling.find("h3").text, price)
 
                 if match := re.match(r"(?:\d+\.)?(.*)\s*\(", name):
-                    name = match.group(1)
+                    name = match.group(1).strip()
 
                 day.add_item(name, price)
 
