@@ -4,7 +4,7 @@ class PaletaProvider(Provider):
     name = "Paleta"
     url = "https://www.paletarestaurant.cz"
 
-    async def generate_menu(self):
+    async def get_menu(self):
         menu = Menu()
         soup = await self.fetch("https://www.paletarestaurant.cz/menu/menu.php")
 
@@ -23,4 +23,4 @@ class PaletaProvider(Provider):
 
                 day.add_item(name, price)
 
-        return menu
+        return menu.serialize()

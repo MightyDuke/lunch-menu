@@ -1,11 +1,8 @@
-import dateparser
 import re
+import dateparser
 from datetime import date
 from httpx import AsyncClient
 from bs4 import BeautifulSoup
-from diskcache import Cache
-from tempfile import gettempdir
-from pathlib import Path
 
 SOUP_PRICE_THRESHOLD = 100
 
@@ -67,34 +64,18 @@ class Menu:
 
 class Provider:
     client = AsyncClient()
-    cache = Cache(Path(gettempdir()) / "lunch_menu_cache")
 
-    def __init__(self, expire: int = 600):
-        self.expire = expire
+    name: str = None
+    url: str = None
 
     @property
     def class_name(self):
         return self.__class__.__name__
 
-    async def get_menu(self):
-        result = await self.generate_menu()
-
-        if isinstance(result, Menu):
-            return result.serialize()
-        else:
-            return result
-
-    async def generate_menu(self, menu: Menu):
+    async def get_menu(self, menu: Menu):
         pass
 
     async def fetch(self, url: str) -> BeautifulSoup:
-        self.cache.expire()
-
-        if item := self.cache.get(self.class_name):
-            response = item
-        else:
-            response = (await self.client.get(url)).text
-            self.cache.add(self.class_name, response, expire = self.expire)
-
+        response = (await self.client.get(url)).text
         return BeautifulSoup(response, features = "html.parser")
     

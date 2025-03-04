@@ -4,7 +4,7 @@ class ToniProvider(Provider):
     name = "Toni"
     url = "https://www.restauracetoni.cz"
 
-    async def generate_menu(self):
+    async def get_menu(self):
         menu = Menu()
         soup = await self.fetch("https://www.restauracetoni.cz/")
 
@@ -19,4 +19,4 @@ class ToniProvider(Provider):
 
                 day.add_item(name, price)
 
-        return menu
+        return menu.serialize()

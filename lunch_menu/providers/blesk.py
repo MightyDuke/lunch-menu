@@ -5,7 +5,7 @@ class BleskProvider(Provider):
     name = "Hasičárna Blesk"
     url = "https://www.hasicarnableskostrava.cz"
 
-    async def generate_menu(self):
+    async def get_menu(self):
         menu = Menu()
         soup = await self.fetch("https://www.hasicarnableskostrava.cz/poledni-menu")
 
@@ -27,4 +27,4 @@ class BleskProvider(Provider):
 
                 day.add_item(name, price)
 
-        return menu
+        return menu.serialize()

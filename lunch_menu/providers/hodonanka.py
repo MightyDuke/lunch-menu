@@ -4,5 +4,5 @@ class HodonankaProvider(Provider):
     name = "Hodoňanka"
     url = "https://www.rozvoz-jidla-ostrava.cz"
 
-    async def generate_menu(self):
+    async def get_menu(self):
         return "https://www.rozvoz-jidla-ostrava.cz/clanky/jidelni-listek"
