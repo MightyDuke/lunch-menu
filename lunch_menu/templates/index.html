@@ -23,8 +23,11 @@
                 </div>
 
                 <div class="subtitle">
-                    <span class="is-capitalized" x-text="activeDay.weekday"></span>, <span
-                        x-text="activeDay.date"></span>
+                    <template x-if="activeDay">
+                        <span>
+                            <span class="is-capitalized" x-text="activeDay.weekday"></span>, <span x-text="activeDay.date"></span>
+                        </span>
+                    </template>
                 </div>
             </div>
         </div>
@@ -50,16 +53,28 @@
                 <div class="column is-half" x-data="provider(name)">
                     <template x-if="!provider">
                         <div class="p-3">
-                            <div class="skeleton-block"></div>
-                            
-                            <div class="skeleton-lines">
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
+                            <div class="is-skeleton block">
+                                <span class="is-size-3">&nbsp;</span>
+                            </div>
+
+                            <div class="is-skeleton block">
+                                <span>&nbsp;</span>
+                            </div>
+
+                            <div class="is-skeleton block">
+                                <span>&nbsp;</span>
+                            </div>
+
+                            <div class="is-skeleton block">
+                                <span>&nbsp;</span>
+                            </div>
+
+                            <div class="is-skeleton block">
+                                <span>&nbsp;</span>
+                            </div>
+
+                            <div class="is-skeleton block">
+                                <span>&nbsp;</span>
                             </div>
                         </div>
                     </template>
@@ -71,7 +86,7 @@
                             </div>
 
                             <table class="table has-background-inherit is-fullwidth is-hoverable">
-                                <template x-if="!provider.menu[activeDay.iso]">
+                                <template x-if="typeof provider.menu !== 'string' && !provider.menu[activeDay.iso]">
                                     <tbody>
                                         <tr>
                                             <td style="color: var(--bulma-text);">
@@ -98,6 +113,16 @@
                                                 </td>
                                             </tr>
                                         </template>
+                                    </tbody>
+                                </template>
+
+                                <template x-if="typeof provider.menu === 'string'">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <a :href="provider.menu" target="_blank">Odkaz na menu</a>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </template>
                             </table>
