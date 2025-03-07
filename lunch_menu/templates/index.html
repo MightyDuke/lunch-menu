@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="cs">
 
-{% set formatted_date = selected_date.strftime("%A, %x")|title %}
-
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>
-        Kam na oběd? - {{ formatted_date }}
+        Kam na oběd?
     </title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.3/css/bulma.min.css">
     <link rel="icon" href="/static/favicon.png">
+
+    <script src="/static/script.js" type="module"></script>
 </head>
 
-<body class="is-clipped">
+<body class="is-clipped" x-data="app">
     <div class="hero" style="background-color: var(--bulma-scheme-main-bis);">
         <div class="hero-body">
             <div class="container has-text-centered">
@@ -23,80 +23,98 @@
                 </div>
 
                 <div class="subtitle">
-                    {{ formatted_date }}
+                    <span class="is-capitalized" x-text="activeDay.weekday"></span>, <span
+                        x-text="activeDay.date"></span>
                 </div>
             </div>
         </div>
 
         <div class="hero-foot">
-            <nav class="tabs is-centered is-boxed">
-                <ul>
-                    {% for date in days_of_week %}
-                        <li class="px-1{% if date == selected_date %} is-active{% endif %}">
-                            <a href="/{{date}}">
-                                {{ date.strftime("%A")|title }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </nav>
+            <template x-if="days">
+                <nav class="tabs is-centered is-boxed">
+                    <ul>
+                        <template x-for="day in days">
+                            <li :class="{ 'is-active': activeDay.iso === day.iso }" @click="activeDay = day">
+                                <a class="is-capitalized mx-1" x-text="day.weekday"></a>
+                            </li>
+                        </template>
+                    </ul>
+                </nav>
+            </template>
         </div>
     </div>
 
-    <div class="container py-6">
+    <div class="container py-6" style="min-height: 100vh;">
         <div class="columns is-tablet is-multiline is-8">
-            {% for provider in providers %}
-                <div class="column is-half">
-                    <table class="table has-background-inherit is-fullwidth is-hoverable">
-                        <div class="px-3 py-2">
-                            <a href="{{ provider.url }}" target="_blank" class="is-size-4">
-                                {{ provider.name }}
-                            </a>
+            <template x-for="name in providers">
+                <div class="column is-half" x-data="provider(name)">
+                    <template x-if="!provider">
+                        <div class="p-3">
+                            <div class="skeleton-block"></div>
+                            
+                            <div class="skeleton-lines">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
                         </div>
+                    </template>
 
-                        {% if provider.menu is not string %}
-                            {% if provider.menu and selected_date in provider.menu %}
-                                {% for item in provider.menu[selected_date] %}
-                                    <tr>
-                                        <td>
-                                            {{ item.name }}
-                                        </td>
+                    <template x-if="provider">
+                        <div>
+                            <div class="px-3 py-2">
+                                <a :href="provider.url" target="_blank" class="is-size-4" x-text="provider.name"></a>
+                            </div>
 
-                                        <td class="has-text-right">
-                                            {% if item.price %}
-                                                {{ item.price }}&nbsp;Kč
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td style="color: var(--bulma-text);">
-                                        Menu není k dispozici.
-                                    </td>
-                                </tr>
-                            {% endif %}
-                        {% else %}
-                            <tr>
-                                <td>
-                                    <a href="{{ provider.menu }}" target="_blank">Odkaz na menu</a>
-                                </td>
-                            </tr>
-                        {% endif %}
-                    </table>
+                            <table class="table has-background-inherit is-fullwidth is-hoverable">
+                                <template x-if="!provider.menu[activeDay.iso]">
+                                    <tbody>
+                                        <tr>
+                                            <td style="color: var(--bulma-text);">
+                                                Menu není k dispozici.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </template>
+
+                                <template x-if="provider.menu[activeDay.iso]">
+                                    <tbody>
+                                        <template x-for="item in provider.menu[activeDay.iso]">
+                                            <tr>
+                                                <td>
+                                                    <span x-text="item.name"></span>
+                                                </td>
+
+                                                <td class="has-text-right">
+                                                    <template x-if="item.price">
+                                                        <span>
+                                                            <span x-text="item.price"></span>&nbsp;Kč
+                                                        </span>
+                                                    </template>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </template>
+                            </table>
+                        </div>
+                    </template>
                 </div>
-            {% endfor %}
+            </template>
         </div>
     </div>
 
     <div class="footer has-text-centered">
         <div>
-            &copy; {{ now.strftime("%Y") }} Josef Macháč
+            &copy; 2025 Josef Macháč
         </div>
 
         <div>
-            <a href="https://github.com/MightyDuke/lunch-menu" target="_blank">GitHub</a> 
-            &bull; <a href="/api/menu" target="_blank">API</a> 
+            <a href="https://github.com/MightyDuke/lunch-menu" target="_blank">GitHub</a>
         </div>
     </div>
 </body>

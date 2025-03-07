@@ -6,9 +6,6 @@
             "type": "debugpy",
             "request": "launch",
             "module": "sanic",
-            "env": {
-                "LC_TIME": "cs_CZ"
-            },
             "args": [
                 "lunch_menu.app:app",
                 "--dev",
