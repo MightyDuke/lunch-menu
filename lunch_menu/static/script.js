@@ -16,14 +16,15 @@ document.addEventListener("alpine:init", () => {
         async init() {
             const now = new Date;
 
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 7; i++) {
                 const date = new Date;
                 date.setDate(now.getDate() - now.getDay() + 1 + i);
 
                 const day = {
                     "iso": isoDate(date),
                     "weekday": date.toLocaleDateString(this.locale, { weekday: "long" }),
-                    "date": date.toLocaleDateString(this.locale, { year: "numeric", month: "long", day: "numeric" })
+                    "date": date.toLocaleDateString(this.locale, { year: "numeric", month: "long", day: "numeric" }),
+                    "active": i != 5 && i != 6
                 };
 
                 this.days.push(day);
