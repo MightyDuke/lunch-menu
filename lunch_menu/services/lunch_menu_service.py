@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from diskcache import Cache
 from tempfile import gettempdir
@@ -9,6 +8,7 @@ from lunch_menu.providers.paleta import PaletaProvider
 from lunch_menu.providers.blesk import BleskProvider
 from lunch_menu.providers.phobo import PhoboProvider
 from lunch_menu.providers.hodonanka import HodonankaProvider
+from lunch_menu.providers.pastafidli import PastaFidliProvider
 
 class LunchMenuService:
     providers = {
@@ -16,8 +16,9 @@ class LunchMenuService:
         "boasi": BoasiProvider,
         "paleta": PaletaProvider,
         "blesk": BleskProvider, 
+        "pastaafidli": PastaFidliProvider,
         "phobo": PhoboProvider,
-        "hodonanka": HodonankaProvider
+        "hodonanka": HodonankaProvider,
     }
 
     def __init__(self, expire: int):
