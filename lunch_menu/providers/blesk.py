@@ -1,5 +1,16 @@
-from . import Menu, Provider, parse_date, parse_price, parse_name
+from . import Menu, Provider, parse_date, parse_price
 import re
+
+def clean_name(text: str):
+    text = text.strip()
+
+    if match := re.match(r"(?:\d+\.\s*)?(.*)", text):
+        text = match.group(1).strip()
+
+    if match := re.match(r"(.*)\s*\(", text):
+        text = match.group(1).strip()
+
+    return text
 
 class BleskProvider(Provider):
     name = "Hasičárna Blesk"
@@ -13,17 +24,11 @@ class BleskProvider(Provider):
             date = parse_date(element.text)
             day = menu.create_day(date)
 
-            if date is None:
-                continue
-
             sibling = element
 
             while (sibling := sibling.find_next_sibling()) and sibling.name == "div":
+                name = clean_name(sibling.find("h3").text)
                 price = parse_price(sibling.find("span").text)
-                name = parse_name(sibling.find("h3").text, price)
-
-                if match := re.match(r"(?:\d+\.)?(.*)\s*\(", name):
-                    name = match.group(1).strip()
 
                 day.add_item(name, price)
 

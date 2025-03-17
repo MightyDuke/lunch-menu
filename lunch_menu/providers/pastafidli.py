@@ -1,5 +1,13 @@
-from . import Menu, Provider, parse_date, parse_price, parse_name
+from . import Menu, Provider, parse_date, parse_price
 import re
+
+def clean_name(text: str):
+    text = text.strip()
+
+    if match := re.match(r"(?:\d+\.)?(.*)\s*\(.*\) \(", text):
+        text = match.group(1).strip()
+
+    return text
 
 class PastaFidliProvider(Provider):
     name = "Pasta & Fidli"
@@ -13,11 +21,8 @@ class PastaFidliProvider(Provider):
             date = parse_date(element.find("td").text)
             day = menu.create_day(date)
 
-            if date is None:
+            if date is not None and date.weekday() in (5, 6):
                 continue
-
-            if date.weekday in (5, 6):
-                break
 
             sibling = element
 
@@ -25,14 +30,11 @@ class PastaFidliProvider(Provider):
                 if not sibling.has_attr("class"):
                     continue
 
-                if sibling.name != "tr" or sibling.has_attr("class") and "day" in sibling.attrs["class"]:
+                if sibling.name != "tr" or sibling.has_attr("class") and "day" in sibling.attrs["class"] or "shift" in sibling.attrs["class"]:
                     break
 
+                name = clean_name(sibling.find("td").text)
                 price = parse_price(sibling.find(class_ = "price").text)
-                name = parse_name(sibling.find("td").text, price)
-
-                if match := re.match(r"(?:\d+\.)?(.*)\s*\(.*\) \(", name):
-                    name = match.group(1).strip()
 
                 day.add_item(name, price)
 

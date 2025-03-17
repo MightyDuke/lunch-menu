@@ -87,7 +87,7 @@
                                 <a :href="provider.url" target="_blank" class="is-size-4" x-text="provider.name"></a>
                             </div>
 
-                            <table class="table has-background-inherit is-fullwidth is-hoverable">
+                            <table class="table has-background-inherit is-fullwidth is-hoverable" style="--bulma-table-cell-border-width: 0">
                                 <template x-if="typeof provider.menu !== 'string' && !provider.menu[activeDay.iso]">
                                     <tbody>
                                         <tr>
@@ -108,7 +108,27 @@
 
                                                 <td class="has-text-right">
                                                     <template x-if="item.price">
-                                                        <span>
+                                                        <span style="color: var(--bulma-text);">
+                                                            <span x-text="item.price"></span>&nbsp;Kč
+                                                        </span>
+                                                    </template>
+                                                </td>
+                                            </tr>
+                                        </template>
+
+                                        <template x-if="'week' in provider.menu">
+                                            <div class="p-3" style="color: var(--bulma-text)">Týdenní menu</div>
+                                        </template>
+
+                                        <template x-for="item in provider.menu['week']">
+                                            <tr>
+                                                <td>
+                                                    <span x-text="item.name"></span>
+                                                </td>
+
+                                                <td class="has-text-right">
+                                                    <template x-if="item.price">
+                                                        <span style="color: var(--bulma-text);">
                                                             <span x-text="item.price"></span>&nbsp;Kč
                                                         </span>
                                                     </template>

@@ -1,4 +1,7 @@
-from . import Menu, Provider, parse_date, parse_price, parse_name
+from . import Menu, Provider, parse_date, parse_price
+
+def clean_name(text: str):
+    return text.strip()
 
 class BoasiProvider(Provider):
     name = "Bo Asi!"
@@ -13,8 +16,8 @@ class BoasiProvider(Provider):
             day = menu.create_day(date)
 
             for item in element.find_next_sibling("table").find_all("tr"):
+                name = clean_name(item.find(class_ = "food").text)
                 price = parse_price(item.find(class_ = "prize").text)
-                name = parse_name(item.find(class_ = "food").text, price)
 
                 day.add_item(name, price)
 
