@@ -23,9 +23,11 @@
                 </div>
 
                 <div class="subtitle">
-                    <span>
-                        <span class="is-capitalized" x-text="getLocalizedWeekName(selectedDate)"></span>, <span x-text="getLocalizedLongFormat(selectedDate)"></span>
-                    </span>
+                    <template x-if="selectedDate">
+                        <span>
+                            <span class="is-capitalized" x-text="getLocalizedWeekName(selectedDate)"></span>, <span x-text="getLocalizedLongFormat(selectedDate)"></span>
+                        </span>
+                    </template>
                 </div>
             </div>
         </div>
