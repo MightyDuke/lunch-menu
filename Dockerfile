@@ -1,8 +1,7 @@
 FROM python:3.13-slim
 
 WORKDIR /app
-RUN apt update && \
-    pip install pipenv
+RUN apt update && pip install pipenv
 
 COPY . .
 RUN pipenv install --system

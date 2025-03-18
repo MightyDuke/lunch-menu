@@ -28,12 +28,12 @@ class BleskProvider(Provider):
             day = menu.create_day(date)
 
             sibling = element
-            i = 0
+            is_soup = True
 
             while (sibling := sibling.find_next_sibling()) and sibling.name == "div":
-                name = clean_name(sibling.find("h3").text, i == 0)
+                name = clean_name(sibling.find("h3").text, is_soup)
                 price = parse_price(sibling.find("span").text)
-                i += 1
+                is_soup = False
 
                 day.add_item(name, price)
 

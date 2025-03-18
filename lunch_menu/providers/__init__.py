@@ -4,8 +4,6 @@ from datetime import date
 from httpx import AsyncClient
 from bs4 import BeautifulSoup
 
-SOUP_PRICE_THRESHOLD = 100
-
 def parse_date(text: str) -> date:
     result = dateparser.parse(text, languages = ["cs"]) 
     return result.date() if result else None
