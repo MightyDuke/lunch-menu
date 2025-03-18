@@ -6,6 +6,8 @@ RUN apt update && pip install pipenv
 COPY . .
 RUN pipenv install --system
 
+ENV SANIC_PROXIES_COUNT=1
+
 ENTRYPOINT [ \
     "sanic", "lunch_menu.app", \
     "--fast", \

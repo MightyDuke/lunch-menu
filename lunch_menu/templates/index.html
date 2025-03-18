@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="cs">
-
 <head>
+    <title>Kam na oběd?</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#171a1f" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f8fafa" media="(prefers-color-scheme: light)">
 
-    <title>
-        Kam na oběd?
-    </title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.3/css/bulma.min.css">
-    <link rel="icon" href="/static/favicon.png">
+    <link rel="stylesheet" href="/static/bulma.min.css">
+    <link rel="icon" href="/static/favicon/64.png">
+    <link rel="manifest" href="/static/manifest.json">
 
     <script src="/static/script.js" type="module"></script>
 </head>
@@ -23,29 +23,23 @@
                 </div>
 
                 <div class="subtitle">
-                    <template x-if="activeDay">
-                        <span>
-                            <span class="is-capitalized" x-text="activeDay.weekday"></span>, <span x-text="activeDay.date"></span>
-                        </span>
-                    </template>
+                    <span>
+                        <span class="is-capitalized" x-text="getLocalizedWeekName(selectedDate)"></span>, <span x-text="getLocalizedLongFormat(selectedDate)"></span>
+                    </span>
                 </div>
             </div>
         </div>
 
         <div class="hero-foot">
-            <template x-if="days">
-                <nav class="tabs is-centered is-boxed">
-                    <ul>
-                        <template x-for="day in days">
-                            <template x-if="day.active">
-                                <li :class="{ 'is-active': activeDay.iso === day.iso }" @click="activeDay = day">
-                                    <a class="is-capitalized mx-1" x-text="day.weekday"></a>
-                                </li>
-                            </template>
-                        </template>
-                    </ul>
-                </nav>
-            </template>
+            <nav class="tabs is-centered is-boxed">
+                <ul>
+                    <template x-for="day in getDaysInWeek()">
+                        <li :class="{ 'is-active': selectedDate === day }" @click="selectedDate = day">
+                            <a class="is-capitalized mx-1" x-text="getLocalizedWeekName(day)"></a>
+                        </li>
+                    </template>
+                </ul>
+            </nav>
         </div>
     </div>
 
@@ -88,7 +82,7 @@
                             </div>
 
                             <table class="table has-background-inherit is-fullwidth is-hoverable" style="--bulma-table-cell-border-width: 0">
-                                <template x-if="typeof provider.menu !== 'string' && !provider.menu[activeDay.iso]">
+                                <template x-if="typeof provider.menu !== 'string' && !provider.menu[selectedDate]">
                                     <tbody>
                                         <tr>
                                             <td style="color: var(--bulma-text);">
@@ -98,9 +92,9 @@
                                     </tbody>
                                 </template>
 
-                                <template x-if="provider.menu[activeDay.iso]">
+                                <template x-if="provider.menu[selectedDate]">
                                     <tbody>
-                                        <template x-for="item in provider.menu[activeDay.iso]">
+                                        <template x-for="item in provider.menu[selectedDate]">
                                             <tr>
                                                 <td>
                                                     <span x-text="item.name"></span>

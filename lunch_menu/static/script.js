@@ -1,38 +1,44 @@
-import Alpine from "https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.8/module.esm.min.js"
+import Alpine from "/static/alpine.min.js"
 
-document.addEventListener("alpine:init", () => {
-    function isoDate(date) {
-        return `${date.getFullYear().toString().padStart(4, "0")}-` +
-            `${(date.getMonth() + 1).toString().padStart(2, "0")}-` + 
-            `${date.getDate().toString().padStart(2, "0")}`;
+window.locale = "cs-cz";
+
+function isoDate(date) {
+    return `${date.getFullYear().toString().padStart(4, "0")}-` +
+        `${(date.getMonth() + 1).toString().padStart(2, "0")}-` + 
+        `${date.getDate().toString().padStart(2, "0")}`
+}
+
+window.getDaysInWeek = function() {
+    const now = new Date;
+    const result = [];
+
+    for (let i = 0; i < 5; i++) {
+        let date = new Date;
+        date.setDate(now.getDate() - now.getDay() + 1 + i);
+        result.push(isoDate(date));
     }
 
+    return result;
+}
+
+window.getLocalizedWeekName = function(date) {
+    const parsedDate = new Date(Date.parse(date));
+    return parsedDate.toLocaleDateString(window.locale, { weekday: "long" });
+}
+
+window.getLocalizedLongFormat = function(date) {
+    const parsedDate = new Date(Date.parse(date));
+    return parsedDate.toLocaleDateString(window.locale, { year: "numeric", month: "long", day: "numeric" });
+}
+
+document.addEventListener("alpine:init", () => {
     Alpine.data("app", () => ({
         locale: "cs-cz",
-        activeDay: null,
-        days: [],
+        selectedDate: null,
         providers: [],
 
         async init() {
-            const now = new Date;
-
-            for (let i = 0; i < 7; i++) {
-                const date = new Date;
-                date.setDate(now.getDate() - now.getDay() + 1 + i);
-
-                const day = {
-                    "iso": isoDate(date),
-                    "weekday": date.toLocaleDateString(this.locale, { weekday: "long" }),
-                    "date": date.toLocaleDateString(this.locale, { year: "numeric", month: "long", day: "numeric" }),
-                    "active": i != 5 && i != 6
-                };
-
-                this.days.push(day);
-
-                if (day.iso === isoDate(now)) {
-                    this.activeDay = day;
-                }
-            }
+            this.selectedDate = isoDate(new Date);
 
             const response = await fetch("/api/providers");
             this.providers = await response.json();
