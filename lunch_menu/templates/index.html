@@ -7,27 +7,24 @@
     <meta name="theme-color" content="#171a1f" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#f8fafa" media="(prefers-color-scheme: light)">
 
-    <link rel="stylesheet" href="/static/bulma.min.css">
+    <link rel="stylesheet" href="/static/css/bulma.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
     <link rel="icon" href="/static/favicon/64.png">
     <link rel="manifest" href="/static/manifest.json">
 
-    <script src="/static/script.js" type="module"></script>
+    <script src="/static/js/script.js" type="module"></script>
 </head>
 
 <body class="is-clipped" x-data="app">
-    <div class="hero" style="background-color: var(--bulma-scheme-main-bis);">
+    <div class="hero">
         <div class="hero-body">
             <div class="container has-text-centered">
                 <div class="title">
                     Kam na oběd?
                 </div>
 
-                <div class="subtitle">
-                    <template x-if="selectedDate">
-                        <span>
-                            <span class="is-capitalized" x-text="getLocalizedWeekName(selectedDate)"></span>, <span x-text="getLocalizedLongFormat(selectedDate)"></span>
-                        </span>
-                    </template>
+                <div class="subtitle" x-cloak>
+                    <span class="is-capitalized" x-text="getLocalizedWeekName(selectedDate)"></span>, <span x-text="getLocalizedLongFormat(selectedDate)"></span>
                 </div>
             </div>
         </div>
@@ -45,7 +42,7 @@
         </div>
     </div>
 
-    <div class="container py-6" style="min-height: 100vh;">
+    <div class="container py-6 has-min-height-screen">
         <div class="columns is-tablet is-multiline is-8">
             <template x-for="name in providers">
                 <div class="column is-half" x-data="provider(name)">
@@ -83,11 +80,11 @@
                                 <a :href="provider.url" target="_blank" class="is-size-4" x-text="provider.name"></a>
                             </div>
 
-                            <table class="table has-background-inherit is-fullwidth is-hoverable" style="--bulma-table-cell-border-width: 0">
+                            <table class="table has-background-inherit is-fullwidth is-hoverable">
                                 <template x-if="typeof provider.menu !== 'string' && !provider.menu[selectedDate]">
                                     <tbody>
                                         <tr>
-                                            <td style="color: var(--bulma-text);">
+                                            <td class="text">
                                                 Menu není k dispozici.
                                             </td>
                                         </tr>
@@ -104,7 +101,7 @@
 
                                                 <td class="has-text-right">
                                                     <template x-if="item.price">
-                                                        <span style="color: var(--bulma-text);">
+                                                        <span class="text">
                                                             <span x-text="item.price"></span>&nbsp;Kč
                                                         </span>
                                                     </template>
@@ -113,7 +110,7 @@
                                         </template>
 
                                         <template x-if="'week' in provider.menu">
-                                            <div class="p-3" style="color: var(--bulma-text)">Týdenní menu</div>
+                                            <div class="p-3 text">Týdenní menu</div>
                                         </template>
 
                                         <template x-for="item in provider.menu['week']">
@@ -124,7 +121,7 @@
 
                                                 <td class="has-text-right">
                                                     <template x-if="item.price">
-                                                        <span style="color: var(--bulma-text);">
+                                                        <span class="text">
                                                             <span x-text="item.price"></span>&nbsp;Kč
                                                         </span>
                                                     </template>

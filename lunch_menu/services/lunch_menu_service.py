@@ -18,7 +18,7 @@ class LunchMenuService:
         "blesk": BleskProvider, 
         "pastaafidli": PastaFidliProvider,
         "phobo": PhoboProvider,
-        "hodonanka": HodonankaProvider,
+        # "hodonanka": HodonankaProvider,
     }
 
     def __init__(self, expire: int):
@@ -46,5 +46,5 @@ class LunchMenuService:
         return {
             "name": instance.name,
             "url": instance.url,
-            "menu": result if result is not None else None
+            "menu": result if result else None
         }

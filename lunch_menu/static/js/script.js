@@ -1,4 +1,4 @@
-import Alpine from "/static/alpine.min.js"
+import Alpine from "/static/js/alpine.min.js"
 
 window.locale = "cs-cz";
 

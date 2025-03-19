@@ -1,0 +1,29 @@
+@font-face {
+    font-family: "Inter";
+    src: url("/static/font/Inter.ttf");
+    font-display: block;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+}
+
+[x-cloak] { 
+    display: none !important; 
+}
+
+.hero {
+    background-color: var(--bulma-scheme-main-bis);
+}
+
+.table {
+    --bulma-table-cell-border-width: 0;
+}
+
+.text {
+    color: var(--bulma-text) !important;
+}
+
+.has-min-height-screen {
+    min-height: 100vh;
+}
