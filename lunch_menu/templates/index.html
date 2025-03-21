@@ -81,7 +81,7 @@
                             </div>
 
                             <table class="table has-background-inherit is-fullwidth is-hoverable">
-                                <template x-if="typeof provider.menu !== 'string' && !provider.menu[selectedDate]">
+                                <template x-if="provider.menu == null || typeof provider.menu !== 'string' && !provider.menu[selectedDate]">
                                     <tbody>
                                         <tr>
                                             <td class="text">
@@ -91,7 +91,7 @@
                                     </tbody>
                                 </template>
 
-                                <template x-if="provider.menu[selectedDate]">
+                                <template x-if="provider.menu != null && provider.menu[selectedDate]">
                                     <tbody>
                                         <template x-for="item in provider.menu[selectedDate]">
                                             <tr>
