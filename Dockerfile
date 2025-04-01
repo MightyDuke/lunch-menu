@@ -9,7 +9,7 @@ RUN pipenv install --system
 ENV SANIC_PROXIES_COUNT=1
 
 ENTRYPOINT [ \
-    "sanic", "lunch_menu.app", \
+    "sanic", "app", \
     "--fast", \
     "--host", "0.0.0.0", \
     "--port", "80" \

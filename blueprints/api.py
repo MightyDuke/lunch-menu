@@ -2,7 +2,7 @@ from sanic import Request, Blueprint
 from sanic.exceptions import NotFound
 from sanic.response import json
 from sanic_ext import cors
-from lunch_menu.services import LunchMenuService
+from services import LunchMenuService
 
 blueprint = Blueprint("api", url_prefix = "api")
 
