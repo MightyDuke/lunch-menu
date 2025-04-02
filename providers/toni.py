@@ -3,7 +3,7 @@ from . import Menu, Provider, find_strings, parse_date, parse_price
 def clean_name(text: str, is_soup: bool):
     text = text.strip()
 
-    if is_soup:
+    if "polévka" not in text.lower() and is_soup:
         text = f"Polévka {text[0].lower()}{text[1:]}"
 
     return text
@@ -14,9 +14,9 @@ class ToniProvider(Provider):
 
     async def get_menu(self):
         menu = Menu()
-        soup = await self.fetch("https://www.restauracetoni.cz/")
+        site = await self.fetch("https://www.restauracetoni.cz/")
 
-        for element in soup.find_all(class_ = "menublok"):
+        for element in site.find_all(class_ = "menublok"):
             date = parse_date(element.find(class_ = "denmenu").text)
             day = menu.create_day(date)
             

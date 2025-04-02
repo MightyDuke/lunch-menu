@@ -17,8 +17,8 @@ class LunchMenuService:
         "paleta": PaletaProvider,
         "blesk": BleskProvider, 
         "pastaafidli": PastaFidliProvider,
-        "phobo": PhoboProvider,
         "hodonanka": HodonankaProvider,
+        "phobo": PhoboProvider,
     }
 
     def __init__(self, expire: int):

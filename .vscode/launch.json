@@ -6,6 +6,9 @@
             "type": "debugpy",
             "request": "launch",
             "module": "sanic",
+            "env": {
+                "SANIC_FETCH_EXPIRE": "1",
+            },
             "args": [
                 "app",
                 "--dev",

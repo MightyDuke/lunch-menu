@@ -62,7 +62,7 @@ class Provider:
     def class_name(self):
         return self.__class__.__name__
 
-    async def get_menu(self, menu: Menu):
+    async def get_menu(self):
         pass
 
     async def fetch(self, url: str) -> BeautifulSoup:
