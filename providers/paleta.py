@@ -1,5 +1,6 @@
 import re
-from . import Menu, Provider, parse_date, parse_price
+from bs4 import BeautifulSoup
+from . import Menu, ScrapingProvider, parse_date, parse_price
 
 def clean_name(text: str):
     text = text.strip()
@@ -10,15 +11,13 @@ def clean_name(text: str):
 
     return text
 
-class PaletaProvider(Provider):
+class PaletaProvider(ScrapingProvider):
     name = "Paleta"
-    url = "https://www.paletarestaurant.cz"
+    homepage = "https://www.paletarestaurant.cz"
+    fetch_url = "https://www.paletarestaurant.cz/menu/menu.php"
 
-    async def get_menu(self):
-        menu = Menu()
-        soup = await self.fetch("https://www.paletarestaurant.cz/menu/menu.php")
-
-        for element in soup.body.find_all("h3"):
+    async def fetch_menu(self, site: BeautifulSoup, menu: Menu):
+        for element in site.body.find_all("h3"):
             date = parse_date(element.text)
             day = menu.create_day(date)
 
@@ -27,5 +26,3 @@ class PaletaProvider(Provider):
                 price = parse_price(item.find(class_ = "meal-price").text)
 
                 day.add_item(name, price)
-
-        return menu.serialize()

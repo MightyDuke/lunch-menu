@@ -1,5 +1,6 @@
-from . import Menu, Provider, parse_date, parse_price
 import re
+from bs4 import BeautifulSoup
+from . import Menu, ScrapingProvider, parse_date, parse_price
 
 def clean_name(text: str, is_soup: str):
     text = text.strip()
@@ -15,15 +16,13 @@ def clean_name(text: str, is_soup: str):
 
     return text
 
-class BleskProvider(Provider):
+class BleskProvider(ScrapingProvider):
     name = "Hasičárna Blesk"
-    url = "https://www.hasicarnableskostrava.cz"
+    homepage = "https://www.hasicarnableskostrava.cz"
+    fetch_url = "https://www.hasicarnableskostrava.cz/poledni-menu"
 
-    async def get_menu(self):
-        menu = Menu()
-        soup = await self.fetch("https://www.hasicarnableskostrava.cz/poledni-menu")
-
-        for element in soup.body.find_all(class_ = "food-section"):
+    async def fetch_menu(self, site: BeautifulSoup, menu: Menu):
+        for element in site.body.find_all(class_ = "food-section"):
             date = parse_date(element.text)
             day = menu.create_day(date)
 
@@ -36,5 +35,3 @@ class BleskProvider(Provider):
                 is_soup = False
 
                 day.add_item(name, price)
-
-        return menu.serialize()

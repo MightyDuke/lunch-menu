@@ -1,6 +1,10 @@
-import re
+import logging
 import dateparser
+import re
+from pathlib import Path
+from tempfile import gettempdir
 from datetime import date
+from diskcache import Cache
 from httpx import AsyncClient
 from bs4 import BeautifulSoup
 
@@ -53,19 +57,42 @@ class Menu:
         }
 
 class Provider:
-    client = AsyncClient()
-
     name: str = None
-    url: str = None
+    homepage: str = None
+
+    async def get_menu(self):
+        pass
+
+class ScrapingProvider(Provider):
+    fetch_url: str
+
+    client = AsyncClient()
+    cache = Cache(Path(gettempdir()) / "lunch_menu_cache")
+    expire = 600
 
     @property
     def class_name(self):
         return self.__class__.__name__
 
     async def get_menu(self):
-        pass
+        result = self.cache.get(self.class_name)
 
-    async def fetch(self, url: str) -> BeautifulSoup:
-        response = (await self.client.get(url)).text
-        return BeautifulSoup(response, features = "html.parser")
-    
+        if result is None:
+            try:
+                response = (await self.client.get(self.fetch_url)).text
+                soup = BeautifulSoup(response, features = "html.parser")
+                menu = Menu()
+
+                await self.fetch_menu(soup, menu)
+                result = menu.serialize()
+            except:
+                logging.exception(self.class_name)
+                result = None
+                
+            if result is not None:
+                self.cache.set(self.class_name, result, expire = self.expire)
+
+        return result
+
+    async def fetch_menu(self, soup: BeautifulSoup, menu: Menu):
+        pass

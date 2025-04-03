@@ -1,7 +1,6 @@
 @font-face {
     font-family: "Inter";
     src: url("/static/font/Inter.ttf");
-    font-display: block;
 }
 
 body {
