@@ -1,10 +1,12 @@
-from providers.toni import ToniProvider
-from providers.boasi import BoasiProvider
-from providers.paleta import PaletaProvider
-from providers.blesk import BleskProvider
-from providers.phobo import PhoboProvider
-from providers.hodonanka import HodonankaProvider
-from providers.pastafidli import PastaFidliProvider
+from providers import (
+    ToniProvider,
+    BoasiProvider,
+    PaletaProvider,
+    BleskProvider,
+    PhoboProvider,
+    HodonankaProvider,
+    PastaFidliProvider
+)
 
 class LunchMenuService:
     providers = {

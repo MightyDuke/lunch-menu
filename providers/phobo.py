@@ -1,4 +1,4 @@
-from . import Provider
+from .base import Provider
 
 class PhoboProvider(Provider):
     name = "Pho Bo"
