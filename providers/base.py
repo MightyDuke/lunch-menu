@@ -90,11 +90,11 @@ class ScrapingProvider(Provider):
         return text
 
     @property
-    def class_name(self):
+    def cache_key(self):
         return self.__class__.__name__
 
     async def get_menu(self):
-        result = self.cache.get(self.class_name)
+        result = self.cache.get(self.cache_key)
 
         if result is None:
             try:
@@ -105,11 +105,11 @@ class ScrapingProvider(Provider):
                 await self.construct_menu(soup, menu)
                 result = menu.serialize()
             except:
-                logging.exception(self.class_name)
+                logging.exception(self.cache_key)
                 result = None
                 
             if result is not None:
-                self.cache.set(self.class_name, result, expire = self.expire)
+                self.cache.set(self.cache_key, result, expire = self.expire)
 
         return result
 

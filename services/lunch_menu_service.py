@@ -1,22 +1,14 @@
-from providers import (
-    ToniProvider,
-    BoasiProvider,
-    PaletaProvider,
-    BleskProvider,
-    PhoboProvider,
-    HodonankaProvider,
-    PastaFidliProvider
-)
+import providers
 
 class LunchMenuService:
     providers = {
-        "toni": ToniProvider,
-        "boasi": BoasiProvider,
-        "paleta": PaletaProvider,
-        "blesk": BleskProvider, 
-        "hodonanka": HodonankaProvider,
-        "pastaafidli": PastaFidliProvider,
-        "phobo": PhoboProvider,
+        "toni": providers.ToniProvider,
+        "boasi": providers.BoasiProvider,
+        "paleta": providers.PaletaProvider,
+        "blesk": providers.BleskProvider, 
+        "hodonanka": providers.HodonankaProvider,
+        "pastaafidli": providers.PastaFidliProvider,
+        "phobo": providers.PhoboProvider,
     }
 
     def __init__(self):
