@@ -74,14 +74,15 @@ class ScrapingProvider(Provider):
         ]
 
     @staticmethod
-    def clean_name(text: str, is_soup: bool = False):
+    def clean_name(text: str, is_soup: bool = False, *, suffix_removal_count: int = 1):
         text = text.strip()
 
         if match := re.match(r"(?:\d+\.\s*)?(.*)", text):
             text = match.group(1).strip()
 
-        if match := re.match(r"(.*)\(.+\)\*?$", text):
-            text = match.group(1).strip()
+        for _ in range(suffix_removal_count):
+            if match := re.match(r"(.*)\(.+\)\*?$", text):
+                text = match.group(1).strip()
 
         if is_soup:
             text = f"Polévka {text[0].lower()}{text[1:]}"

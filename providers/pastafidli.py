@@ -23,7 +23,7 @@ class PastaFidliProvider(ScrapingProvider):
                 if sibling.name != "tr" or sibling.has_attr("class") and "day" in sibling.attrs["class"] or "shift" in sibling.attrs["class"]:
                     break
 
-                name = self.clean_name(sibling.find("td").text)
+                name = self.clean_name(sibling.find("td").text, suffix_removal_count = 2)
                 price = self.parse_price(sibling.find(class_ = "price").text)
 
                 day.add_item(name, price)
