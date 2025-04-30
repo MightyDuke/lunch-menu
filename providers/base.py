@@ -98,8 +98,8 @@ class ScrapingProvider(Provider):
 
         if result is None:
             try:
-                response = (await self.client.get(self.fetch_url)).text
-                soup = BeautifulSoup(response, features = "html.parser")
+                response = await self.client.get(self.fetch_url)
+                soup = BeautifulSoup(response.text, features = "html.parser")
                 menu = Menu()
 
                 await self.construct_menu(soup, menu)
