@@ -5,7 +5,7 @@ from services import LunchMenuService
 app = Sanic("lunch_menu")
 app.config.OAS = False
 
-lunch_menu_service = LunchMenuService()
+lunch_menu_service = LunchMenuService(expire = app.config.FETCH_EXPIRE)
 app.ext.dependency(lunch_menu_service)
 
 app.blueprint(static_blueprint)

@@ -5,3 +5,4 @@ from .paleta import PaletaProvider
 from .pastafidli import PastaFidliProvider
 from .phobo import PhoboProvider
 from .toni import ToniProvider
+from .mbrestaurace import MBRestauraceProvider

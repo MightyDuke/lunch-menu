@@ -8,11 +8,12 @@ class LunchMenuService:
         "blesk": providers.BleskProvider, 
         "hodonanka": providers.HodonankaProvider,
         "pastaafidli": providers.PastaFidliProvider,
+        "mbrestaurace": providers.MBRestauraceProvider,
         "phobo": providers.PhoboProvider,
     }
 
-    def __init__(self):
-        self.instances = {key: cls() for key, cls in self.providers.items()}
+    def __init__(self, *, expire: int = 600):
+        self.instances = {key: cls(expire = expire) for key, cls in self.providers.items()}
 
     async def get_providers(self):
         return [

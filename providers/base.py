@@ -13,6 +13,9 @@ class Day:
         self.items = []
 
     def add_item(self, name: str, price: int):
+        if name == "":
+            return
+
         self.items.append((name, price))
 
 class Menu:
@@ -43,6 +46,9 @@ class Menu:
 class Provider:
     name: str = None
     homepage: str = None
+
+    def __init__(self, **kwargs):
+        pass
 
     async def get_menu(self):
         pass
@@ -88,6 +94,10 @@ class ScrapingProvider(Provider):
             text = f"Polévka {text[0].lower()}{text[1:]}"
 
         return text
+
+    def __init__(self, expire: int = 600, **kwargs):
+        super().__init__(**kwargs)
+        self.expire = expire
 
     @property
     def cache_key(self):
