@@ -13,7 +13,11 @@ class LunchMenuService:
     }
 
     def __init__(self, *, expire: int = 600):
-        self.instances = {key: cls(expire = expire) for key, cls in self.providers.items()}
+        self.instances = {
+            key: cls(expire = expire) 
+            for key, cls 
+            in self.providers.items()
+        }
 
     async def get_providers(self):
         return [

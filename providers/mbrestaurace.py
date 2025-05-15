@@ -21,6 +21,9 @@ class MBRestauraceProvider(ScrapingProvider):
             name = self.clean_name(name.replace("k menu", ""))
             price = self.parse_price(item.select_one(":scope > div > div > div > div:nth-child(2)").text)
 
+            if name == "": 
+                continue
+
             day.add_item(name, price)
 
     

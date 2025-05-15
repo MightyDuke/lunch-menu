@@ -13,9 +13,6 @@ class Day:
         self.items = []
 
     def add_item(self, name: str, price: int):
-        if name == "":
-            return
-
         self.items.append((name, price))
 
 class Menu:
@@ -58,7 +55,6 @@ class ScrapingProvider(Provider):
 
     client = AsyncClient()
     cache = Cache(Path(gettempdir()) / "lunch_menu_cache")
-    expire = 600
 
     @staticmethod
     def parse_date(text: str) -> date:
