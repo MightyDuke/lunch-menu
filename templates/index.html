@@ -23,128 +23,170 @@
                 </div>
 
                 <div class="subtitle" x-cloak>
-                    <span class="is-capitalized" x-text="getLocalizedWeekName(selectedDate)"></span>, <span x-text="getLocalizedLongFormat(selectedDate)"></span>
+                    <template x-if="tab == 'menu'">
+                        <div>
+                            <span class="is-capitalized" x-text="getLocalizedWeekName(selectedDate)"></span>, <span x-text="getLocalizedLongFormat(selectedDate)"></span>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>
 
-        <div class="hero-foot">
-            <nav class="tabs is-centered is-boxed">
-                <ul>
-                    <template x-for="day in getDaysInWeek()">
-                        <li :class="{ 'is-active': selectedDate === day }" @click="selectedDate = day">
-                            <a class="is-capitalized mx-1" x-text="getLocalizedWeekName(day)"></a>
-                        </li>
-                    </template>
-                </ul>
-            </nav>
-        </div>
+        <template x-if="tab == 'menu'">
+            <div class="hero-foot">
+                <nav class="tabs is-centered is-boxed">
+                    <ul>
+                        <template x-for="day in getDaysInWeek()">
+                            <li :class="{ 'is-active': selectedDate === day }" @click="selectedDate = day">
+                                <a class="is-capitalized mx-1" x-text="getLocalizedWeekName(day)"></a>
+                            </li>
+                        </template>
+                    </ul>
+                </nav>
+            </div>
+        </template>
     </div>
 
     <div class="container py-6 has-min-height-screen">
-        <div class="columns is-tablet is-multiline is-8">
-            <template x-for="name in providers">
-                <div class="column is-half" x-data="provider(name)">
-                    <template x-if="!provider">
-                        <div class="p-3">
-                            <div class="is-skeleton block">
-                                <span class="is-size-3">&nbsp;</span>
-                            </div>
+        <template x-if="tab == 'menu'">
+            <div>
+                <!--
+                <button class="button" @click="switchTab('luckyWheel')">Kolo štěstí</button>
+                -->
 
-                            <div class="is-skeleton block">
-                                <span>&nbsp;</span>
-                            </div>
-
-                            <div class="is-skeleton block">
-                                <span>&nbsp;</span>
-                            </div>
-
-                            <div class="is-skeleton block">
-                                <span>&nbsp;</span>
-                            </div>
-
-                            <div class="is-skeleton block">
-                                <span>&nbsp;</span>
-                            </div>
-
-                            <div class="is-skeleton block">
-                                <span>&nbsp;</span>
-                            </div>
-                        </div>
-                    </template>
-
-                    <template x-if="provider">
-                        <div>
+                <div class="columns is-tablet is-multiline is-8">
+                    <template x-for="provider in providers">
+                        <div class="column is-half">
                             <div class="px-3 py-2">
-                                <a :href="provider.homepage" target="_blank" class="is-size-4" x-text="provider.name"></a>
+                                <a :href="provider.homepage" target="_blank" class="is-size-4" x-text="provider.title"></a>
+                            </div>
+                            
+                            <div x-data="menu(provider.name)">
+                                <template x-if="!provider">
+                                    <div class="p-3">
+                                        <div class="is-skeleton block">
+                                            <span>&nbsp;</span>
+                                        </div>
+
+                                        <div class="is-skeleton block">
+                                            <span>&nbsp;</span>
+                                        </div>
+
+                                        <div class="is-skeleton block">
+                                            <span>&nbsp;</span>
+                                        </div>
+
+                                        <div class="is-skeleton block">
+                                            <span>&nbsp;</span>
+                                        </div>
+
+                                        <div class="is-skeleton block">
+                                            <span>&nbsp;</span>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <template x-if="provider">
+                                    <table class="table has-background-inherit is-fullwidth is-hoverable">
+                                        <template x-if="provider.menu == null || typeof provider.menu !== 'string' && !provider.menu[selectedDate]">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text">
+                                                        Menu není k dispozici.
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+
+                                        <template x-if="provider.menu != null && provider.menu[selectedDate]">
+                                            <tbody>
+                                                <template x-for="item in provider.menu[selectedDate]">
+                                                    <tr>
+                                                        <td>
+                                                            <span x-text="item.name"></span>
+                                                        </td>
+
+                                                        <td class="has-text-right">
+                                                            <template x-if="item.price">
+                                                                <span class="text">
+                                                                    <span x-text="item.price"></span>&nbsp;Kč
+                                                                </span>
+                                                            </template>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+
+                                                <template x-if="'week' in provider.menu">
+                                                    <div class="p-3 text">Týdenní menu</div>
+                                                </template>
+
+                                                <template x-for="item in provider.menu['week']">
+                                                    <tr>
+                                                        <td>
+                                                            <span x-text="item.name"></span>
+                                                        </td>
+
+                                                        <td class="has-text-right">
+                                                            <template x-if="item.price">
+                                                                <span class="text">
+                                                                    <span x-text="item.price"></span>&nbsp;Kč
+                                                                </span>
+                                                            </template>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </template>
+
+                                        <template x-if="typeof provider.menu === 'string'">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <a :href="provider.menu" target="_blank">Odkaz na menu</a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                    </table>
+                                </template>
                             </div>
 
-                            <table class="table has-background-inherit is-fullwidth is-hoverable">
-                                <template x-if="provider.menu == null || typeof provider.menu !== 'string' && !provider.menu[selectedDate]">
-                                    <tbody>
-                                        <tr>
-                                            <td class="text">
-                                                Menu není k dispozici.
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </template>
-
-                                <template x-if="provider.menu != null && provider.menu[selectedDate]">
-                                    <tbody>
-                                        <template x-for="item in provider.menu[selectedDate]">
-                                            <tr>
-                                                <td>
-                                                    <span x-text="item.name"></span>
-                                                </td>
-
-                                                <td class="has-text-right">
-                                                    <template x-if="item.price">
-                                                        <span class="text">
-                                                            <span x-text="item.price"></span>&nbsp;Kč
-                                                        </span>
-                                                    </template>
-                                                </td>
-                                            </tr>
-                                        </template>
-
-                                        <template x-if="'week' in provider.menu">
-                                            <div class="p-3 text">Týdenní menu</div>
-                                        </template>
-
-                                        <template x-for="item in provider.menu['week']">
-                                            <tr>
-                                                <td>
-                                                    <span x-text="item.name"></span>
-                                                </td>
-
-                                                <td class="has-text-right">
-                                                    <template x-if="item.price">
-                                                        <span class="text">
-                                                            <span x-text="item.price"></span>&nbsp;Kč
-                                                        </span>
-                                                    </template>
-                                                </td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </template>
-
-                                <template x-if="typeof provider.menu === 'string'">
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <a :href="provider.menu" target="_blank">Odkaz na menu</a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </template>
-                            </table>
                         </div>
                     </template>
                 </div>
-            </template>
-        </div>
+            </div>
+        </template>
+
+        <template x-if="tab == 'wheel'">
+            <div x-data="wheel($refs.canvas)">
+                <div class="columns is-centered">
+                    <div class="column is-narrow">
+                        <div class="wheel" :style="{ transform: `rotate(${angle}deg)` }">
+                            <template x-for="(name, index) in options">
+                                <div class="slice" x-text="name" :style="{ transform: `rotate(${360 / options.length * index}deg)` }"></div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="columns is-centered is-multiline">
+                    <div class="column is-narrow">
+                        <button class="button is-info" @click="spin()" :disabled="options.length < 2 || pending">
+                            Roztočit!
+                        </button>
+                    </div>
+                </div>
+
+                <div class="columns is-tablet is-multiline is-centered">
+                    <template x-for="provider in providers">
+                        <div class="column py-1 is-narrow">
+                            <input type="checkbox" :id="'label-' + provider.name" @click="toggleOption(provider.title)" :value="options.has(provider.title)" :disabled="pending">
+                            <label :for="'label-' + provider.name" x-text="provider.title"></label>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
     </div>
 
     <div class="footer has-text-centered">

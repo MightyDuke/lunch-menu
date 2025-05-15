@@ -10,16 +10,16 @@ blueprint = Blueprint("api", url_prefix = "api")
 @blueprint.get("/providers")
 @serializer(json)
 @cors(origin = "*")
-async def providers(request: Request, lunch_menu_provider: LunchMenuService):
-    result = await lunch_menu_provider.get_providers()
+async def providers(request: Request, lunch_menu_service: LunchMenuService):
+    result = await lunch_menu_service.get_providers()
     return result
 
 @blueprint.get("/providers/<provider:str>")
 @serializer(json)
 @cors(origin = "*")
-async def provider(request: Request, lunch_menu_provider: LunchMenuService, provider: str):
+async def provider(request: Request, lunch_menu_service: LunchMenuService, provider: str):
     try:
-        menu = await lunch_menu_provider.get_menu(provider)
+        menu = await lunch_menu_service.get_menu(provider)
     except KeyError:
         raise NotFound(f"Provider \"{provider}\" not found")
     

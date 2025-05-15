@@ -15,14 +15,20 @@ class LunchMenuService:
         self.instances = {key: cls() for key, cls in self.providers.items()}
 
     async def get_providers(self):
-        return list(self.providers.keys())
+        return [
+            {
+                "name": key,
+                "title": instance.name,
+                "homepage": instance.homepage
+            }
+            for key, instance
+            in self.instances.items()
+        ]
 
     async def get_menu(self, provider: str):
         instance = self.instances[provider]
         result = await instance.get_menu()
 
         return {
-            "name": instance.name,
-            "homepage": instance.homepage,
             "menu": result
         }
