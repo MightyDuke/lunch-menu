@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="cs" x-data="app">
 <head>
-    <title>Kam na oběd?</title>
+    <title x-text="`${capitalize(getLocalizedWeekName(selectedDate))}, ${getLocalizedLongFormat(selectedDate)} - Kam na oběd?`"></title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#171a1f" media="(prefers-color-scheme: dark)">
@@ -14,7 +14,7 @@
     <script src="/static/js/script.js" type="module"></script>
 </head>
 
-<body class="is-clipped" x-data="app">
+<body class="is-clipped">
     <div class="hero">
         <div class="hero-body">
             <div class="container has-text-centered">
@@ -24,9 +24,7 @@
 
                 <div class="subtitle" x-cloak>
                     <template x-if="tab == 'menu'">
-                        <div>
-                            <span class="is-capitalized" x-text="getLocalizedWeekName(selectedDate)"></span>, <span x-text="getLocalizedLongFormat(selectedDate)"></span>
-                        </div>
+                        <div x-text="`${capitalize(getLocalizedWeekName(selectedDate))}, ${getLocalizedLongFormat(selectedDate)}`"></div>
                     </template>
                 </div>
             </div>
@@ -51,7 +49,7 @@
         <template x-if="tab == 'menu'">
             <div>
                 <!--
-                <button class="button" @click="switchTab('luckyWheel')">Kolo štěstí</button>
+                <button class="button" @click="switchTab('wheel')">Kolo štěstí</button>
                 -->
 
                 <div class="columns is-tablet is-multiline is-8">

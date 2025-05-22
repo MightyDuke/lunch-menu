@@ -1,14 +1,18 @@
 import Alpine from "/static/js/alpine.min.js"
 
-window.locale = "cs-cz";
+window.locale = "cs";
 
-function isoDate(date) {
+window.isoDate = date => {
     return `${date.getFullYear().toString().padStart(4, "0")}-` +
         `${(date.getMonth() + 1).toString().padStart(2, "0")}-` + 
         `${date.getDate().toString().padStart(2, "0")}`
 }
 
-window.getDaysInWeek = function() {
+window.capitalize = text => {
+    return text[0].toUpperCase() + text.slice(1);
+}
+
+window.getDaysInWeek = () => {
     const now = new Date;
     const result = [];
 
@@ -21,18 +25,18 @@ window.getDaysInWeek = function() {
     return result;
 }
 
-window.getLocalizedWeekName = function(date) {
+window.getLocalizedWeekName = date => {
     const parsedDate = new Date(Date.parse(date));
     return parsedDate.toLocaleDateString(window.locale, { weekday: "long" });
 }
 
-window.getLocalizedLongFormat = function(date) {
+window.getLocalizedLongFormat = date => {
     const parsedDate = new Date(Date.parse(date));
     return parsedDate.toLocaleDateString(window.locale, { year: "numeric", month: "long", day: "numeric" });
 }
 
-window.randomInterval = function(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
+window.randomInterval = (min, max) => {
+    return Math.random() * (max - min) + min;
 }
 
 document.addEventListener("alpine:init", () => {
@@ -62,7 +66,7 @@ document.addEventListener("alpine:init", () => {
         }
     }));
 
-    Alpine.data("wheel", (canvasElement = null) => ({
+    Alpine.data("wheel", () => ({
         options: [],
         pending: false,
         lastUpdate: null,
@@ -100,9 +104,10 @@ document.addEventListener("alpine:init", () => {
         },
 
         spin() {
-            this.momentum = 10.0;
+            this.momentum = randomInterval(7, 13);
         }
     }));
 });
 
+window.Alpine = Alpine;
 Alpine.start();
