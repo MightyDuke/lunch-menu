@@ -1,5 +1,4 @@
 from sanic import Request, Blueprint
-from sanic.exceptions import NotFound
 from sanic.response import json
 from sanic_ext import serializer
 from sanic_ext import cors
@@ -18,9 +17,5 @@ async def providers(request: Request, lunch_menu_service: LunchMenuService):
 @serializer(json)
 @cors(origin = "*")
 async def provider(request: Request, lunch_menu_service: LunchMenuService, provider: str):
-    try:
-        menu = await lunch_menu_service.get_menu(provider)
-    except KeyError:
-        raise NotFound(f"Provider \"{provider}\" not found")
-    
+    menu = await lunch_menu_service.get_menu(provider)
     return menu

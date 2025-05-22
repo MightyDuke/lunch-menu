@@ -53,13 +53,13 @@
                 -->
 
                 <div class="columns is-tablet is-multiline is-8">
-                    <template x-for="provider in providers">
+                    <template x-for="(provider, providerName) in providers">
                         <div class="column is-half">
                             <div class="px-3 py-2">
-                                <a :href="provider.homepage" target="_blank" class="is-size-4" x-text="provider.title"></a>
+                                <a :href="provider.homepage" target="_blank" class="is-size-4" x-text="provider.name"></a>
                             </div>
                             
-                            <div x-data="menu(provider.name)">
+                            <div x-data="menu(providerName)">
                                 <template x-if="!provider">
                                     <div class="p-3">
                                         <div class="is-skeleton block">
@@ -86,7 +86,7 @@
 
                                 <template x-if="provider">
                                     <table class="table has-background-inherit is-fullwidth is-hoverable">
-                                        <template x-if="provider.menu == null || typeof provider.menu !== 'string' && !provider.menu[selectedDate]">
+                                        <template x-if="provider == null || typeof provider !== 'string' && !provider[selectedDate]">
                                             <tbody>
                                                 <tr>
                                                     <td class="text">
@@ -96,9 +96,9 @@
                                             </tbody>
                                         </template>
 
-                                        <template x-if="provider.menu != null && provider.menu[selectedDate]">
+                                        <template x-if="provider != null && provider[selectedDate]">
                                             <tbody>
-                                                <template x-for="item in provider.menu[selectedDate]">
+                                                <template x-for="item in provider[selectedDate]">
                                                     <tr>
                                                         <td>
                                                             <span x-text="item.name"></span>
@@ -114,11 +114,11 @@
                                                     </tr>
                                                 </template>
 
-                                                <template x-if="'week' in provider.menu">
+                                                <template x-if="'week' in provider">
                                                     <div class="p-3 text">Týdenní menu</div>
                                                 </template>
 
-                                                <template x-for="item in provider.menu['week']">
+                                                <template x-for="item in provider['week']">
                                                     <tr>
                                                         <td>
                                                             <span x-text="item.name"></span>
@@ -136,11 +136,11 @@
                                             </tbody>
                                         </template>
 
-                                        <template x-if="typeof provider.menu === 'string'">
+                                        <template x-if="typeof provider === 'string'">
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <a :href="provider.menu" target="_blank">Odkaz na menu</a>
+                                                        <a :href="provider" target="_blank">Odkaz na menu</a>
                                                     </td>
                                                 </tr>
                                             </tbody>
