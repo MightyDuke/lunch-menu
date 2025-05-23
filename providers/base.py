@@ -1,4 +1,3 @@
-import logging
 import dateparser
 import re
 from pathlib import Path
@@ -110,9 +109,8 @@ class ScrapingProvider(Provider):
 
                 await self.construct_menu(soup, menu)
                 result = menu.serialize()
-            except:
-                logging.exception(self.cache_key)
-                result = None
+            except Exception as exception:
+                raise ValueError(self.cache_key) from exception
                 
             if result is not None:
                 self.cache.set(self.cache_key, result, expire = self.expire)

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <title>
+        Kam na oběd?
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#171a1f" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f8fafa" media="(prefers-color-scheme: light)">
+
+    <link rel="stylesheet" href="/static/css/bulma.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" href="/static/favicon.png">
+
+    <script src="/static/js/script.js" type="module"></script>
+</head>
+
+<body class="is-clipped" x-data="app">
+    <div class="hero">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <div class="title">
+                    Kam na oběd?
+                </div>
+
+                <div class="subtitle" x-cloak>
+                    <div x-text="`${capitalize(getLocalizedWeekName(selectedDate))}, ${getLocalizedLongFormat(selectedDate)}`"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-foot">
+            <nav class="tabs is-centered is-boxed">
+                <ul>
+                    <template x-for="day in getDaysInWeek()">
+                        <li :class="{ 'is-active': selectedDate === day }" @click="selectedDate = day">
+                            <a class="is-capitalized mx-1" x-text="getLocalizedWeekName(day)"></a>
+                        </li>
+                    </template>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container py-6 has-min-height-screen">
+        <div>
+            <div class="columns is-tablet is-multiline is-8">
+                <template x-for="(provider, name) in providers">
+                    <div class="column is-half">
+                        <div class="px-3 py-2">
+                            <a :href="provider.homepage" target="_blank" class="is-size-4" x-text="provider.name"></a>
+                        </div>
+                        
+                        <div x-data="menu(name)">
+                            <template x-if="!menu">
+                                <div class="p-3">
+                                    <div class="is-skeleton block">
+                                        <span>&nbsp;</span>
+                                    </div>
+
+                                    <div class="is-skeleton block">
+                                        <span>&nbsp;</span>
+                                    </div>
+
+                                    <div class="is-skeleton block">
+                                        <span>&nbsp;</span>
+                                    </div>
+
+                                    <div class="is-skeleton block">
+                                        <span>&nbsp;</span>
+                                    </div>
+
+                                    <div class="is-skeleton block">
+                                        <span>&nbsp;</span>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template x-if="menu">
+                                <table class="table has-background-inherit is-fullwidth is-hoverable">
+                                    <template x-if="menu == null || typeof menu !== 'string' && !menu[selectedDate]">
+                                        <tbody>
+                                            <tr>
+                                                <td class="text">
+                                                    Menu není k dispozici.
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </template>
+
+                                    <template x-if="menu != null && menu[selectedDate]">
+                                        <tbody>
+                                            <template x-for="item in menu[selectedDate]">
+                                                <tr>
+                                                    <td>
+                                                        <span x-text="item.name"></span>
+                                                    </td>
+
+                                                    <td class="has-text-right">
+                                                        <template x-if="item.price">
+                                                            <span class="text">
+                                                                <span x-text="item.price"></span>&nbsp;Kč
+                                                            </span>
+                                                        </template>
+                                                    </td>
+                                                </tr>
+                                            </template>
+
+                                            <template x-if="'week' in menu">
+                                                <div class="p-3 text">Týdenní menu</div>
+                                            </template>
+
+                                            <template x-for="item in menu['week']">
+                                                <tr>
+                                                    <td>
+                                                        <span x-text="item.name"></span>
+                                                    </td>
+
+                                                    <td class="has-text-right">
+                                                        <template x-if="item.price">
+                                                            <span class="text">
+                                                                <span x-text="item.price"></span>&nbsp;Kč
+                                                            </span>
+                                                        </template>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </template>
+
+                                    <template x-if="typeof menu === 'string'">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <a :href="menu" target="_blank">Odkaz na menu</a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </template>
+                                </table>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer has-text-centered">
+        <div>
+            &copy; 2025 Josef Macháč
+        </div>
+
+        <div>
+            <a href="https://github.com/MightyDuke/lunch-menu" target="_blank">GitHub</a>
+        </div>
+    </div>
+</body>
+
+</html>

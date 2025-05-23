@@ -35,15 +35,10 @@ window.getLocalizedLongFormat = date => {
     return parsedDate.toLocaleDateString(window.locale, { year: "numeric", month: "long", day: "numeric" });
 }
 
-window.randomInterval = (min, max) => {
-    return Math.random() * (max - min) + min;
-}
-
 document.addEventListener("alpine:init", () => {
     Alpine.data("app", () => ({
         selectedDate: null,
         providers: [],
-        tab: "menu",
 
         async init() {
             this.selectedDate = isoDate(new Date);
@@ -51,60 +46,14 @@ document.addEventListener("alpine:init", () => {
             const response = await fetch("/api/providers");
             this.providers = await response.json();
         },
-
-        switchTab(name) {
-            this.tab = name;
-        }
     }));
 
     Alpine.data("menu", (provider = null) => ({
-        provider: null,
+        menu: null,
 
         async init() {
             const response = await fetch(`/api/providers/${provider}`);
-            this.provider = await response.json();
-        }
-    }));
-
-    Alpine.data("wheel", () => ({
-        options: [],
-        pending: false,
-        lastUpdate: null,
-
-        angle: 0,
-        momentum: 0,
-
-        init() {
-            const callback = (timestamp) => {
-                if (this.lastUpdate == null) {
-                    this.lastUpdate = timestamp;
-                }
-
-                const delta = (timestamp - this.lastUpdate) / (1000 / 60);
-                this.lastUpdate = timestamp;
-
-                this.angle += this.momentum * delta;
-                this.momentum *= 0.995;
-
-                if (this.momentum < 0.05) {
-                    this.momentum = 0;
-                    this.pending = false;
-                } else {
-                    this.pending = true;
-                }
-
-                window.requestAnimationFrame(callback);
-            };
-
-            window.requestAnimationFrame(callback);
-        },
-
-        toggleOption(name) {
-            this.options.push(name);
-        },
-
-        spin() {
-            this.momentum = randomInterval(7, 13);
+            this.menu = await response.json();
         }
     }));
 });

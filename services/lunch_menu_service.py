@@ -1,4 +1,6 @@
+import logging
 import providers
+from sanic.exceptions import NotFound
 
 class LunchMenuService:
     providers = {
@@ -30,7 +32,15 @@ class LunchMenuService:
         }
 
     async def get_menu(self, provider: str):
-        instance = self.instances[provider]
-        result = await instance.get_menu()
+        try:
+            instance = self.instances[provider]
+        except Exception as exception:
+            raise NotFound(f"Provider \"{provider}\" not found") from exception
+
+        try:
+            result = await instance.get_menu()
+        except:
+            logging.exception(instance.__class__.__name__)
+            result = {}
 
         return result
