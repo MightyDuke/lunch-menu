@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sanic = {extras = ["ext"], version = "~=24.12"}
+sanic = {extras = ["ext"], version = "~=25.3"}
 httpx = "~=0.28"
 beautifulsoup4 = "~=4.13"
 dateparser = "~=1.2"

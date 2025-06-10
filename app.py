@@ -1,6 +1,7 @@
 from sanic import Sanic
-from blueprints import api_blueprint, static_blueprint
-from services import LunchMenuService
+from blueprints.api import blueprint as api_blueprint
+from blueprints.static import blueprint as static_blueprint
+from services.lunch_menu_service import LunchMenuService
 
 app = Sanic("lunch_menu")
 app.config.OAS = False

@@ -1,8 +1,7 @@
 from sanic import Request, Blueprint
 from sanic.response import json
-from sanic_ext import serializer
-from sanic_ext import cors
-from services import LunchMenuService
+from sanic_ext import serializer, cors
+from services.lunch_menu_service import LunchMenuService
 
 blueprint = Blueprint("api", url_prefix = "api")
 

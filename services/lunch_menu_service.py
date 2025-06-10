@@ -1,17 +1,24 @@
 import logging
-import providers
+from providers.blesk import BleskProvider
+from providers.toni import ToniProvider
+from providers.boasi import BoasiProvider
+from providers.paleta import PaletaProvider
+from providers.hodonanka import HodonankaProvider
+from providers.pastafidli import PastaFidliProvider
+from providers.mbrestaurace import MBRestauraceProvider
+from providers.phobo import PhoboProvider
 from sanic.exceptions import NotFound
 
 class LunchMenuService:
     providers = {
-        "toni": providers.ToniProvider,
-        "boasi": providers.BoasiProvider,
-        "paleta": providers.PaletaProvider,
-        "blesk": providers.BleskProvider, 
-        "hodonanka": providers.HodonankaProvider,
-        "pastaafidli": providers.PastaFidliProvider,
-        "mbrestaurace": providers.MBRestauraceProvider,
-        "phobo": providers.PhoboProvider,
+        "toni": ToniProvider,
+        "boasi": BoasiProvider,
+        "paleta": PaletaProvider,
+        "blesk": BleskProvider, 
+        "hodonanka": HodonankaProvider,
+        "pastaafidli": PastaFidliProvider,
+        "mbrestaurace": MBRestauraceProvider,
+        "phobo": PhoboProvider,
     }
 
     def __init__(self, *, expire: int = 600):
