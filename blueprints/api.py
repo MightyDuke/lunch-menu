@@ -1,4 +1,3 @@
-import asyncio
 from sanic import Request, Blueprint
 from sanic.response import json
 from sanic_ext import serializer, cors
