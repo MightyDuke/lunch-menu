@@ -16,5 +16,4 @@ async def providers(request: Request, lunch_menu_service: LunchMenuService):
 @serializer(json)
 @cors(origin = "*")
 async def provider(request: Request, lunch_menu_service: LunchMenuService, provider: str):
-    await asyncio.sleep(1.0)
     return await lunch_menu_service.get_menu(provider)
