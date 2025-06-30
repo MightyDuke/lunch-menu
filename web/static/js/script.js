@@ -1,4 +1,4 @@
-import Alpine from "/static/js/alpine.min.js"
+import Alpine from "/static/js/alpine.js"
 
 window.locale = "cs";
 
@@ -30,7 +30,7 @@ window.getLocalizedWeekName = date => {
     return parsedDate.toLocaleDateString(window.locale, { weekday: "long" });
 }
 
-window.getLocalizedLongFormat = date => {
+window.getLocalizedLongFormatDate = date => {
     const parsedDate = new Date(Date.parse(date));
     return parsedDate.toLocaleDateString(window.locale, { year: "numeric", month: "long", day: "numeric" });
 }

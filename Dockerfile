@@ -1,12 +1,17 @@
-FROM python:3.13-slim
+FROM node:24.3 AS builder
 
 WORKDIR /app
-RUN pip install pipenv
 
 COPY . .
-RUN pipenv install --system
+RUN npm install --prefix "web/"
 
-ENV SANIC_PROXIES_COUNT=1
+FROM python:3.13
+
+WORKDIR /app
+
+RUN pip install pipenv
+COPY --from=builder /app .
+RUN pipenv install --system
 
 ENTRYPOINT [ \
     "sanic", "app", \

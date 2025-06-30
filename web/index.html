@@ -1,15 +1,9 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <title>
-        Kam na oběd?
-    </title>
-
+    <title>Kam na oběd?</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#171a1f" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#f8fafa" media="(prefers-color-scheme: light)">
 
-    <link rel="stylesheet" href="/static/css/bulma.min.css">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="icon" href="/static/favicon.png">
 
@@ -25,7 +19,8 @@
                 </div>
 
                 <div class="subtitle" x-cloak>
-                    <div x-text="`${capitalize(getLocalizedWeekName(selectedDate))}, ${getLocalizedLongFormat(selectedDate)}`"></div>
+                    <span class="is-capitalized" x-text="getLocalizedWeekName(selectedDate)"></span>,
+                    <span x-text="getLocalizedLongFormatDate(selectedDate)"></span>
                 </div>
             </div>
         </div>
@@ -55,25 +50,11 @@
                         <div x-data="menu(name)">
                             <template x-if="!menu">
                                 <div class="p-3">
-                                    <div class="is-skeleton block">
-                                        <span>&nbsp;</span>
-                                    </div>
-
-                                    <div class="is-skeleton block">
-                                        <span>&nbsp;</span>
-                                    </div>
-
-                                    <div class="is-skeleton block">
-                                        <span>&nbsp;</span>
-                                    </div>
-
-                                    <div class="is-skeleton block">
-                                        <span>&nbsp;</span>
-                                    </div>
-
-                                    <div class="is-skeleton block">
-                                        <span>&nbsp;</span>
-                                    </div>
+                                    <div class="is-skeleton block"><span>&nbsp;</span></div>
+                                    <div class="is-skeleton block"><span>&nbsp;</span></div>
+                                    <div class="is-skeleton block"><span>&nbsp;</span></div>
+                                    <div class="is-skeleton block"><span>&nbsp;</span></div>
+                                    <div class="is-skeleton block"><span>&nbsp;</span></div>
                                 </div>
                             </template>
 

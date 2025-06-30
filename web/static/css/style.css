@@ -1,11 +1,8 @@
-@font-face {
-    font-family: "Inter";
-    src: url("/static/font/Inter.ttf");
-    font-display: optional;
-}
+@import url("/static/css/bulma.css");
+@import url("/static/css/inter.css");
 
 body {
-    font-family: "Inter", sans-serif;
+    font-family: "Inter Variable", sans-serif;
 }
 
 [x-cloak] { 
