@@ -52,7 +52,7 @@ class Provider:
 class ScrapingProvider(Provider):
     fetch_url: str
 
-    client = AsyncClient()
+    client = AsyncClient(http2 = True)
     cache = Cache(Path(gettempdir()) / "lunch_menu_cache")
 
     @staticmethod
