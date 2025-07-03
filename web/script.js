@@ -1,4 +1,4 @@
-import Alpine from "/static/js/alpine.js"
+import Alpine from "/node_modules/alpinejs/dist/module.esm.js"
 
 window.locale = "cs";
 

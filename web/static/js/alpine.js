@@ -1,1 +1,0 @@
-../../node_modules/alpinejs/dist/module.esm.min.js

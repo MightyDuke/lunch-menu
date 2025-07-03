@@ -2,6 +2,7 @@
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.6",
     "alpinejs": "^3.14.9",
-    "bulma": "^1.0.4"
+    "bulma": "^1.0.4",
+    "parcel": "^2.15.4"
   }
 }
