@@ -1,18 +1,20 @@
 from bs4 import BeautifulSoup
-from .base import ScrapingProvider, Menu
+from common.provider import WebProvider
+from common.menu import Menu
+from common.utils import clean_name, parse_date, parse_price
 
-class PaletaProvider(ScrapingProvider):
+class PaletaProvider(WebProvider):
     name = "Paleta"
     homepage = "https://www.paletarestaurant.cz"
     fetch_url = "https://www.paletarestaurant.cz/menu/menu.php"
 
-    async def construct_menu(self, site: BeautifulSoup, menu: Menu):
+    def process_site(self, site: BeautifulSoup, menu: Menu):
         for element in site.body.find_all("h3"):
-            date = self.parse_date(element.text)
+            date = parse_date(element.text)
             day = menu.create_day(date)
 
             for item in element.find_next_sibling("table").find_all("tr"):
-                name = self.clean_name(item.find(class_ = "meal-name").text)
-                price = self.parse_price(item.find(class_ = "meal-price").text)
+                name = clean_name(item.find(class_ = "meal-name").text)
+                price = parse_price(item.find(class_ = "meal-price").text)
 
                 day.add_item(name, price)

@@ -1,14 +1,16 @@
 from bs4 import BeautifulSoup
-from .base import ScrapingProvider, Menu
+from common.provider import WebProvider
+from common.menu import Menu
+from common.utils import clean_name, parse_date, parse_price
 
-class PastaFidliProvider(ScrapingProvider):
+class PastaFidliProvider(WebProvider):
     name = "Pasta & Fidli"
     homepage = "https://www.pastaafidli.cz"
     fetch_url = "https://www.pastaafidli.cz/cz/denni-menu/"
 
-    async def construct_menu(self, site: BeautifulSoup, menu: Menu):
+    def process_site(self, site: BeautifulSoup, menu: Menu):
         for element in site.body.find_all(class_ = "day"):
-            date = self.parse_date(element.find("td").text)
+            date = parse_date(element.find("td").text)
             day = menu.create_day(date)
 
             if date is not None and date.weekday() in (5, 6):
@@ -23,7 +25,7 @@ class PastaFidliProvider(ScrapingProvider):
                 if sibling.name != "tr" or sibling.has_attr("class") and "day" in sibling.attrs["class"] or "shift" in sibling.attrs["class"]:
                     break
 
-                name = self.clean_name(sibling.find("td").text, suffix_removal_count = 2)
-                price = self.parse_price(sibling.find(class_ = "price").text)
+                name = clean_name(sibling.find("td").text, suffix_removal_count = 2)
+                price = parse_price(sibling.find(class_ = "price").text)
 
                 day.add_item(name, price)

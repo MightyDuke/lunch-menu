@@ -1,4 +1,3 @@
-import logging
 from providers.blesk import BleskProvider
 from providers.toni import ToniProvider
 from providers.boasi import BoasiProvider
@@ -7,7 +6,8 @@ from providers.hodonanka import HodonankaProvider
 from providers.pastafidli import PastaFidliProvider
 from providers.mbrestaurace import MBRestauraceProvider
 from providers.phobo import PhoboProvider
-from sanic.exceptions import NotFound
+from sanic.exceptions import NotFound, BadRequest
+from sanic.log import logger
 
 class LunchMenuService:
     providers = {
@@ -21,9 +21,9 @@ class LunchMenuService:
         "phobo": PhoboProvider,
     }
 
-    def __init__(self, *, expire: int = 600):
+    def __init__(self):
         self.instances = {
-            key: cls(expire = expire) 
+            key: cls(key = key) 
             for key, cls 
             in self.providers.items()
         }
@@ -32,22 +32,25 @@ class LunchMenuService:
         return {
             key: {
                 "name": instance.name,
-                "homepage": instance.homepage
+                "homepage": instance.homepage,
+                "linkOnly": instance.link_only
             }
             for key, instance
             in self.instances.items()
         }
 
     async def get_menu(self, provider: str):
-        try:
-            instance = self.instances[provider]
-        except Exception as exception:
-            raise NotFound(f"Provider \"{provider}\" not found") from exception
+        instance = self.instances.get(provider)
+
+        if instance is None:
+            raise NotFound(f"Provider \"{provider}\" not found")
 
         try:
             result = await instance.get_menu()
+        except NotImplementedError:
+            raise BadRequest(f"Provider \"{provider}\" doesn't provide a menu")
         except:
-            logging.exception(instance.__class__.__name__)
+            logger.exception(instance.__class__.__name__)
             result = {}
 
         return result

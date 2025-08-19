@@ -1,8 +1,5 @@
-from .base import Provider
+from common.provider import Provider
 
 class PhoboProvider(Provider):
     name = "Pho Bo"
     homepage = "https://www.facebook.com/p/PHO-BO-Restaurant-100082901603735"
-
-    async def get_menu(self):
-        return "https://www.facebook.com/p/PHO-BO-Restaurant-100082901603735"
