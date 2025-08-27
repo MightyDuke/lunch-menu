@@ -1,4 +1,4 @@
-from common.provider import Provider
+from lunch_menu.provider import Provider
 
 class PhoboProvider(Provider):
     name = "Pho Bo"

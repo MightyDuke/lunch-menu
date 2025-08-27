@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
-from common.provider import WebProvider
-from common.menu import Menu
-from common.utils import clean_name, parse_date, parse_price, find_strings
+from lunch_menu.provider import WebProvider
+from lunch_menu.menu import Menu
+from lunch_menu.utils import clean_name, parse_date, parse_price, find_strings
 
 class ToniProvider(WebProvider):
     name = "Toni"

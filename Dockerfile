@@ -1,4 +1,4 @@
-FROM node:24.3 AS build
+FROM node:24.3 AS frontend
 WORKDIR /app
 
 COPY web/ .
@@ -9,12 +9,11 @@ WORKDIR /app
 EXPOSE 80
 
 RUN pip install --no-cache-dir pipenv
-
 COPY . .
-RUN rm -rf web
-COPY --from=build /app/dist/ web/
-
 RUN pipenv install --system
+
+RUN rm -rf web
+COPY --from=frontend /app/dist/ web/
 
 ENTRYPOINT [ \
     "sanic", "app", \

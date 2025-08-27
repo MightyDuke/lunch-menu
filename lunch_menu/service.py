@@ -1,29 +1,30 @@
-from providers.blesk import BleskProvider
-from providers.toni import ToniProvider
-from providers.boasi import BoasiProvider
-from providers.paleta import PaletaProvider
-from providers.hodonanka import HodonankaProvider
-from providers.pastafidli import PastaFidliProvider
-from providers.mbrestaurace import MBRestauraceProvider
-from providers.phobo import PhoboProvider
+from cashews import Cache
+from httpx import AsyncClient, TimeoutException
 from sanic.exceptions import NotFound, BadRequest
 from sanic.log import logger
+from lunch_menu import providers
+from asyncio import CancelledError
 
 class LunchMenuService:
     providers = {
-        "toni": ToniProvider,
-        "boasi": BoasiProvider,
-        "paleta": PaletaProvider,
-        "blesk": BleskProvider, 
-        "hodonanka": HodonankaProvider,
-        "pastaafidli": PastaFidliProvider,
-        "mbrestaurace": MBRestauraceProvider,
-        "phobo": PhoboProvider,
+        "toni": providers.ToniProvider,
+        "boasi": providers.BoasiProvider,
+        "paleta": providers.PaletaProvider,
+        "blesk": providers.BleskProvider, 
+        "hodonanka": providers.HodonankaProvider,
+        "pastaafidli": providers.PastaFidliProvider,
+        "mbrestaurace": providers.MBRestauraceProvider,
+        "phobo": providers.PhoboProvider
     }
 
-    def __init__(self):
+    def __init__(self, *, cache_url: str = "mem://", expiration: str = "10m"):
+        self.client = AsyncClient()
+        self.cache = Cache()
+
+        self.cache.setup(cache_url)
+
         self.instances = {
-            key: cls(key = key) 
+            key: cls(key = key, client = self.client, cache = self.cache, expiration = expiration) 
             for key, cls 
             in self.providers.items()
         }
@@ -49,8 +50,10 @@ class LunchMenuService:
             result = await instance.get_menu()
         except NotImplementedError:
             raise BadRequest(f"Provider \"{provider}\" doesn't provide a menu")
+        except (CancelledError, TimeoutException):
+            result = {}
         except:
-            logger.exception(instance.__class__.__name__)
+            logger.exception(f"{instance.__class__.__name__} ({provider})")
             result = {}
 
         return result

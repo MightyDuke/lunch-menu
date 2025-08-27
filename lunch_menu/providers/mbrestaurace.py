@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
-from common.provider import WebProvider
-from common.menu import Menu
-from common.utils import clean_name, parse_date, parse_price
+from lunch_menu.provider import WebProvider
+from lunch_menu.menu import Menu
+from lunch_menu.utils import clean_name, parse_date, parse_price
 
 class MBRestauraceProvider(WebProvider):
     name = "MB Restaurace"
@@ -20,7 +20,7 @@ class MBRestauraceProvider(WebProvider):
         for item in menu_elements:
             name = item.select_one(":scope > div > div > div > div:nth-child(1)").text
 
-            name = clean_name(name.replace("k menu", ""))
+            name = clean_name(name.replace("k menu ZDARMA", ""))
             price = parse_price(item.select_one(":scope > div > div > div > div:nth-child(2)").text)
 
             if name == "": 

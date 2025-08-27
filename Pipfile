@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sanic = {extras = ["ext"], version = "~=25.3"}
-httpx = {extras = ["http2"], version = "~=0.28"}
+sanic = "~=25.3"
+httpx = "~=0.28"
 beautifulsoup4 = "~=4.13"
 dateparser = "~=1.2"
 cashews = {extras = ["diskcache"], version = "~=7.4"}
