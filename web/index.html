@@ -11,7 +11,7 @@
     <script src="/script.js" type="module"></script>
 </head>
 
-<body class="is-clipped" x-data="app">
+<body x-data="app">
     <div class="hero">
         <div class="hero-body">
             <div class="container has-text-centered">
@@ -60,7 +60,7 @@
                                     </div>
                                 </template>
 
-                                <template x-if="menu">
+                                <div x-show="menu" x-transition.opacity>
                                     <table class="table has-background-inherit is-fullwidth is-hoverable">
                                         <template x-if="menu === null || !menu[selectedDate]">
                                             <div class="p-3 text">
@@ -108,7 +108,7 @@
                                             </tbody>
                                         </template>
                                     </table>
-                                </template>
+                                </div>
                             </div>
                         </template>
 

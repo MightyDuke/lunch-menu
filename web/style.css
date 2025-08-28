@@ -1,8 +1,9 @@
 @import url("/node_modules/bulma/css/bulma.css");
 @import url("/node_modules/@fontsource-variable/inter/index.css");
 
-body {
-    font-family: "Inter Variable", sans-serif;
+:root {
+    --bulma-body-family: "Inter Variable", sans-serif;
+    --bulma-body-size: 14px;
 }
 
 [x-cloak] { 
@@ -22,5 +23,5 @@ body {
 }
 
 .has-min-height-screen {
-    min-height: 100vh;
+    min-height: 80vh;
 }
