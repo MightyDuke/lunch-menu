@@ -1,7 +1,7 @@
 FROM node:24.3 AS frontend
 WORKDIR /app
 
-COPY web/ .
+COPY web/app/ .
 RUN npm install && npx parcel build "index.html"
 
 FROM python:3.13
@@ -12,8 +12,8 @@ RUN pip install --no-cache-dir pipenv
 COPY . .
 RUN pipenv install --system
 
-RUN rm -rf web
-COPY --from=frontend /app/dist/ web/
+RUN rm -rf web/app/
+COPY --from=frontend /app/dist/ web/app/
 
 ENTRYPOINT [ \
     "sanic", "app", \
