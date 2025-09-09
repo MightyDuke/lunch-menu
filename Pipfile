@@ -8,6 +8,6 @@ sanic = "~=25.3"
 httpx = "~=0.28"
 beautifulsoup4 = "~=4.13"
 dateparser = "~=1.2"
-cashews = {extras = ["diskcache"], version = "~=7.4"}
+cashews = {extras = ["diskcache", "redis"], version = "~=7.4"}
 
 [dev-packages]
