@@ -1,4 +1,4 @@
-from sanic import Sanic, Request, Blueprint
+from sanic import HTTPResponse, Sanic, Request, Blueprint
 from sanic.response import json
 from lunch_menu.service import LunchMenuService
 
@@ -10,6 +10,10 @@ async def before_server_start(app: Sanic):
     expiration = app.config.get("CACHE_EXPIRATION", "10m")
 
     app.ctx.lunch_menu_service = LunchMenuService(cache_url = cache_url, expiration = expiration)
+
+@blueprint.on_response
+async def on_response(request: Request, response: HTTPResponse):
+    response.headers["Cache-Control"] = "no-store"
 
 @blueprint.get("/providers")
 async def providers(request: Request):
