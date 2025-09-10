@@ -17,14 +17,14 @@ class LunchMenuService:
         "phobo": providers.PhoboProvider
     }
 
-    def __init__(self, *, cache_url: str = "mem://", expiration: str = "10m", soft_expiration: str = "7m"):
+    def __init__(self, *, cache_url: str = "disk://", expiration: str = "10m"):
         self.client = AsyncClient()
         self.cache = Cache()
 
         self.cache.setup(cache_url)
 
         self.instances = {
-            key: cls(key = key, client = self.client, cache = self.cache, expiration = expiration, soft_expiration = soft_expiration) 
+            key: cls(key = key, client = self.client, cache = self.cache, expiration = expiration) 
             for key, cls 
             in self.providers.items()
         }
