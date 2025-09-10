@@ -17,14 +17,14 @@ class LunchMenuService:
         "phobo": providers.PhoboProvider
     }
 
-    def __init__(self, *, cache_url: str = "mem://", expiration: str = "10m"):
+    def __init__(self, *, cache_url: str = "mem://", expiration: str = "10m", soft_expiration: str = "7m"):
         self.client = AsyncClient()
         self.cache = Cache()
 
         self.cache.setup(cache_url)
 
         self.instances = {
-            key: cls(key = key, client = self.client, cache = self.cache, expiration = expiration) 
+            key: cls(key = key, client = self.client, cache = self.cache, expiration = expiration, soft_expiration = soft_expiration) 
             for key, cls 
             in self.providers.items()
         }
@@ -50,10 +50,10 @@ class LunchMenuService:
             result = await instance.get_menu()
         except NotImplementedError:
             raise BadRequest(f"Provider \"{provider}\" doesn't provide a menu")
-        except (CancelledError, TimeoutException):
+        except CancelledError:
             result = {}
         except:
-            logger.exception(f"{instance.__class__.__name__} ({provider})")
+            logger.exception(f"{instance.__class__.__name__}, {provider} - get_menu")
             result = {}
 
         return result
