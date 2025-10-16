@@ -7,14 +7,14 @@ from asyncio import CancelledError
 
 class LunchMenuService:
     providers = {
-        "toni": providers.ToniProvider,
         "boasi": providers.BoasiProvider,
         "paleta": providers.PaletaProvider,
         "blesk": providers.BleskProvider, 
         "hodonanka": providers.HodonankaProvider,
         "pastaafidli": providers.PastaFidliProvider,
         "mbrestaurace": providers.MBRestauraceProvider,
-        "phobo": providers.PhoboProvider
+        "phobo": providers.PhoboProvider,
+        "tajmahal": providers.TajMahalProvider
     }
 
     def __init__(self, *, cache_url: str = "disk://", expiration: str = "10m"):

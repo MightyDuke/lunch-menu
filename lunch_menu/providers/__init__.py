@@ -6,3 +6,4 @@ from .hodonanka import HodonankaProvider
 from .pastafidli import PastaFidliProvider
 from .mbrestaurace import MBRestauraceProvider
 from .phobo import PhoboProvider
+from .tajmahal import TajMahalProvider
