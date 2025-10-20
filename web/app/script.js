@@ -38,21 +38,21 @@ window.getLocalizedLongFormatDate = date => {
 document.addEventListener("alpine:init", () => {
     Alpine.data("app", () => ({
         selectedDate: null,
-        providers: [],
+        establishments: [],
 
         async init() {
             this.selectedDate = isoDate(new Date);
 
-            const response = await fetch("/api/providers");
-            this.providers = await response.json();
+            const response = await fetch("/api/establishments");
+            this.establishments = await response.json();
         },
     }));
 
-    Alpine.data("menu", (provider = null) => ({
+    Alpine.data("menu", (establishment = null) => ({
         menu: null,
 
         async init() {
-            const response = await fetch(`/api/providers/${provider}`);
+            const response = await fetch(`/api/establishments/${establishment}`);
             this.menu = await response.json();
         }
     }));

@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from sanic.log import logger
 from lunch_menu.menu import Menu
 
-class Provider:
+class Establishment:
     name: str = None
     homepage: str = None
     link_only: bool = True
@@ -15,7 +15,7 @@ class Provider:
     async def get_menu(self) -> Menu:
         raise NotImplementedError()
 
-class WebProvider(Provider):
+class WebScraperEstablishment(Establishment):
     fetch_url: str
     link_only: bool = False
 
@@ -27,7 +27,7 @@ class WebProvider(Provider):
 
     @property
     def cache_key(self):
-        return f"lunch_menu:provider:{self.key}"
+        return f"lunch_menu:establishment:{self.key}"
 
     async def get_menu(self) -> Menu:
         async with self.cache.lock(f"{self.cache_key}:lock", 5.0):

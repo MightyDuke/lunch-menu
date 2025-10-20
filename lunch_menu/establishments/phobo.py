@@ -1,5 +1,5 @@
-from lunch_menu.provider import Provider
+from lunch_menu.establishment import Establishment
 
-class PhoboProvider(Provider):
+class PhoboEstablishment(Establishment):
     name = "Pho Bo"
     homepage = "https://www.facebook.com/p/PHO-BO-Restaurant-100082901603735"

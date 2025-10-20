@@ -51,13 +51,13 @@
 
         <div>
             <div class="columns is-tablet is-multiline is-8">
-                <template x-for="(provider, name) in providers">
+                <template x-for="(establishment, name) in establishments">
                     <div class="column is-half">
                         <div class="px-3 py-2">
-                            <a :href="provider.homepage" target="_blank" class="is-size-4" x-text="provider.name"></a>
+                            <a :href="establishment.homepage" target="_blank" class="is-size-4" x-text="establishment.name"></a>
                         </div>
                         
-                        <template x-if="!provider.linkOnly">
+                        <template x-if="!establishment.linkOnly">
                             <div x-data="menu(name)">
                                 <template x-if="!menu">
                                     <div class="p-3">
@@ -121,9 +121,9 @@
                             </div>
                         </template>
 
-                        <template x-if="provider.linkOnly">
+                        <template x-if="establishment.linkOnly">
                             <div class="p-3">
-                                <a :href="provider.homepage" target="_blank">Odkaz na menu</a>
+                                <a :href="establishment.homepage" target="_blank">Odkaz na menu</a>
                             </div>
                         </template>
                     </div>

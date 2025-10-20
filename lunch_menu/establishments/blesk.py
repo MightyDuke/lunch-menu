@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
-from lunch_menu.provider import WebProvider
+from lunch_menu.establishment import WebScraperEstablishment
 from lunch_menu.menu import Menu
 from lunch_menu.utils import clean_name, parse_date, parse_price
 
-class BleskProvider(WebProvider):
+class BleskEstablishment(WebScraperEstablishment):
     name = "Hasičárna Blesk"
     homepage = "https://www.hasicarnableskostrava.cz"
     fetch_url = "https://www.hasicarnableskostrava.cz/poledni-menu"

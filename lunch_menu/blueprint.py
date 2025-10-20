@@ -15,16 +15,16 @@ async def before_server_start(app: Sanic):
 async def on_response(request: Request, response: HTTPResponse):
     response.headers["Cache-Control"] = "no-store"
 
-@blueprint.get("/providers")
-async def providers(request: Request):
+@blueprint.get("/establishments")
+async def establishments(request: Request):
     lunch_menu_service = request.app.ctx.lunch_menu_service
-    providers = await lunch_menu_service.get_providers()
+    establishments = await lunch_menu_service.get_establishments()
 
-    return json(providers)
+    return json(establishments)
 
-@blueprint.get("/providers/<provider:str>")
-async def provider(request: Request, provider: str):
+@blueprint.get("/establishments/<establishment:str>")
+async def establishment(request: Request, establishment: str):
     lunch_menu_service = request.app.ctx.lunch_menu_service
-    menu = await lunch_menu_service.get_menu(provider)
+    menu = await lunch_menu_service.get_menu(establishment)
 
     return json(menu)

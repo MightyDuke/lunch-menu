@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
-from lunch_menu.provider import WebProvider
+from lunch_menu.establishment import WebScraperEstablishment
 from lunch_menu.menu import Menu
 from lunch_menu.utils import clean_name, parse_date, parse_price
 
-class MBRestauraceProvider(WebProvider):
+class MBRestauraceEstablishment(WebScraperEstablishment):
     name = "MB Restaurace"
     homepage = "https://mbrestaurace.cz"
     fetch_url = "https://mbrestaurace.cz/restaurace"
