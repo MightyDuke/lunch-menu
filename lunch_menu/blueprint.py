@@ -1,6 +1,6 @@
 from sanic import HTTPResponse, Sanic, Request, Blueprint
 from sanic.response import json
-from lunch_menu.service import LunchMenuService
+from lunch_menu.services import LunchMenuService
 
 blueprint = Blueprint("lunch_menu_api")
 

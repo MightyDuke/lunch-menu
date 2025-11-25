@@ -1,7 +1,5 @@
 from bs4 import BeautifulSoup
-from lunch_menu.establishment import WebScraperEstablishment
-from lunch_menu.menu import Menu
-from lunch_menu.utils import clean_name, parse_date, parse_price
+from lunch_menu.establishments.base import WebScraperEstablishment, Menu, clean_name, parse_date, parse_price
 
 class PastaFidliEstablishment(WebScraperEstablishment):
     name = "Pasta & Fidli"
@@ -11,7 +9,6 @@ class PastaFidliEstablishment(WebScraperEstablishment):
     def process_site(self, site: BeautifulSoup, menu: Menu):
         for element in site.body.find_all(class_ = "day"):
             date = parse_date(element.find("td").text)
-            day = menu.create_day(date)
 
             if date is not None and date.weekday() in (5, 6):
                 continue
@@ -28,4 +25,4 @@ class PastaFidliEstablishment(WebScraperEstablishment):
                 name = clean_name(sibling.find("td").text, suffix_removal_count = 2)
                 price = parse_price(sibling.find(class_ = "price").text)
 
-                day.add_item(name, price)
+                menu.add_item(date, name, price)

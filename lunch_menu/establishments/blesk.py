@@ -1,7 +1,5 @@
 from bs4 import BeautifulSoup
-from lunch_menu.establishment import WebScraperEstablishment
-from lunch_menu.menu import Menu
-from lunch_menu.utils import clean_name, parse_date, parse_price
+from lunch_menu.establishments.base import WebScraperEstablishment, Menu, clean_name, parse_date, parse_price
 
 class BleskEstablishment(WebScraperEstablishment):
     name = "Hasičárna Blesk"
@@ -11,7 +9,6 @@ class BleskEstablishment(WebScraperEstablishment):
     def process_site(self, site: BeautifulSoup, menu: Menu):
         for element in site.body.find_all(class_ = "food-section"):
             date = parse_date(element.text)
-            day = menu.create_day(date)
 
             sibling = element
             is_soup = True
@@ -21,4 +18,4 @@ class BleskEstablishment(WebScraperEstablishment):
                 price = parse_price(sibling.find("span").text)
                 is_soup = False
 
-                day.add_item(name, price)
+                menu.add_item(date, name, price)

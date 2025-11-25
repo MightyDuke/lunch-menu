@@ -1,7 +1,5 @@
 from bs4 import BeautifulSoup
-from lunch_menu.establishment import WebScraperEstablishment
-from lunch_menu.menu import Menu
-from lunch_menu.utils import clean_name, parse_date, parse_price
+from lunch_menu.establishments.base import WebScraperEstablishment, Menu, clean_name, parse_date, parse_price
 
 class MBRestauraceEstablishment(WebScraperEstablishment):
     name = "MB Restaurace"
@@ -13,7 +11,6 @@ class MBRestauraceEstablishment(WebScraperEstablishment):
         date_element = menu_element.select_one(":scope > div > div:nth-child(3)")
 
         date = parse_date(date_element.text)
-        day = menu.create_day(date)
 
         menu_elements = menu_element.select(":scope > div > div:nth-child(4) > div > div > div > div")
 
@@ -26,6 +23,4 @@ class MBRestauraceEstablishment(WebScraperEstablishment):
             if name == "": 
                 continue
 
-            day.add_item(name, price)
-
-    
+            menu.add_item(date, name, price)
