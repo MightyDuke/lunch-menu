@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 sanic = "~=25.3"
 httpx = {extras = ["http2"], version = "~=0.28"}
-beautifulsoup4 = "~=4.13"
+beautifulsoup4 = "~=4.14"
 dateparser = "~=1.2"
 cashews = {extras = ["diskcache", "redis"], version = "~=7.4"}
 
