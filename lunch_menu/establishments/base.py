@@ -42,7 +42,7 @@ class Menu:
     def __init__(self):
         self.menu = {}
     
-    def add_item(self, when: date | str, name, price: int = None):
+    def add_item(self, when: date | str, name: str, price: int = None):
         if when not in self.menu:
             self.menu[when] = []
 

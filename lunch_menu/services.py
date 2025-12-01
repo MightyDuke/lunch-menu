@@ -10,6 +10,7 @@ from lunch_menu.establishments.paleta import PaletaEstablishment
 from lunch_menu.establishments.hodonanka import HodonankaEstablishment
 from lunch_menu.establishments.pastafidli import PastaFidliEstablishment
 from lunch_menu.establishments.mbrestaurace import MBRestauraceEstablishment
+from lunch_menu.establishments.delphi import DelphiEstablishment
 from lunch_menu.establishments.phobo import PhoboEstablishment
 from lunch_menu.establishments.tajmahal import TajMahalEstablishment
 
@@ -21,6 +22,7 @@ class LunchMenuService:
         "hodonanka": HodonankaEstablishment,
         "pastaafidli": PastaFidliEstablishment,
         "mbrestaurace": MBRestauraceEstablishment,
+        "delphi": DelphiEstablishment,
         "phobo": PhoboEstablishment,
         "tajmahal": TajMahalEstablishment
     }
