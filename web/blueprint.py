@@ -14,7 +14,6 @@ async def on_response(request: Request, response: HTTPResponse):
     
     if "text/html" in response.content_type:
         response.headers["Cache-Control"] = "no-cache"
-        response.headers["Content-Security-Policy"] = "default-src 'self' 'unsafe-eval' 'unsafe-inline'"
     elif response.status == 200: 
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
 

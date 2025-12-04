@@ -28,7 +28,7 @@ class LunchMenuService:
         "tajmahal": TajMahalEstablishment
     }
 
-    def __init__(self, *, cache_url: str = "disk://", expiration: str = "10m"):
+    def __init__(self, *, cache_url: str = "mem://", expiration: str = "10m"):
         self.client = AsyncClient(http2 = True)
         self.cache = Cache()
 
