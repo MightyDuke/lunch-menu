@@ -14,7 +14,13 @@ class BleskEstablishment(WebScraperEstablishment):
             is_soup = True
 
             while (sibling := sibling.find_next_sibling()) and sibling.name == "div":
-                name = clean_name(sibling.find("h3").text, is_soup)
+                name = sibling.find("h3").text
+
+                if date and is_soup:
+                    name = name.removesuffix("v ceně menu")
+                    name += ")"
+
+                name = clean_name(name, date and is_soup)
                 price = parse_price(sibling.find("span").text)
                 is_soup = False
 
