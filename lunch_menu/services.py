@@ -23,6 +23,7 @@ class LunchMenuService:
         "pastaafidli": PastaFidliEstablishment,
         "mbrestaurace": MBRestauraceEstablishment,
         "delphi": DelphiEstablishment,
+        "toni": ToniEstablishment,
         "phobo": PhoboEstablishment,
         "tajmahal": TajMahalEstablishment
     }
