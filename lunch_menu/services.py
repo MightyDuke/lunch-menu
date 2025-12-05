@@ -1,4 +1,4 @@
-from cashews import Cache
+from aiocache import Cache
 from httpx import AsyncClient
 from sanic.exceptions import NotFound, BadRequest
 from sanic.log import logger
@@ -28,14 +28,12 @@ class LunchMenuService:
         "tajmahal": TajMahalEstablishment
     }
 
-    def __init__(self, *, cache_url: str = "mem://", expiration: str = "10m"):
+    def __init__(self, *, cache_url: str = "memory://", expiration: int = 600):
         self.client = AsyncClient(http2 = True)
-        self.cache = Cache()
-
-        self.cache.setup(cache_url)
+        self.cache = Cache.from_url(cache_url)
 
         self.instances = {
-            key: cls(key = key, client = self.client, cache = self.cache, expiration = expiration) 
+            key: cls(key = key, client = self.client, cache = self.cache, expiration = int(expiration)) 
             for key, cls 
             in self.establishments.items()
         }

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2066a918a76c75602d3d22d2edb6967e99fe0d09c305192b0a0e89f2db413aaa"
+            "sha256": "b61a86c2ed13fc6509779c59a8b258c1e374f9dacb788c8cb098e2b0bbd1b359"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -14,6 +14,16 @@
         ]
     },
     "default": {
+        "aiocache": {
+            "extras": [
+                "redis"
+            ],
+            "hashes": [
+                "sha256:889086fc24710f431937b87ad3720a289f7fc31c4fd8b68e9f918b9bacd8270d",
+                "sha256:f528b27bf4d436b497a1d0d1a8f59a542c153ab1e37c3621713cb376d44c4713"
+            ],
+            "version": "==0.12.3"
+        },
         "aiofiles": {
             "hashes": [
                 "sha256:a8d728f0a29de45dc521f18f07297428d56992a742f0cd2701ba86e44d23d5b2",
@@ -39,18 +49,6 @@
             "markers": "python_full_version >= '3.7.0'",
             "version": "==4.14.3"
         },
-        "cashews": {
-            "extras": [
-                "diskcache",
-                "redis"
-            ],
-            "hashes": [
-                "sha256:33449b26b44c36d3ab6e73f91f71ade1e29e918e85a820238f1947beaae26322",
-                "sha256:72cc1931b558e1bbe1e80395f9be6707131ffe21768f55e359d3e760c802fbb1"
-            ],
-            "markers": "python_version >= '3.9'",
-            "version": "==7.4.3"
-        },
         "certifi": {
             "hashes": [
                 "sha256:97de8790030bbd5c2d96b7ec782fc2f7820ef8dba6db909ccf95449f2d062d4b",
@@ -67,14 +65,6 @@
             "index": "pypi",
             "markers": "python_version >= '3.8'",
             "version": "==1.2.2"
-        },
-        "diskcache": {
-            "hashes": [
-                "sha256:2c3a3fa2743d8535d832ec61c2054a1641f41775aa7c556758a109941e33e4fc",
-                "sha256:5e31b2d5fbad117cc363ebaf6b689474db18a1f6438bc82358b024abd4c2ca19"
-            ],
-            "markers": "python_version >= '3'",
-            "version": "==5.6.3"
         },
         "h11": {
             "hashes": [

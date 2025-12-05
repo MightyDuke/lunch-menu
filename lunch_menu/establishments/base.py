@@ -1,6 +1,7 @@
 import re
 import dateparser
-from cashews import Cache
+from aiocache import Cache
+from aiocache.lock import RedLock
 from httpx import AsyncClient
 from bs4 import BeautifulSoup
 from sanic.log import logger
@@ -81,7 +82,7 @@ class WebScraperEstablishment(Establishment):
     fetch_url: str
     link_only: bool = False
 
-    def __init__(self, *, key: str, client: AsyncClient, cache: Cache, expiration: str, **kwargs):
+    def __init__(self, *, key: str, client: AsyncClient, cache: Cache, expiration: int, **kwargs):
         self.key = key
         self.client = client
         self.cache = cache
@@ -92,7 +93,7 @@ class WebScraperEstablishment(Establishment):
         return f"lunch_menu:establishment:{self.key}"
 
     async def get_menu(self) -> Menu:
-        async with self.cache.lock(f"{self.cache_key}:lock", 5.0):
+        async with RedLock(self.cache, self.cache_key, lease = 3):
             result = await self.cache.get(self.cache_key)
 
             if result is None:
@@ -105,7 +106,7 @@ class WebScraperEstablishment(Establishment):
                 self.process_site(site, menu)
                 result = menu.serialize()
 
-                await self.cache.set(self.cache_key, result, expire = self.expiration)
+                await self.cache.set(self.cache_key, result, ttl = self.expiration)
 
             return result
 
