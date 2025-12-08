@@ -19,7 +19,10 @@ def clean_name(text: str, is_soup: bool = False, *, suffix_removal_count: int = 
             text = match.group(1).strip()
 
     if is_soup:
-        text = f"Polévka {text[0].lower()}{text[1:]}"
+        text_lower = text.lower()
+
+        if "polévka" not in text_lower and "svátek" not in text_lower:
+            text = f"Polévka {text[0].lower()}{text[1:]}"
 
     return text
 
