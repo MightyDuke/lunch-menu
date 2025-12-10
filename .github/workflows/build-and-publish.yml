@@ -48,6 +48,6 @@ jobs:
       - name: Cleanup registry
         uses: actions/delete-package-versions@v5
         with:
-          package-name: ${{ env.IMAGE_NAME }}
+          package-name: ${{ github.event.repository.name }}
           package-type: container
           min-versions-to-keep: ${{ env.IMAGES_TO_KEEP }}
