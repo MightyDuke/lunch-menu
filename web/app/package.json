@@ -11,7 +11,11 @@
     },
     "targets": {
         "default": {
-            "sourceMap": false
+            "sourceMap": false,
+            "publicUrl": "/static/"
         }
+    },
+    "alias": {
+        "./static/**": "./$1"
     }
 }

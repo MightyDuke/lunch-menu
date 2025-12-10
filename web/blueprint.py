@@ -4,7 +4,7 @@ blueprint = Blueprint("web")
 
 @blueprint.on_request
 async def on_request(request: Request):
-    if request.path == "/index.html":
+    if request.path.lower().endswith("/index.html"):
         raise NotFound("File not found")
 
 @blueprint.on_response
@@ -17,4 +17,5 @@ async def on_response(request: Request, response: HTTPResponse):
     elif response.status == 200: 
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
 
-blueprint.static("/", "web/app/", index = "index.html", name = "static")
+blueprint.static("/", "web/app/index.html", name = "index")
+blueprint.static("/static", "web/app/", name = "static")

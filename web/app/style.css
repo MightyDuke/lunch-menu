@@ -1,5 +1,5 @@
-@import url("/node_modules/bulma/css/bulma.css");
-@import url("/node_modules/@fontsource-variable/inter/index.css");
+@import url("/static/node_modules/bulma/css/bulma.css");
+@import url("/static/node_modules/@fontsource-variable/inter/index.css");
 
 :root {
     --bulma-body-family: "Inter Variable", sans-serif;
