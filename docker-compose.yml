@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    ports:
+      - 8000:80
+    environment:
+      - LUNCH_MENU_CACHE_URL=redis://redis
+      - LUNCH_MENU_CACHE_EXPIRATION=600
+  redis:
+    image: redis:latest
