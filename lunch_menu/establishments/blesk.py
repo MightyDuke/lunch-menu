@@ -20,7 +20,7 @@ class BleskEstablishment(WebScraperEstablishment):
                     name = name.removesuffix("v ceně menu")
                     name += ")"
 
-                name = clean_name(name, date and is_soup)
+                name = clean_name(name, is_soup = date and is_soup, remove_numbering = True, suffix_removal_count = 1)
                 price = parse_price(sibling.find("span").text)
                 is_soup = False
 

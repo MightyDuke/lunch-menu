@@ -8,14 +8,19 @@ from sanic.log import logger
 from bs4 import BeautifulSoup
 from datetime import date
 
-def clean_name(text: str, is_soup: bool = False, *, suffix_removal_count: int = 1):
+def clean_name(text: str, *, is_soup: bool = False, remove_numbering: bool = False, prefix_removal_count: int = 0, suffix_removal_count: int = 0):
     text = text.strip()
 
-    if match := re.match(r"(?:\d+\.\s*)?(.*)", text):
-        text = match.group(1).strip()
+    if remove_numbering:
+        if match := re.match(r"(?:\d+\.\s*)?(.*)", text):
+            text = match.group(1).strip()
+
+    for _ in range(prefix_removal_count):
+        if match := re.match(r"^(?:\(.+?\))\s*(.*)$", text):
+            text = match.group(1).strip()
 
     for _ in range(suffix_removal_count):
-        if match := re.match(r"(.*)\(.+\)\*?$", text):
+        if match := re.match(r"^(.*)\s*(?:\(.+?\))$", text):
             text = match.group(1).strip()
 
     if is_soup:

@@ -13,6 +13,7 @@ from lunch_menu.establishments.mbrestaurace import MBRestauraceEstablishment
 from lunch_menu.establishments.delphi import DelphiEstablishment
 from lunch_menu.establishments.phobo import PhoboEstablishment
 from lunch_menu.establishments.tajmahal import TajMahalEstablishment
+from lunch_menu.establishments.uzlatehojarouse import UZlatehoJarouseEstablishment
 
 class LunchMenuService:
     establishments = {
@@ -23,6 +24,7 @@ class LunchMenuService:
         "pastaafidli": PastaFidliEstablishment,
         "mbrestaurace": MBRestauraceEstablishment,
         "delphi": DelphiEstablishment,
+        "uzlatehojarouse": UZlatehoJarouseEstablishment,
         "toni": ToniEstablishment,
         "phobo": PhoboEstablishment,
         "tajmahal": TajMahalEstablishment

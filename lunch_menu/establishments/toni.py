@@ -12,7 +12,7 @@ class ToniEstablishment(WebScraperEstablishment):
             
             for i, item in enumerate(element.find_all(class_ = "menu-post-content")):
                 content = find_strings(item)
-                name = clean_name(content[0], i == 0)
+                name = clean_name(content[0], is_soup = i == 0)
                 price = parse_price(content[1])
 
                 menu.add_item(date, name, price)
