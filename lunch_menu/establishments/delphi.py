@@ -15,7 +15,7 @@ class DelphiEstablishment(WebScraperEstablishment):
                 subitems = item.find_all("span")
 
                 if not subitems:
-                    name = clean_name(item.text, is_soup = True, suffix_removal_count = 0)
+                    name = clean_name(item.text, is_soup = True)
                     menu.add_item(date, name)
                 else:
                     name = clean_name(subitems[0].text)
