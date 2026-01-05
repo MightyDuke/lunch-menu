@@ -5,26 +5,26 @@ from sanic.log import logger
 from asyncio import CancelledError
 from lunch_menu.establishments.toni import ToniEstablishment
 from lunch_menu.establishments.blesk import BleskEstablishment
-from lunch_menu.establishments.boasi import BoasiEstablishment
+from lunch_menu.establishments.bo_asi import BoasiEstablishment
 from lunch_menu.establishments.paleta import PaletaEstablishment
 from lunch_menu.establishments.hodonanka import HodonankaEstablishment
-from lunch_menu.establishments.pastafidli import PastaFidliEstablishment
-from lunch_menu.establishments.mbrestaurace import MBRestauraceEstablishment
+from lunch_menu.establishments.pasta_a_fidli import PastaFidliEstablishment
+from lunch_menu.establishments.mb_restaurace import MBRestauraceEstablishment
 from lunch_menu.establishments.delphi import DelphiEstablishment
 from lunch_menu.establishments.phobo import PhoboEstablishment
 from lunch_menu.establishments.tajmahal import TajMahalEstablishment
-from lunch_menu.establishments.uzlatehojarouse import UZlatehoJarouseEstablishment
+from lunch_menu.establishments.u_zlateho_jarouse import UZlatehoJarouseEstablishment
 
 class LunchMenuService:
     establishments = {
-        "boasi": BoasiEstablishment,
+        "bo-asi": BoasiEstablishment,
         "paleta": PaletaEstablishment,
         "blesk": BleskEstablishment, 
         "hodonanka": HodonankaEstablishment,
-        "pastaafidli": PastaFidliEstablishment,
-        "mbrestaurace": MBRestauraceEstablishment,
+        "pasta-a-fidli": PastaFidliEstablishment,
+        "mb-restaurace": MBRestauraceEstablishment,
         "delphi": DelphiEstablishment,
-        "uzlatehojarouse": UZlatehoJarouseEstablishment,
+        "u-zlateho-jarouse": UZlatehoJarouseEstablishment,
         "toni": ToniEstablishment,
         "phobo": PhoboEstablishment,
         "tajmahal": TajMahalEstablishment
