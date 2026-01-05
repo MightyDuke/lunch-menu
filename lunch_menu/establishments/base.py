@@ -8,6 +8,12 @@ from sanic.log import logger
 from bs4 import BeautifulSoup
 from datetime import date
 
+soup_word_blacklist = (
+    "polévka",
+    "svátek",
+    "zavřen"
+)
+
 def regex_match(regex: str, text: str) -> str:
     if match := re.match(regex, text):
         return match.group(1).strip()
@@ -27,9 +33,7 @@ def clean_name(text: str, *, is_soup: bool = False, remove_numbering: bool = Fal
         text = regex_match(r"^(.*)\s*\(.+?\).?$", text)
 
     if is_soup:
-        text_lower = text.lower()
-
-        if "polévka" not in text_lower and "svátek" not in text_lower:
+        if all(word not in text.lower() for word in soup_word_blacklist):
             text = f"Polévka {text[0].lower()}{text[1:]}"
 
     return text
