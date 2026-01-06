@@ -1,4 +1,4 @@
-from lunch_menu.establishments.base import Establishment
+from lunch_menu.base import Establishment
 
 class TajMahalEstablishment(Establishment):
     name = "Taj Mahal"

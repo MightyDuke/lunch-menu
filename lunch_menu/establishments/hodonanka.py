@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
-from lunch_menu.establishments.base import WebScraperEstablishment, Menu, clean_name, parse_date, parse_price
+from lunch_menu.base import WebScraperEstablishment, Menu
+from lunch_menu.helpers import clean_name, parse_date, parse_price
 
 class HodonankaEstablishment(WebScraperEstablishment):
     name = "Hodoňanka"

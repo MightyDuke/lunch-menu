@@ -1,8 +1,8 @@
+from asyncio import CancelledError
 from aiocache import Cache
 from httpx import AsyncClient
 from sanic.exceptions import NotFound, BadRequest
 from sanic.log import logger
-from asyncio import CancelledError
 from lunch_menu.establishments.toni import ToniEstablishment
 from lunch_menu.establishments.blesk import BleskEstablishment
 from lunch_menu.establishments.bo_asi import BoasiEstablishment

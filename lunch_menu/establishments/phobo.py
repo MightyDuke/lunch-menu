@@ -1,4 +1,4 @@
-from lunch_menu.establishments.base import Establishment
+from lunch_menu.base import Establishment
 
 class PhoboEstablishment(Establishment):
     name = "Pho Bo"
