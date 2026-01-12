@@ -1,37 +1,37 @@
 from asyncio import CancelledError
 from aiocache import Cache
 from httpx import AsyncClient
+from sanic import Config
 from sanic.exceptions import NotFound, BadRequest
 from sanic.log import logger
-from lunch_menu.establishments.toni import ToniEstablishment
-from lunch_menu.establishments.blesk import BleskEstablishment
-from lunch_menu.establishments.bo_asi import BoasiEstablishment
-from lunch_menu.establishments.paleta import PaletaEstablishment
-from lunch_menu.establishments.hodonanka import HodonankaEstablishment
-from lunch_menu.establishments.pasta_a_fidli import PastaFidliEstablishment
-from lunch_menu.establishments.mb_restaurace import MBRestauraceEstablishment
-from lunch_menu.establishments.delphi import DelphiEstablishment
-from lunch_menu.establishments.phobo import PhoboEstablishment
-from lunch_menu.establishments.tajmahal import TajMahalEstablishment
-from lunch_menu.establishments.u_zlateho_jarouse import UZlatehoJarouseEstablishment
+from lunch_menu import establishments
 
 class LunchMenuService:
     establishments = {
-        "bo-asi": BoasiEstablishment,
-        "paleta": PaletaEstablishment,
-        "blesk": BleskEstablishment, 
-        "hodonanka": HodonankaEstablishment,
-        "pasta-a-fidli": PastaFidliEstablishment,
-        "mb-restaurace": MBRestauraceEstablishment,
-        "delphi": DelphiEstablishment,
-        "u-zlateho-jarouse": UZlatehoJarouseEstablishment,
-        "toni": ToniEstablishment,
-        "phobo": PhoboEstablishment,
-        "taj-mahal": TajMahalEstablishment
+        "bo-asi": establishments.BoasiEstablishment,
+        "paleta": establishments.PaletaEstablishment,
+        "blesk": establishments.BleskEstablishment, 
+        "hodonanka": establishments.HodonankaEstablishment,
+        "pasta-a-fidli": establishments.PastaFidliEstablishment,
+        "mb-restaurace": establishments.MBRestauraceEstablishment,
+        "delphi": establishments.DelphiEstablishment,
+        "u-zlateho-jarouse": establishments.UZlatehoJarouseEstablishment,
+        "toni": establishments.ToniEstablishment,
+        "phobo": establishments.PhoboEstablishment,
+        "taj-mahal": establishments.TajMahalEstablishment
     }
 
-    def __init__(self, *, cache_url: str = "memory://", expiration: int = 600):
-        self.client = AsyncClient(http2 = True)
+    def __init__(self, config: Config):
+        cache_url = config.get("CACHE_URL", "memory://")
+        expiration = config.get("CACHE_EXPIRATION", "600")
+        user_agent = config.get("CRAWLER_USER_AGENT", None)
+
+        headers = {}
+
+        if user_agent is not None:
+            headers["User-Agent"] = user_agent
+
+        self.client = AsyncClient(http2 = True, headers = headers)
         self.cache = Cache.from_url(cache_url)
 
         self.instances = {
