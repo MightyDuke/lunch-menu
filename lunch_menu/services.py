@@ -27,7 +27,7 @@ class LunchMenuService:
         "u-zlateho-jarouse": UZlatehoJarouseEstablishment,
         "toni": ToniEstablishment,
         "phobo": PhoboEstablishment,
-        "tajmahal": TajMahalEstablishment
+        "taj-mahal": TajMahalEstablishment
     }
 
     def __init__(self, *, cache_url: str = "memory://", expiration: int = 600):
