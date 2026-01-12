@@ -4,7 +4,7 @@ WORKDIR /app
 COPY web/app/ .
 RUN npm install && npx parcel build "index.html"
 
-FROM python:3.13
+FROM python:3.14
 WORKDIR /app
 EXPOSE 80
 
