@@ -11,7 +11,12 @@
                 "--dev",
                 "--host", "0.0.0.0",
                 "--port", "80"
-            ]
+            ],
+            "env": {
+                "LUNCH_MENU_CACHE_URL": "memory://",
+                "LUNCH_MENU_EXPIRATION": "10",
+                "LUNCH_MENU_ESTABLISHMENTS": "[bo-asi, paleta, blesk, hodonanka, pasta-a-fidli, mb-restaurace, delphi, u-zlateho-jarouse, toni, phobo, taj-mahal]"
+            }
         }
     ]
 }

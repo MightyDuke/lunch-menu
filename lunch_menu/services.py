@@ -5,6 +5,7 @@ from sanic import Config
 from sanic.exceptions import NotFound, BadRequest
 from sanic.log import logger
 from lunch_menu import establishments
+from collections import OrderedDict
 
 class LunchMenuService:
     establishments = {
@@ -25,6 +26,7 @@ class LunchMenuService:
         cache_url = config.get("CACHE_URL", "memory://")
         expiration = config.get("CACHE_EXPIRATION", "600")
         user_agent = config.get("CRAWLER_USER_AGENT", None)
+        establishments = config.get("ESTABLISHMENTS", list(self.establishments.keys()))
 
         headers = {}
 
@@ -34,11 +36,20 @@ class LunchMenuService:
         self.client = AsyncClient(http2 = True, headers = headers)
         self.cache = Cache.from_url(cache_url)
 
-        self.instances = {
-            key: cls(key = key, client = self.client, cache = self.cache, expiration = int(expiration)) 
-            for key, cls 
-            in self.establishments.items()
-        }
+        self.instances = OrderedDict()
+
+        for establishment in establishments:
+            if establishment not in self.establishments:
+                logger.warning(f"Establishment not found: {establishment}")
+                continue
+
+            cls = self.establishments[establishment]
+            self.instances[establishment] = cls(
+                key = establishment, 
+                client = self.client, 
+                cache = self.cache, 
+                expiration = int(expiration)
+            ) 
 
     async def get_establishments(self):
         return {
