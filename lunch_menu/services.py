@@ -1,14 +1,14 @@
 from asyncio import CancelledError
+from collections import OrderedDict
 from aiocache import Cache
 from httpx import AsyncClient
 from sanic import Config
 from sanic.exceptions import NotFound, BadRequest
 from sanic.log import logger
 from lunch_menu import establishments
-from collections import OrderedDict
 
 class LunchMenuService:
-    establishments = {
+    establishments = OrderedDict({
         "bo-asi": establishments.BoasiEstablishment,
         "paleta": establishments.PaletaEstablishment,
         "blesk": establishments.BleskEstablishment, 
@@ -20,7 +20,7 @@ class LunchMenuService:
         "toni": establishments.ToniEstablishment,
         "phobo": establishments.PhoboEstablishment,
         "taj-mahal": establishments.TajMahalEstablishment
-    }
+    })
 
     def __init__(self, config: Config):
         cache_url = config.get("CACHE_URL", "memory://")

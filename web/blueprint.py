@@ -15,7 +15,7 @@ async def on_response(request: Request, response: HTTPResponse):
     if "text/html" in response.content_type:
         response.headers["Cache-Control"] = "no-cache"
     elif response.status == 200: 
-        response.headers["Cache-Control"] = "public,max-age=31536000,immutable"
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
 
 blueprint.static("/", "web/app/index.html", name = "index")
 blueprint.static("/static", "web/app/", name = "static")
