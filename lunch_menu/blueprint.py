@@ -11,7 +11,7 @@ async def before_server_start(app: Sanic):
 @blueprint.on_response
 async def on_response(request: Request, response: HTTPResponse):
     if response.status == 200:
-        response.headers["Cache-Control"] = "max-age=60, stale-if-error=604800"
+        response.headers["Cache-Control"] = "private, max-age=60, must-revalidate"
 
 @blueprint.get("/establishments")
 async def establishments(request: Request):
