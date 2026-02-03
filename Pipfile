@@ -4,10 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sanic = "~=25.12"
-httpx = {extras = ["http2"], version = "~=0.28"}
-beautifulsoup4 = "~=4.14"
-dateparser = "~=1.2"
-aiocache = {extras = ["redis"], version = "~=0.12"}
+sanic = {extras = ["ext"], version = "~=25.12.0"}
+httpx = {extras = ["http2"], version = "~=0.28.0"}
+pydantic = "~=2.12.0"
+beautifulsoup4 = "~=4.14.0"
+dateparser = "~=1.2.0"
+aiocache = {extras = ["redis"], version = "~=0.12.0"}
 
 [dev-packages]

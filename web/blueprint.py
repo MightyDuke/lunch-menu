@@ -1,4 +1,4 @@
-from sanic import Blueprint, HTTPResponse, NotFound, Request
+from sanic import Blueprint, HTTPResponse, NotFound, Request, text
 
 blueprint = Blueprint("web")
 
@@ -19,3 +19,7 @@ async def on_response(request: Request, response: HTTPResponse):
 
 blueprint.static("/", "web/app/index.html", name = "index")
 blueprint.static("/static", "web/app/", name = "static")
+
+@blueprint.get("/robots.txt")
+async def robots_txt(request: Request):
+    return text("User-agent: *\nDisallow: /")

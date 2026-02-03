@@ -22,6 +22,10 @@
     color: var(--bulma-text) !important;
 }
 
+.footer {
+    --bulma-footer-padding: 2.5rem;
+}
+
 .has-min-height-screen {
     min-height: 80vh;
 }
