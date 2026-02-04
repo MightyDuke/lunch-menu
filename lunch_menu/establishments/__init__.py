@@ -6,6 +6,6 @@ from .hodonanka import HodonankaEstablishment
 from .pasta_a_fidli import PastaFidliEstablishment
 from .mb_restaurace import MBRestauraceEstablishment
 from .delphi import DelphiEstablishment
-from .phobo import PhoboEstablishment
+from .pho_bo import PhoBoEstablishment
 from .tajmahal import TajMahalEstablishment
 from .u_zlateho_jarouse import UZlatehoJarouseEstablishment

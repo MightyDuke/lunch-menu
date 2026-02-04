@@ -18,7 +18,7 @@ class LunchMenuService:
         "delphi": establishments.DelphiEstablishment,
         "u-zlateho-jarouse": establishments.UZlatehoJarouseEstablishment,
         "toni": establishments.ToniEstablishment,
-        "phobo": establishments.PhoboEstablishment,
+        "pho-bo": establishments.PhoBoEstablishment,
         "taj-mahal": establishments.TajMahalEstablishment
     })
 
