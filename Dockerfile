@@ -10,7 +10,7 @@ EXPOSE 80
 
 RUN pip install --no-cache-dir pipenv
 COPY . .
-RUN pipenv install --system
+RUN pipenv install --system --deploy
 
 RUN rm -rf web/app/
 COPY --from=frontend /app/dist/ web/app/
