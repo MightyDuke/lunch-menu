@@ -27,6 +27,8 @@ class LunchMenuService:
         expiration = config.get("CACHE_EXPIRATION", "600")
         user_agent = config.get("CRAWLER_USER_AGENT", None)
         establishments = config.get("ESTABLISHMENTS", list(self.establishments.keys()))
+        
+        self.highlighted_words = config.get("HIGHLIGHTED_WORDS", [])
 
         headers = {}
 
@@ -51,6 +53,11 @@ class LunchMenuService:
                 expiration = int(expiration)
             ) 
 
+    def highlight_items(self, menu: dict):
+        for day in menu.values():
+            for item in day:
+                item["highlight"] = any(word.lower() in item["name"].lower() for word in self.highlighted_words)
+
     async def get_establishments(self):
         return {
             key: {
@@ -70,6 +77,7 @@ class LunchMenuService:
 
         try:
             result = await instance.get_menu()
+            self.highlight_items(result)
         except NotImplementedError:
             raise BadRequest(f"Establishment \"{establishment}\" doesn't provide a menu")
         except CancelledError:

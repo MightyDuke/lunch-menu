@@ -80,7 +80,7 @@
                                         <template x-if="menu !== null && menu[selectedDate]">
                                             <tbody>
                                                 <template x-for="item in menu[selectedDate]">
-                                                    <tr>
+                                                    <tr :class="{'has-background-primary-soft': item.highlight}">
                                                         <td>
                                                             <span x-text="item.name"></span>
                                                         </td>
@@ -100,7 +100,7 @@
                                                 </template>
 
                                                 <template x-for="item in menu['week']">
-                                                    <tr>
+                                                    <tr :class="{'has-background-primary-soft': item.highlight}">
                                                         <td>
                                                             <span x-text="item.name"></span>
                                                         </td>
