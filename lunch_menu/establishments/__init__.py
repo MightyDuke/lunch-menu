@@ -7,5 +7,5 @@ from .pasta_a_fidli import PastaFidliEstablishment
 from .mb_restaurace import MBRestauraceEstablishment
 from .delphi import DelphiEstablishment
 from .pho_bo import PhoBoEstablishment
-from .tajmahal import TajMahalEstablishment
+from .taj_mahal import TajMahalEstablishment
 from .u_zlateho_jarouse import UZlatehoJarouseEstablishment
