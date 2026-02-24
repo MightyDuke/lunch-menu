@@ -62,7 +62,11 @@ establishment_menu_schema = {
                     "price": {
                         "type": ["number", "null"],
                         "description": "Price of the item."
-                    }
+                    },
+                    "highlight": {
+                        "type": "boolean",
+                        "description": "Item is important and should be highlighted."
+                    },
                 },
             }
         }
@@ -74,43 +78,52 @@ establishment_menu_example = {
     "2026-01-26": [
         {
             "name": "Polévka bramboračka",
-            "price": None
+            "price": None,
+            "highlight": False
         },
         {
             "name": "Holandský řízek XXL 200g, máslová bramborová kaše, salátek",
-            "price": 164
+            "price": 164,
+            "highlight": False
         },
         {
             "name": "Marinované kuřecí medailoky, pečené brambory ve slupce, tatarská omáčka",
-            "price": 164
+            "price": 164,
+            "highlight": False
         },
     ],
     "2026-01-27": [
         {
             "name": "Polévka hrachová",
-            "price": None
+            "price": None,
+            "highlight": False
         },
         {
             "name": "Hovězí svíčková na smetaně, houskový knedlík, citron, brusinky",
-            "price": 179
+            "price": 179,
+            "highlight": True
         },
         {
             "name": "Kuřecí prsíčko na středomořský způsob s rajčaty, olivami, kapary a česnekem, rýže",
-            "price": 164
+            "price": 164,
+            "highlight": False
         }
     ],
     "week": [
         {
             "name": "Polévka rajská",
-            "price": None
+            "price": None,
+            "highlight": False
         },
         {
             "name": "Currywrust (německá specialita grilovaná klobása 200g s kořením ) s hranolky",
-            "price": 164
+            "price": 164,
+            "highlight": False
         },
         {
             "name": "Holandský řízek XXL 200g, máslová bramborová kaše, salátek",
-            "price": 164
+            "price": 164,
+            "highlight": True
         },
     ]
 }
