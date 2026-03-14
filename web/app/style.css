@@ -18,8 +18,8 @@
     --bulma-table-cell-border-width: 0;
 }
 
-.text {
-    color: var(--bulma-text) !important;
+.has-text-strong {
+    color: var(--bulma-text-strong) !important;
 }
 
 .footer {
@@ -28,4 +28,8 @@
 
 .has-min-height-screen {
     min-height: 80vh;
+}
+
+.is-rounded {
+    border-radius: var(--bulma-radius);
 }

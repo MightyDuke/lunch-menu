@@ -53,77 +53,71 @@
             <div class="columns is-tablet is-multiline is-8">
                 <template x-for="(establishment, name) in establishments">
                     <div class="column is-half">
-                        <div class="px-3 py-2">
-                            <a :href="establishment.homepage" target="_blank" class="is-size-4" x-text="establishment.name"></a>
-                        </div>
+                        <a :href="establishment.homepage" target="_blank" class="is-size-4 my-1 p-2 mx-2" x-text="establishment.name"></a>
+
+                        <hr class="my-2 mx-3">
                         
                         <template x-if="!establishment.linkOnly">
                             <div x-data="menu(name)">
-                                <template x-if="!menu">
-                                    <div class="p-3">
-                                        <div class="is-skeleton block"><span>&nbsp;</span></div>
-                                        <div class="is-skeleton block"><span>&nbsp;</span></div>
-                                        <div class="is-skeleton block"><span>&nbsp;</span></div>
-                                        <div class="is-skeleton block"><span>&nbsp;</span></div>
-                                        <div class="is-skeleton block"><span>&nbsp;</span></div>
+                                <div x-show="!menu">
+                                    <div>
+                                        <div class="is-skeleton mx-2 my-3"><span>&nbsp;</span></div>
+                                        <div class="is-skeleton mx-2 my-3"><span>&nbsp;</span></div>
+                                        <div class="is-skeleton mx-2 my-3"><span>&nbsp;</span></div>
+                                        <div class="is-skeleton mx-2 my-3"><span>&nbsp;</span></div>
+                                        <div class="is-skeleton mx-2 my-3"><span>&nbsp;</span></div>
                                     </div>
-                                </template>
+                                </div>
 
-                                <div x-show="menu">
-                                    <table class="table has-background-inherit is-fullwidth is-hoverable">
+                                <div x-show="menu" x-transition.opacity.duration.200ms>
+                                    <div class="mx-2">
                                         <template x-if="menu === null || !menu[selectedDate]">
-                                            <div class="p-3 text">
+                                            <div class="my-1 p-2">
                                                 Menu není k dispozici.
                                             </div>
                                         </template>
 
                                         <template x-if="menu !== null && menu[selectedDate]">
-                                            <tbody>
+                                            <div>
                                                 <template x-for="item in menu[selectedDate]">
-                                                    <tr :class="{'has-background-primary-soft': item.highlight}">
-                                                        <td>
-                                                            <span x-text="item.name"></span>
-                                                        </td>
-
-                                                        <td class="has-text-right">
-                                                            <template x-if="item.price">
-                                                                <span class="text">
-                                                                    <span x-text="item.price"></span>&nbsp;Kč
-                                                                </span>
-                                                            </template>
-                                                        </td>
-                                                    </tr>
+                                                    <div class="is-flex is-mobile is-rounded my-1 px-2 py-1" :class="{'has-background-primary-soft': item.highlight}">
+                                                        <div class="is-flex-grow-5 has-text-strong pr-4" x-text="item.name"></div>
+                                                        
+                                                        <template x-if="item.price">
+                                                            <div x-text="`${item.price}&nbsp;Kč`"></div>
+                                                        </template>
+                                                    </div>
                                                 </template>
 
                                                 <template x-if="'week' in menu">
-                                                    <div class="p-3 text">Týdenní menu</div>
+                                                    <div>
+                                                        <div class="px-2 py-4">
+                                                            Týdenní menu
+                                                        </div>
+                                                        
+                                                        <template x-for="item in menu.week">
+                                                            <div class="is-flex is-mobile is-rounded my-1 px-2 py-1" :class="{'has-background-primary-soft': item.highlight}">
+                                                                <div class="is-flex-grow-5 has-text-strong pr-4" x-text="item.name"></div>
+                                                                
+                                                                <template x-if="item.price">
+                                                                    <div x-text="`${item.price}&nbsp;Kč`"></div>
+                                                                </template>
+                                                            </div>
+                                                        </template>
+                                                    </div>
                                                 </template>
-
-                                                <template x-for="item in menu['week']">
-                                                    <tr :class="{'has-background-primary-soft': item.highlight}">
-                                                        <td>
-                                                            <span x-text="item.name"></span>
-                                                        </td>
-
-                                                        <td class="has-text-right">
-                                                            <template x-if="item.price">
-                                                                <span class="text">
-                                                                    <span x-text="item.price"></span>&nbsp;Kč
-                                                                </span>
-                                                            </template>
-                                                        </td>
-                                                    </tr>
-                                                </template>
-                                            </tbody>
+                                            </div>
                                         </template>
-                                    </table>
+                                    </div>
                                 </div>
                             </div>
                         </template>
 
                         <template x-if="establishment.linkOnly">
-                            <div class="p-3">
-                                <a :href="establishment.homepage" target="_blank">Odkaz na menu</a>
+                            <div class="my-3">
+                                <a class="mx-2 px-2 py-1" :href="establishment.homepage" target="_blank">
+                                    Odkaz na menu
+                                </a>
                             </div>
                         </template>
                     </div>
