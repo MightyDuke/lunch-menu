@@ -12,12 +12,7 @@ class PaletaEstablishment(WebScraperEstablishment):
             date = parse_date(element.text)
 
             for item in element.find_next_sibling("table").find_all("tr"):
-                name = item.find(class_ = "meal-name").text
-
-                if "polévka" in name.lower():
-                    name = clean_name(name, is_soup = True, suffix_removal_count = 1)
-                else:
-                    name = clean_name(name)
+                name = clean_name(item.find(class_ = "meal-name").text)
 
                 price = parse_price(item.find(class_ = "meal-price").text)
 

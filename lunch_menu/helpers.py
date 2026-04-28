@@ -3,19 +3,13 @@ import dateparser
 from datetime import date
 from bs4 import BeautifulSoup
 
-soup_word_blacklist = (
-    "polévka",
-    "svátek",
-    "zavřen"
-)
-
 def regex_match(regex: str, text: str) -> str:
     if match := re.match(regex, text):
         return match.group(1).strip()
     else:
         return text
 
-def clean_name(text: str, *, is_soup: bool = False, remove_numbering: bool = False, prefix_removal_count: int = 0, suffix_removal_count: int = 0) -> str:
+def clean_name(text: str, *, remove_numbering: bool = False, prefix_removal_count: int = 0, suffix_removal_count: int = 0) -> str:
     text = text.strip()
 
     if remove_numbering:
@@ -26,9 +20,6 @@ def clean_name(text: str, *, is_soup: bool = False, remove_numbering: bool = Fal
 
     for _ in range(suffix_removal_count):
         text = regex_match(r"^(.*)\s*\(.+?\).?$", text)
-
-    if is_soup and all(word not in text.lower() for word in soup_word_blacklist):
-        text = f"Polévka {text[0].lower()}{text[1:]}"
 
     return text
 

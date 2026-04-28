@@ -25,17 +25,10 @@ class LunchMenuService:
     def __init__(self, config: Config):
         cache_url = config.get("CACHE_URL", "memory://")
         expiration = config.get("CACHE_EXPIRATION", "600")
-        user_agent = config.get("CRAWLER_USER_AGENT", None)
         establishments = config.get("ESTABLISHMENTS", list(self.establishments.keys()))
-        
         self.highlighted_words = config.get("HIGHLIGHTED_WORDS", [])
 
-        headers = {}
-
-        if user_agent is not None:
-            headers["User-Agent"] = user_agent
-
-        self.client = AsyncClient(http2 = True, headers = headers)
+        self.client = AsyncClient(http2 = True)
         self.cache = Cache.from_url(cache_url)
 
         self.instances = OrderedDict()

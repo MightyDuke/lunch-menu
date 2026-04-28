@@ -15,11 +15,7 @@ class DelphiEstablishment(WebScraperEstablishment):
             for item in element.find_all("li"):
                 subitems = item.find_all("span")
 
-                if not subitems:
-                    name = clean_name(item.text, is_soup = True)
-                    menu.add_item(date, name)
-                else:
-                    name = clean_name(subitems[0].text)
-                    price = parse_price(subitems[2].text)
+                name = clean_name(subitems[0].text)
+                price = parse_price(subitems[2].text)
 
-                    menu.add_item(date, name, price)
+                menu.add_item(date, name, price)

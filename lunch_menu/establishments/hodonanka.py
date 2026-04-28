@@ -15,7 +15,7 @@ class HodonankaEstablishment(WebScraperEstablishment):
                 continue
 
             for item in element.find_all(class_ = "photomenu"):
-                name = clean_name(item.find(class_ = "food").text, is_soup = "soup" in item.attrs["class"], suffix_removal_count = 1)
+                name = clean_name(item.find(class_ = "food").text, suffix_removal_count = 1)
                 price = parse_price(item.find(class_ = "prize").text)
 
                 menu.add_item(date, name, price)
