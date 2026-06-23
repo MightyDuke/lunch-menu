@@ -35,6 +35,10 @@ window.getLocalizedLongFormatDate = date => {
     return parsedDate.toLocaleDateString(window.locale, { year: "numeric", month: "long", day: "numeric" });
 }
 
+window.isPwa = () => {
+    return window?.matchMedia("(display-mode: standalone)").matches ?? false;
+}
+
 document.addEventListener("alpine:init", () => {
     Alpine.data("app", () => ({
         selectedDate: null,
