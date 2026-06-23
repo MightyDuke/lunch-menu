@@ -70,7 +70,7 @@ class WebScraperEstablishment(Establishment):
                     logger.info(f"{self.key}: fetch {self.fetch_url}")
                     response = await self.client.get(self.fetch_url)
 
-                    site = BeautifulSoup(response.text, features = "html.parser")
+                    site = BeautifulSoup(response.text, features = "lxml")
                     menu = Menu()
 
                     self.process_site(site, menu)
