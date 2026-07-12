@@ -26,11 +26,12 @@ class LunchMenuService:
         cache_url = config.get("CACHE_URL", "memory://")
         expiration = config.get("CACHE_EXPIRATION", "600")
         establishments = config.get("ESTABLISHMENTS", list(self.establishments.keys()))
+        timeout = config.get("TIMEOUT", 5)
+
         self.highlighted_words = config.get("HIGHLIGHTED_WORDS", [])
 
-        self.client = AsyncClient(http2 = True)
+        self.client = AsyncClient(http2 = True, timeout = timeout)
         self.cache = Cache.from_url(cache_url)
-
         self.instances = OrderedDict()
 
         for establishment in establishments:
