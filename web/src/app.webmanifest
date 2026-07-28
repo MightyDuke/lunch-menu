@@ -1,0 +1,32 @@
+{
+    "name": "Kam na oběd?",
+    "short_name": "Oběd",
+    "start_url": "/",
+    "background_color": "#14161a",
+    "theme_color": "#14161a",
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "icon_144.png",
+            "type": "image/png",
+            "sizes": "144x144"
+        },
+        {
+            "src": "icon_512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        },
+        {
+            "src": "icon_maskable_144.png",
+            "type": "image/png",
+            "sizes": "144x144",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icon_maskable_512.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "maskable"
+        }
+    ]
+}

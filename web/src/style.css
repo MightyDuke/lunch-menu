@@ -1,0 +1,35 @@
+@import url("/node_modules/bulma/css/bulma.css");
+@import url("/node_modules/@fontsource-variable/inter/index.css");
+
+:root {
+    --bulma-body-family: "Inter Variable", sans-serif;
+    --bulma-body-size: 14px;
+}
+
+[x-cloak] { 
+    display: none !important; 
+}
+
+.hero {
+    background-color: var(--bulma-scheme-main-bis);
+}
+
+.table {
+    --bulma-table-cell-border-width: 0;
+}
+
+.has-text-strong {
+    color: var(--bulma-text-strong) !important;
+}
+
+.footer {
+    --bulma-footer-padding: 2.5rem;
+}
+
+.has-min-height-screen {
+    min-height: 80vh;
+}
+
+.is-rounded {
+    border-radius: var(--bulma-radius);
+}
