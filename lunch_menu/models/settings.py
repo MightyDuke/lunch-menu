@@ -4,10 +4,11 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     establishments: list[str] = []
     establishments_module: str = "lunch_menu.establishments"
-    cache_url: str = "memory://"
+    highlighted_words: list[str] = []
+    redis_url: str = "redis://localhost"
     cache_expiration: int = 600
     timeout: int = 5
-    highlighted_words: list[str] = []
+    user_agent: str | None = None
 
 @cache
 def get_settings():

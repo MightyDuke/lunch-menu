@@ -1,34 +1,8 @@
-from typing import Literal
-from logging import getLogger
+from typing import Callable, Literal
 from datetime import date
+from lunch_menu.models.menu import MenuForEstablishmentModel
 
-class Menu:
-    def __init__(self):
-        self.menu = {}
-    
-    def add_item(self, when: date | Literal["week"], name: str, price: int = None):
-        if when not in self.menu:
-            self.menu[when] = []
-
-        self.menu[when].append({
-            "name": name,
-            "price": price
-        })
-    
-    def serialize(self):
-        result = {}
-
-        for when, items in self.menu.items():
-            if isinstance(when, date):
-                when = when.isoformat()
-            elif when is None or when != "week":
-                when = "week"
-            else:
-                when = str(when)
-
-            result[when] = items
-
-        return result
+AddMenuItemCallback = Callable[[date | Literal["week"] | str, str, int], None]
 
 class Provider:
     name: str = None
@@ -37,7 +11,34 @@ class Provider:
 
     def __init__(self, *, key: str, **kwargs):
         self.key = key
-        self.logger = getLogger(f"establishments.{self.key}")
 
-    async def get_menu(self) -> Menu:
+    async def get_menu(self) -> MenuForEstablishmentModel:
         raise NotImplementedError()
+
+class MenuProvider(Provider):
+    link_only: bool = False
+
+    def __init__(self, *, highlighted_words: list[str], **kwargs):
+        super().__init__(**kwargs)
+
+        self.highlighted_words = highlighted_words
+
+    def create_menu(self) -> tuple[dict, AddMenuItemCallback]:
+        menu = {}
+
+        def add_menu_item_callback(when: date | Literal["week"] | str, name: str, price: int = None):
+            if isinstance(when, date):
+                when = when.isoformat()
+            elif when is None or when != "week":
+                when = "week"
+
+            if when not in menu:
+                menu[when] = []
+
+            menu[when].append({
+                "name": name,
+                "price": price,
+                "highlight": any(word.lower() in name.lower() for word in self.highlighted_words)
+            })
+
+        return (menu, add_menu_item_callback)

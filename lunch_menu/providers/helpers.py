@@ -13,13 +13,13 @@ def clean_name(text: str, *, remove_numbering: bool = False, prefix_removal_coun
     text = text.strip()
 
     if remove_numbering:
-        text = regex_match(r"^\d+\.\s*(.*)$", text)
+        text = regex_match(r"^\d+\.\s*(.*)$", text).strip()
 
     for _ in range(prefix_removal_count):
-        text = regex_match(r"^\(.+?\)\s*(.*)$", text)
+        text = regex_match(r"^\(.+?\)\s*(.*)$", text).strip()
 
     for _ in range(suffix_removal_count):
-        text = regex_match(r"^(.*)\s*\(.+?\).?$", text)
+        text = regex_match(r"^(.*)\s*\(.+?\).?$", text).strip()
 
     return text
 

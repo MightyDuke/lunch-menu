@@ -1,14 +1,14 @@
 from bs4 import BeautifulSoup
-from lunch_menu.providers.base import Menu
+from lunch_menu.providers.base import AddMenuItemCallback
 from lunch_menu.providers.web_scraper import WebScraperProvider
-from lunch_menu.helpers import clean_name, parse_date, parse_price
+from lunch_menu.providers.helpers import clean_name, parse_date, parse_price
 
 class PastaFidliEstablishment(WebScraperProvider):
     name = "Pasta & Fidli"
     homepage = "https://www.pastaafidli.cz"
     fetch_url = "https://www.pastaafidli.cz/cz/denni-menu/"
 
-    def process_site(self, site: BeautifulSoup, menu: Menu):
+    def process_site(self, site: BeautifulSoup, add_item: AddMenuItemCallback):
         for element in site.body.find_all(class_ = "day"):
             date = parse_date(element.find("td").text)
 
@@ -27,4 +27,4 @@ class PastaFidliEstablishment(WebScraperProvider):
                 name = clean_name(sibling.find("td").text, suffix_removal_count = 2)
                 price = parse_price(sibling.find(class_ = "price").text)
 
-                menu.add_item(date, name, price)
+                add_item(date, name, price)

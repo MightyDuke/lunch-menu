@@ -1,44 +1,42 @@
-from aiocache import Cache
-from aiocache.lock import RedLock
-from httpx import AsyncClient
 from bs4 import BeautifulSoup
-from .base import Provider, Menu
+from lunch_menu.services.http_client import HttpClientService
+from lunch_menu.services.redis_client import RedisClientService
+from lunch_menu.providers.base import AddMenuItemCallback, MenuProvider
 
-class WebScraperProvider(Provider):
+class WebScraperProvider(MenuProvider):
     fetch_url: str
-    link_only: bool = False
 
-    def __init__(self, *, client: AsyncClient, cache: Cache, expiration: int, **kwargs):
+    def __init__(self, *, http_client: HttpClientService, redis_client: RedisClientService, expiration: int, **kwargs):
         super().__init__(**kwargs)
 
-        self.client = client
-        self.cache = cache
+        self.http_client = http_client
+        self.redis_client = redis_client
         self.expiration = expiration
 
     @property
+    def url(self):
+        return self.fetch_url
+
+    @property
     def cache_key(self):
-        return f"lunch_menu:establishment:{self.key}"
+        return f"establishment:{self.key}"
 
-    async def get_menu(self) -> Menu:
-        result = await self.cache.get(self.cache_key)
+    async def get_menu(self) -> dict:
+        menu = await self.redis_client.get_s(self.cache_key)
 
-        if result is None:
-            async with RedLock(self.cache, self.cache_key, lease = 3.0):
-                result = await self.cache.get(self.cache_key)
+        if menu is None:
+            async with self.redis_client.lock(self.cache_key):
+                menu = await self.redis_client.get_s(self.cache_key)
 
-                if result is None:
-                    self.logger.info(f"{self.key}: fetch {self.fetch_url}")
-                    response = await self.client.get(self.fetch_url)
+                if menu is None:
+                    site = await self.http_client.fetch(self.url)
 
-                    site = BeautifulSoup(response.text, features = "lxml")
-                    menu = Menu()
+                    menu, add_menu_item_callback = self.create_menu()
+                    self.process_site(site, add_menu_item_callback)
 
-                    self.process_site(site, menu)
-                    result = menu.serialize()
+                    await self.redis_client.set_s(self.cache_key, menu, expiration = self.expiration)
 
-                    await self.cache.set(self.cache_key, result, ttl = self.expiration)
+        return menu
 
-        return result
-
-    def process_site(self, site: BeautifulSoup, menu: Menu):
+    def process_site(self, site: BeautifulSoup, menu: AddMenuItemCallback):
         raise NotImplementedError()

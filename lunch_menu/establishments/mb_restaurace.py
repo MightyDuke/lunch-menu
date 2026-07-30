@@ -1,14 +1,14 @@
 from bs4 import BeautifulSoup
-from lunch_menu.providers.base import Menu
+from lunch_menu.providers.base import AddMenuItemCallback
 from lunch_menu.providers.web_scraper import WebScraperProvider
-from lunch_menu.helpers import clean_name, parse_date, parse_price
+from lunch_menu.providers.helpers import clean_name, parse_date, parse_price
 
 class MBRestauraceEstablishment(WebScraperProvider):
     name = "MB Restaurace"
     homepage = "https://mbrestaurace.cz"
     fetch_url = "https://mbrestaurace.cz/restaurace"
 
-    def process_site(self, site: BeautifulSoup, menu: Menu):
+    def process_site(self, site: BeautifulSoup, add_item: AddMenuItemCallback):
         menu_element = site.body.find(id = "dennimenu")
         date_element = menu_element.select_one(":scope > div > div:nth-child(3)")
 
@@ -25,4 +25,4 @@ class MBRestauraceEstablishment(WebScraperProvider):
             if name == "": 
                 continue
 
-            menu.add_item(date, name, price)
+            add_item(date, name, price)
