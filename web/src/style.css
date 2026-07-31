@@ -33,3 +33,8 @@
 .is-rounded {
     border-radius: var(--bulma-radius);
 }
+
+.is-min-width-button {
+    min-width: 80px;
+    justify-content: center;
+}

@@ -1,6 +1,5 @@
 from typing import Callable, Literal
 from datetime import date
-from lunch_menu.models.menu import MenuForEstablishmentModel
 
 AddMenuItemCallback = Callable[[date | Literal["week"] | str, str, int], None]
 
@@ -12,7 +11,7 @@ class Provider:
     def __init__(self, *, key: str, **kwargs):
         self.key = key
 
-    async def get_menu(self) -> MenuForEstablishmentModel:
+    async def get_menu(self) -> dict:
         raise NotImplementedError()
 
 class MenuProvider(Provider):

@@ -1,12 +1,12 @@
 from pydantic import BaseModel, RootModel
 
-class EstablishmentEntryModel(BaseModel):
+class EstablishmentEntryResponse(BaseModel):
     name: str
     homepage: str
     linkOnly: bool
 
-class EstablishmentEntriesModel(RootModel):
-    root: dict[str, EstablishmentEntryModel]
+class EstablishmentEntriesResponse(RootModel):
+    root: dict[str, EstablishmentEntryResponse]
     
     model_config = {
         "json_schema_extra": {

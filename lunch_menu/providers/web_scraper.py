@@ -22,11 +22,11 @@ class WebScraperProvider(MenuProvider):
         return f"establishment:{self.key}"
 
     async def get_menu(self) -> dict:
-        menu = await self.redis_client.get_s(self.cache_key)
+        menu = await self.redis_client.get(self.cache_key)
 
         if menu is None:
             async with self.redis_client.lock(self.cache_key):
-                menu = await self.redis_client.get_s(self.cache_key)
+                menu = await self.redis_client.get(self.cache_key)
 
                 if menu is None:
                     site = await self.http_client.fetch(self.url)
@@ -34,7 +34,7 @@ class WebScraperProvider(MenuProvider):
                     menu, add_menu_item_callback = self.create_menu()
                     self.process_site(site, add_menu_item_callback)
 
-                    await self.redis_client.set_s(self.cache_key, menu, expiration = self.expiration)
+                    await self.redis_client.set(self.cache_key, menu, expiration = self.expiration)
 
         return menu
 

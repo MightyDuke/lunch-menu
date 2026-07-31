@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     highlighted_words: list[str] = []
     redis_url: str = "redis://localhost"
     cache_expiration: int = 600
+    session_expiration: int = 604800
     timeout: int = 5
     user_agent: str | None = None
 

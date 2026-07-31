@@ -1,15 +1,15 @@
 from pydantic import BaseModel, RootModel
 
-class MenuItemModel(BaseModel):
+class MenuItemResponse(BaseModel):
     name: str
     price: int | None
     highlight: bool | None
 
-class MenuDayModel(RootModel):
-    root: list[MenuItemModel]
+class MenuDayResponse(RootModel):
+    root: list[MenuItemResponse]
 
-class MenuForEstablishmentModel(RootModel):
-    root: dict[str, MenuDayModel]
+class MenuForEstablishmentResponse(RootModel):
+    root: dict[str, MenuDayResponse]
 
     model_config = {
         "json_schema_extra": {
@@ -44,7 +44,7 @@ class MenuForEstablishmentModel(RootModel):
         }
     }
 
-class HighlightedWordsModel(RootModel):
+class HighlightedWordsResponse(RootModel):
     root: list[str]
 
     model_config = {

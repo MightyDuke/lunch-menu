@@ -11,6 +11,7 @@
     <link rel="icon" href="/icon_144.png" sizes="144x144">
     <link rel="icon" href="/icon_512.png" sizes="512x512">
 
+    <script src="https://accounts.google.com/gsi/client"></script>
     <script src="/script.js" type="module"></script>
 </head>
 
@@ -28,17 +29,35 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="hero-foot">
-            <nav class="tabs is-centered is-boxed">
-                <ul>
+    <div class="navbar is-dark">
+        <div class="container px-3">
+            <div class="navbar-menu">
+                <div class="navbar-start">
                     <template x-for="day in getDaysInWeek()">
-                        <li :class="{ 'is-active': selectedDate === day }" @click="selectedDate = day">
-                            <a class="is-capitalized mx-1" x-text="getLocalizedWeekName(day)"></a>
-                        </li>
+                        <a :class="{ 'has-background-grey-dark': selectedDate === day }" @click="selectedDate = day" class="navbar-item is-min-width-button has-text-weight-bold is-capitalized" x-text="getLocalizedWeekName(day)"></a>
                     </template>
-                </ul>
-            </nav>
+                </div>
+
+                <div class="navbar-end">
+                    <div class="navbar-item" x-show="!user">
+                        <div class="is-flex is-justify-content-center">
+                            <div id="google-login"></div>
+                        </div>
+                    </div>
+
+                    <template x-if="user">
+                        <div class="navbar-item is-flex py-0">
+                            <figure class="image">
+                                <img class="is-rounded" :src="user.picture">
+                            </figure>
+                            <div class="has-text-weight-bold" x-text="user.name"></div>
+                            <button class="button" @click="logout()">Odhlásit se</button>
+                        </div>
+                    </template>
+                </div>
+            </div>
         </div>
     </div>
 

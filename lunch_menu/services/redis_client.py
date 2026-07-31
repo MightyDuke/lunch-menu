@@ -1,48 +1,59 @@
 import json
-from typing import Type, TypeVar
+from contextlib import asynccontextmanager
+from typing import Any
 from fastapi import Request
 from redis.asyncio import ConnectionPool, Redis
-from pydantic import BaseModel
-
-T = TypeVar("PydanticModel", bound = BaseModel)
 
 class RedisClientService:
-    prefix = "lunch_menu"
-
     @staticmethod
     def create_connection_pool(url: str):
         return ConnectionPool.from_url(url)
 
-    @classmethod
-    def prefixed_key(cls, key: str):
-        return f"{cls.prefix}:{key}"
+    def __init__(self, request: Request, *, client = None):
+        self.request = request
+        self.client = Redis(connection_pool = request.app.state.redis_pool) if client is None else client
 
-    def __init__(self, request: Request):
-        self.client = Redis(connection_pool = request.app.state.redis_pool, decode_responses = True)
+    async def get(self, key: str, *, expiration: int = None) -> Any:
+        if expiration is None:
+            value = await self.client.get(key)
+        else:
+            value = await self.client.getex(key, ex = expiration)
 
-    async def set(self, key: str, value: BaseModel, *, expiration: int = None) -> None:
-        await self.client.set(self.prefixed_key(key), value.model_dump_json(), ex = expiration)
+        if value is not None:
+            value = json.loads(value)
 
-    async def set_s(self, key: str, value: str, *, expiration: int = None) -> None:
-        await self.client.set(self.prefixed_key(key), json.dumps(value), ex = expiration)
+        return value
+
+    async def set(self, key: str, value: Any, *, expiration: int = None):
+        value = json.dumps(value)
+
+        await self.client.set(key, value, ex = expiration)
     
-    async def get(self, cls: Type[T], key: str, *, expiration: int = None) -> T | None:
-        if expiration is None:
-            value = await self.client.get(self.prefixed_key(key))
-        else:
-            value = await self.client.getex(self.prefixed_key(key), ex = expiration)
+    async def hget(self, key: str, field: str) -> Any | None:
+        value = await self.client.hget(key, field)
 
         if value is not None:
-            return cls.model_validate_json(value)
+            value = json.loads(value)
 
-    async def get_s(self, key: str, *, expiration: int = None) -> str | None:
+        return value
+
+    async def hset(self, key: str, field: str, value: Any, *, expiration: int = None):
+        value = json.dumps(value)
+
         if expiration is None:
-            value = await self.client.get(self.prefixed_key(key))
+            await self.client.hset(key, field, value)
         else:
-            value = await self.client.getex(self.prefixed_key(key), ex = expiration)
+            await self.client.hsetex(key, field, value, ex = expiration)
 
-        if value is not None:
-            return json.loads(value)
+    async def delete(self, key: str) -> int:
+        return await self.client.delete(key)
 
     def lock(self, key: str):
         return self.client.lock(f"{key}:lock")
+
+    @asynccontextmanager
+    async def pipeline(self):
+        async with self.client.pipeline() as pipeline:
+            instance = RedisClientService(self.request, client = pipeline)
+            yield instance
+            await pipeline.execute()
