@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     session_expiration: int = 604800
     timeout: int = 5
     user_agent: str | None = None
+    oauth2_clients: dict[str, str] | None = None
 
 @cache
 def get_settings():

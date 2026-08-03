@@ -20,14 +20,12 @@ async def lifespan(app: FastAPI):
 
     redis_pool = RedisClientService.create_connection_pool(settings.redis_url)
 
-    issuers = await SessionService.discover_issuers([
-        "https://accounts.google.com"
-    ])
+    issuers = await SessionService.discover_issuers(settings.oauth2_clients.keys())
     logger.info(f"Discovered {len(issuers.keys())} OAuth2 issuers: {str.join(", ", (key for key in issuers.keys()))}")
 
     app.state.establishments = establishments
     app.state.redis_pool = redis_pool
-    app.state.issuers = issuers
+    app.state.issuers = issuers.values()
 
     yield 
 

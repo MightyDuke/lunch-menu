@@ -23,7 +23,7 @@ class VotingService:
         return result
 
     async def vote(self, id: str, path: str):
-        await self.redis_client.hset("votes", id, path, expiration = 2_628_000)
+        await self.redis_client.hset("votes", id, path, expiration = 604_800)
         votes = await self._get_votes()
 
         await self.redis_client.publish("votes", votes)

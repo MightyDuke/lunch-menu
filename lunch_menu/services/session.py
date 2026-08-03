@@ -43,15 +43,15 @@ class SessionService:
     def __init__(self, request: Request, redis_client: Annotated[RedisClientService, Depends()], settings: Annotated[Settings, Depends(get_settings)]):
         self.issuers = request.app.state.issuers
         self.redis_client = redis_client
+
+        self.valid_audiences = settings.oauth2_clients.values()
         self.session_expiration = settings.session_expiration
 
     async def create_session(self, id_token: str) -> str:
         claims = verify_id_token(
             id_token, 
-            valid_issuers = self.issuers.values(),
-            valid_audiences = [
-                "463687060136-hhf1has9o5c9q9nafcf62ruvueb5bbkj.apps.googleusercontent.com"
-            ]
+            valid_issuers = self.issuers,
+            valid_audiences = self.valid_audiences
         )
         token = secrets.token_urlsafe(self.token_length)
 
@@ -64,7 +64,7 @@ class SessionService:
 
         async with self.redis_client.pipeline() as pipeline:
             await pipeline.set(f"session:{token}", id, expiration = self.session_expiration)
-            await pipeline.hset(f"users", id, user, expiration = 2_628_000)
+            await pipeline.hset("users", id, user, expiration = 2_628_000)
 
         return token
 
