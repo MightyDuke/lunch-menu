@@ -34,7 +34,7 @@ async def establishment(establishment: str, lunch_menu: Annotated[LunchMenuServi
     except NotImplementedError as error:
         raise HTTPException(400, str(error))
     except Exception as error:
-        logger.exception(f"{establishment} - get_menu")
+        # logger.exception(f"{establishment} - get_menu")
         raise HTTPException(500, "An error has occured while obtaining the menu")
 
     return MenuForEstablishmentResponse(menu)

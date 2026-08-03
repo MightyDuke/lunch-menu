@@ -68,8 +68,11 @@ class SessionService:
 
         return token
 
+    async def get_session(self, token: str) -> str | None:
+        return await self.redis_client.get(f"session:{token}", expiration = self.session_expiration)
+
     async def get_user(self, token: str) -> User | None:
-        id = await self.redis_client.get(f"session:{token}", expiration = self.session_expiration)
+        id = await self.get_session(token)
 
         if id is None:
             return

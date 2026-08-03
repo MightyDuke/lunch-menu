@@ -45,11 +45,33 @@ class RedisClientService:
         else:
             await self.client.hsetex(key, field, value, ex = expiration)
 
+    async def hgetall(self, key: str) -> Any:
+        value = await self.client.hgetall(key)
+        result = {}
+
+        if value is not None:
+            for key in value.keys():
+                result[key.decode()] = json.loads(value[key])
+
+        return result
+
     async def delete(self, key: str) -> int:
         return await self.client.delete(key)
 
+    async def publish(self, channel: str, message: Any):
+        message = json.dumps(message)
+
+        await self.client.publish(channel, message)
+
     def lock(self, key: str):
         return self.client.lock(f"{key}:lock")
+
+    async def subscribe(self, channel: str):
+        async with self.client.pubsub(ignore_subscribe_messages = True) as pubsub:
+            await pubsub.subscribe(channel)
+
+            async for message in pubsub.listen():
+                yield json.loads(message["data"])
 
     @asynccontextmanager
     async def pipeline(self):

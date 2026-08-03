@@ -34,7 +34,7 @@
     <div class="navbar is-dark">
         <div class="container px-3 is-flex-direction-row-reverse">
             <div class="navbar-brand">
-                <div class="navbar-item" x-if="user">
+                <div class="navbar-item" x-show="!user">
                     <div class="is-flex is-justify-content-center">
                         <div id="google-login"></div>
                     </div>
@@ -105,12 +105,33 @@
 
                                         <template x-if="menu !== null && menu[selectedDate]">
                                             <div>
-                                                <template x-for="item in menu[selectedDate]">
-                                                    <div class="is-flex is-mobile is-rounded my-1 px-2 py-1" :class="{'has-background-primary-soft': item.highlight}">
-                                                        <div class="is-flex-grow-5 has-text-strong pr-4" x-text="item.name"></div>
-                                                        
-                                                        <template x-if="item.price">
-                                                            <div x-text="`${item.price}&nbsp;Kč`"></div>
+                                                <template x-for="(item, index) in menu[selectedDate]">
+                                                    <div class="is-clickable" x-data="{
+                                                        'path': () => `${selectedDate}/${name}/${index}`
+                                                    }">
+                                                        <div 
+                                                            class="is-flex is-mobile is-rounded my-1 px-2 py-1" 
+                                                            :class="{'has-background-primary-soft': item.highlight}"
+                                                            @click="vote(path())"
+                                                        >
+                                                            <div class="is-flex-grow-5 has-text-strong pr-4" x-text="item.name"></div>
+                                                            
+                                                            <template x-if="item.price">
+                                                                <div x-text="`${item.price}&nbsp;Kč`"></div>
+                                                            </template>
+                                                        </div>
+
+                                                        <template x-if="path() in votes">
+                                                            <div class="px-2 pb-2">
+                                                                <template x-for="user in votes[path()]">
+                                                                    <span class="tag">
+                                                                        <figure class="image is-24x24">
+                                                                            <img class="is-rounded" :src="user.picture">
+                                                                        </figure>
+                                                                        <span class="ml-1" x-text="user.name"></span>
+                                                                    </span>
+                                                                </template>
+                                                            </div>
                                                         </template>
                                                     </div>
                                                 </template>
@@ -121,12 +142,34 @@
                                                             Týdenní menu
                                                         </div>
                                                         
-                                                        <template x-for="item in menu.week">
-                                                            <div class="is-flex is-mobile is-rounded my-1 px-2 py-1" :class="{'has-background-primary-soft': item.highlight}">
-                                                                <div class="is-flex-grow-5 has-text-strong pr-4" x-text="item.name"></div>
-                                                                
-                                                                <template x-if="item.price">
-                                                                    <div x-text="`${item.price}&nbsp;Kč`"></div>
+                                                        <template x-for="(item, index) in menu.week">
+                                                            <div class="is-clickable" x-data="{
+                                                                    'path': () => `${selectedDate}/${name}/week/${index}`
+                                                                }"
+                                                            >
+                                                                <div 
+                                                                    class="is-flex is-mobile is-rounded my-1 px-2 py-1" 
+                                                                    :class="{'has-background-primary-soft': item.highlight}"
+                                                                    @click="vote(path())"
+                                                                >
+                                                                    <div class="is-flex-grow-5 has-text-strong pr-4" x-text="item.name"></div>
+                                                                    
+                                                                    <template x-if="item.price">
+                                                                        <div x-text="`${item.price}&nbsp;Kč`"></div>
+                                                                    </template>
+                                                                </div>
+
+                                                                <template x-if="path() in votes">
+                                                                    <div class="px-2 pb-2">
+                                                                        <template x-for="user in votes[path()]">
+                                                                            <span class="tag">
+                                                                                <figure class="image is-24x24">
+                                                                                    <img class="is-rounded" :src="user.picture">
+                                                                                </figure>
+                                                                                <span class="ml-1" x-text="user.name"></span>
+                                                                            </span>
+                                                                        </template>
+                                                                    </div>
                                                                 </template>
                                                             </div>
                                                         </template>

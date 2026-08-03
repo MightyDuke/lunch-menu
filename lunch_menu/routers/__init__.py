@@ -7,6 +7,7 @@ from lunch_menu.services.redis_client import RedisClientService
 from lunch_menu.services.session import SessionService
 from .menu import router as menu_router
 from .session import router as session_router
+from .voting import router as voting_router
 
 logger = getLogger("uvicorn.error")
 
@@ -32,10 +33,8 @@ async def lifespan(app: FastAPI):
 
     await app.state.redis_pool.aclose()
 
-
-router = APIRouter(
-    lifespan = lifespan
-)
+router = APIRouter(lifespan = lifespan)
 
 router.include_router(menu_router)
 router.include_router(session_router)
+router.include_router(voting_router)

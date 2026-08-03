@@ -47,6 +47,7 @@ document.addEventListener("alpine:init", () => {
         token: Alpine.$persist(null),
         user: null,
         menuOpen: false,
+        votes: {},
 
         async init() {
             google.accounts.id.initialize({
@@ -71,6 +72,12 @@ document.addEventListener("alpine:init", () => {
             const response = await fetch("/api/establishments");
             this.establishments = await response.json();
 
+            this.voteStream = new EventSource("/api/vote/stream");
+            this.voteStream.onmessage = (event) => {
+                const votes = JSON.parse(event.data);
+                this.votes = votes;
+            };
+
             if (this.token != null) {
                 await this.fetchUser();
             }
@@ -81,8 +88,6 @@ document.addEventListener("alpine:init", () => {
         },
 
         async fetchSession(data) {
-            console.log(data);
-
             let response = await fetch("/api/user", {
                 method: "POST",
                 headers: {
@@ -121,6 +126,23 @@ document.addEventListener("alpine:init", () => {
 
             this.token = null;
             this.user = null;
+        },
+
+        async vote(path) {
+            if (this.token == null) {
+                return;
+            }
+
+            let response = await fetch("/api/vote", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${this.token}`
+                },
+                body: JSON.stringify({
+                    "path": path
+                })
+            });
         }
     }));
 
