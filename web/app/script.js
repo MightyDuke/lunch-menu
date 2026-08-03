@@ -51,7 +51,7 @@ document.addEventListener("alpine:init", () => {
 
         async init() {
             google.accounts.id.initialize({
-                client_id: "463687060136-hhf1has9o5c9q9nafcf62ruvueb5bbkj.apps.googleusercontent.com",
+                client_id: "463687060136-g6v6qjf7r1jh49lfpeogq3qm5rj7islk.apps.googleusercontent.com",
                 callback: async response => {
                     await this.fetchSession(response);
                     await this.fetchUser();

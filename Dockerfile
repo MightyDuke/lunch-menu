@@ -15,4 +15,4 @@ RUN poetry install
 RUN rm -rf web/app/
 COPY --from=frontend /app/dist/ web/app/
 
-ENTRYPOINT [ "poetry", "run", "fastapi", "run", "--workers", "2" ]
+ENTRYPOINT [ "poetry", "run", "fastapi", "run" ]
