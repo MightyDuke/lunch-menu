@@ -27,6 +27,7 @@ class User(TypedDict):
     picture: str | None
 
 class SessionService:
+    token_length = 32
     transport = HttpxTransport()
 
     @classmethod
@@ -52,7 +53,7 @@ class SessionService:
                 "463687060136-hhf1has9o5c9q9nafcf62ruvueb5bbkj.apps.googleusercontent.com"
             ]
         )
-        token = secrets.token_urlsafe(20)
+        token = secrets.token_urlsafe(self.token_length)
 
         id = f"{claims["sub"]}@{claims["iss"]}"
 

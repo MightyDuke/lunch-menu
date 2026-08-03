@@ -46,6 +46,7 @@ document.addEventListener("alpine:init", () => {
         establishments: [],
         token: Alpine.$persist(null),
         user: null,
+        menuOpen: false,
 
         async init() {
             google.accounts.id.initialize({
@@ -75,6 +76,10 @@ document.addEventListener("alpine:init", () => {
             }
         },
 
+        toggleMenu() {
+            this.menuOpen = !this.menuOpen;
+        },
+
         async fetchSession(data) {
             console.log(data);
 
@@ -98,7 +103,7 @@ document.addEventListener("alpine:init", () => {
             let response = await fetch("/api/user", {
                 method: "GET",
                 headers: {
-                    "Auth": this.token
+                    "Authorization": `Bearer ${this.token}`
                 }
             });
 
@@ -110,7 +115,7 @@ document.addEventListener("alpine:init", () => {
             let response = await fetch("/api/user", {
                 method: "DELETE",
                 headers: {
-                    "Auth": this.token
+                    "Authorization": `Bearer ${this.token}`
                 }
             });
 

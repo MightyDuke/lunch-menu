@@ -32,29 +32,36 @@
     </div>
 
     <div class="navbar is-dark">
-        <div class="container px-3">
-            <div class="navbar-menu">
-                <div class="navbar-start">
-                    <template x-for="day in getDaysInWeek()">
-                        <a :class="{ 'has-background-grey-dark': selectedDate === day }" @click="selectedDate = day" class="navbar-item is-min-width-button has-text-weight-bold is-capitalized" x-text="getLocalizedWeekName(day)"></a>
-                    </template>
+        <div class="container px-3 is-flex-direction-row-reverse">
+            <div class="navbar-brand">
+                <div class="navbar-item" x-if="user">
+                    <div class="is-flex is-justify-content-center">
+                        <div id="google-login"></div>
+                    </div>
                 </div>
 
-                <div class="navbar-end">
-                    <div class="navbar-item" x-show="!user">
-                        <div class="is-flex is-justify-content-center">
-                            <div id="google-login"></div>
-                        </div>
+                <template x-if="user">
+                    <div class="navbar-item is-flex py-0">
+                        <figure class="image">
+                            <img class="is-rounded" :src="user.picture">
+                        </figure>
+                        <div class="has-text-weight-bold" x-text="user.name"></div>
+                        <button class="button" @click="logout()">Odhlásit se</button>
                     </div>
+                </template>
 
-                    <template x-if="user">
-                        <div class="navbar-item is-flex py-0">
-                            <figure class="image">
-                                <img class="is-rounded" :src="user.picture">
-                            </figure>
-                            <div class="has-text-weight-bold" x-text="user.name"></div>
-                            <button class="button" @click="logout()">Odhlásit se</button>
-                        </div>
+                <a class="navbar-burger" @click="toggleMenu()" :class="{ 'is-active': menuOpen }">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </a>
+            </div>
+
+            <div class="navbar-menu" :class="{ 'is-active': menuOpen }">
+                <div class="navbar-start">
+                    <template x-for="day in getDaysInWeek()">
+                        <a :class="{ 'has-background-grey-dark': selectedDate === day, 'has-text-weight-bold': selectedDate === day }" @click="selectedDate = day" class="navbar-item is-min-width-button is-capitalized" x-text="getLocalizedWeekName(day)"></a>
                     </template>
                 </div>
             </div>
