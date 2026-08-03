@@ -1,10 +1,10 @@
-FROM node:24.3 AS frontend
+FROM node:24.3-alpine AS frontend
 WORKDIR /app
 
 COPY web/app/ .
 RUN npm install && npx parcel build "index.html"
 
-FROM python:3.14
+FROM python:3.14-alpine
 WORKDIR /app
 EXPOSE 80
 
