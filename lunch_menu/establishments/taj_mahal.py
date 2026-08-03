@@ -1,5 +1,5 @@
-from lunch_menu.base import Establishment
+from lunch_menu.providers.base import Provider
 
-class TajMahalEstablishment(Establishment):
+class TajMahalEstablishment(Provider):
     name = "Taj Mahal"
     homepage = "https://www.facebook.com/TajMahalOstrava"

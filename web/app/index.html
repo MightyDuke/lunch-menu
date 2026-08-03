@@ -5,13 +5,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="manifest" href="/static/app.webmanifest">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="manifest" href="/app.webmanifest">
 
-    <link rel="icon" href="/static/icon_144.png" sizes="144x144">
-    <link rel="icon" href="/static/icon_512.png" sizes="512x512">
+    <link rel="icon" href="/icon_144.png" sizes="144x144">
+    <link rel="icon" href="/icon_512.png" sizes="512x512">
 
-    <script src="/static/script.js" type="module"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+    <script src="/script.js" type="module"></script>
 </head>
 
 <body class="is-clipped" x-data="app">
@@ -28,17 +29,42 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="hero-foot">
-            <nav class="tabs is-centered is-boxed">
-                <ul>
+    <div class="navbar is-dark">
+        <div class="container px-3 is-flex-direction-row-reverse">
+            <div class="navbar-brand">
+                <div class="navbar-item" x-show="!user">
+                    <div class="is-flex is-justify-content-center">
+                        <div id="google-login"></div>
+                    </div>
+                </div>
+
+                <template x-if="user">
+                    <div class="navbar-item is-flex py-0">
+                        <figure class="image">
+                            <img class="is-rounded" :src="user.picture">
+                        </figure>
+                        <div class="has-text-weight-bold" x-text="user.name"></div>
+                        <button class="button" @click="logout()">Odhlásit se</button>
+                    </div>
+                </template>
+
+                <a class="navbar-burger" @click="toggleMenu()" :class="{ 'is-active': menuOpen }">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </a>
+            </div>
+
+            <div class="navbar-menu" :class="{ 'is-active': menuOpen }">
+                <div class="navbar-start">
                     <template x-for="day in getDaysInWeek()">
-                        <li :class="{ 'is-active': selectedDate === day }" @click="selectedDate = day">
-                            <a class="is-capitalized mx-1" x-text="getLocalizedWeekName(day)"></a>
-                        </li>
+                        <a :class="{ 'has-background-grey-dark': selectedDate === day, 'has-text-weight-bold': selectedDate === day }" @click="selectedDate = day" class="navbar-item is-min-width-button is-capitalized" x-text="getLocalizedWeekName(day)"></a>
                     </template>
-                </ul>
-            </nav>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -79,12 +105,33 @@
 
                                         <template x-if="menu !== null && menu[selectedDate]">
                                             <div>
-                                                <template x-for="item in menu[selectedDate]">
-                                                    <div class="is-flex is-mobile is-rounded my-1 px-2 py-1" :class="{'has-background-primary-soft': item.highlight}">
-                                                        <div class="is-flex-grow-5 has-text-strong pr-4" x-text="item.name"></div>
-                                                        
-                                                        <template x-if="item.price">
-                                                            <div x-text="`${item.price}&nbsp;Kč`"></div>
+                                                <template x-for="(item, index) in menu[selectedDate]">
+                                                    <div class="is-clickable" x-data="{
+                                                        'path': () => `${selectedDate}/${name}/${index}`
+                                                    }">
+                                                        <div 
+                                                            class="is-flex is-mobile is-rounded my-1 px-2 py-1" 
+                                                            :class="{'has-background-primary-soft': item.highlight}"
+                                                            @click="vote(path())"
+                                                        >
+                                                            <div class="is-flex-grow-5 has-text-strong pr-4" x-text="item.name"></div>
+                                                            
+                                                            <template x-if="item.price">
+                                                                <div x-text="`${item.price}&nbsp;Kč`"></div>
+                                                            </template>
+                                                        </div>
+
+                                                        <template x-if="path() in votes">
+                                                            <div class="px-2 pb-2">
+                                                                <template x-for="user in votes[path()]">
+                                                                    <span class="tag">
+                                                                        <figure class="image is-24x24">
+                                                                            <img class="is-rounded" :src="user.picture">
+                                                                        </figure>
+                                                                        <span class="ml-1" x-text="user.name"></span>
+                                                                    </span>
+                                                                </template>
+                                                            </div>
                                                         </template>
                                                     </div>
                                                 </template>
@@ -95,12 +142,34 @@
                                                             Týdenní menu
                                                         </div>
                                                         
-                                                        <template x-for="item in menu.week">
-                                                            <div class="is-flex is-mobile is-rounded my-1 px-2 py-1" :class="{'has-background-primary-soft': item.highlight}">
-                                                                <div class="is-flex-grow-5 has-text-strong pr-4" x-text="item.name"></div>
-                                                                
-                                                                <template x-if="item.price">
-                                                                    <div x-text="`${item.price}&nbsp;Kč`"></div>
+                                                        <template x-for="(item, index) in menu.week">
+                                                            <div class="is-clickable" x-data="{
+                                                                    'path': () => `${selectedDate}/${name}/week/${index}`
+                                                                }"
+                                                            >
+                                                                <div 
+                                                                    class="is-flex is-mobile is-rounded my-1 px-2 py-1" 
+                                                                    :class="{'has-background-primary-soft': item.highlight}"
+                                                                    @click="vote(path())"
+                                                                >
+                                                                    <div class="is-flex-grow-5 has-text-strong pr-4" x-text="item.name"></div>
+                                                                    
+                                                                    <template x-if="item.price">
+                                                                        <div x-text="`${item.price}&nbsp;Kč`"></div>
+                                                                    </template>
+                                                                </div>
+
+                                                                <template x-if="path() in votes">
+                                                                    <div class="px-2 pb-2">
+                                                                        <template x-for="user in votes[path()]">
+                                                                            <span class="tag">
+                                                                                <figure class="image is-24x24">
+                                                                                    <img class="is-rounded" :src="user.picture">
+                                                                                </figure>
+                                                                                <span class="ml-1" x-text="user.name"></span>
+                                                                            </span>
+                                                                        </template>
+                                                                    </div>
                                                                 </template>
                                                             </div>
                                                         </template>

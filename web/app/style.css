@@ -1,5 +1,5 @@
-@import url("/static/node_modules/bulma/css/bulma.css");
-@import url("/static/node_modules/@fontsource-variable/inter/index.css");
+@import url("/node_modules/bulma/css/bulma.css");
+@import url("/node_modules/@fontsource-variable/inter/index.css");
 
 :root {
     --bulma-body-family: "Inter Variable", sans-serif;
@@ -32,4 +32,9 @@
 
 .is-rounded {
     border-radius: var(--bulma-radius);
+}
+
+.is-min-width-button {
+    min-width: 80px;
+    justify-content: center;
 }

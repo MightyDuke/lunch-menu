@@ -8,17 +8,11 @@ FROM python:3.14
 WORKDIR /app
 EXPOSE 80
 
-RUN pip install --no-cache-dir pipenv
+RUN pip install --no-cache-dir poetry
 COPY . .
-RUN pipenv install --system --deploy
+RUN poetry install
 
 RUN rm -rf web/app/
 COPY --from=frontend /app/dist/ web/app/
 
-ENTRYPOINT [ \
-    "sanic", "app", \
-    "--fast", \
-    "--no-access-logs", \
-    "--host", "0.0.0.0", \
-    "--port", "80" \
-]
+ENTRYPOINT [ "poetry", "run", "fastapi", "run", "--workers", "2" ]

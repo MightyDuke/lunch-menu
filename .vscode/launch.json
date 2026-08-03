@@ -2,23 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Lunch Menu",
+            "name": "Launch",
             "type": "debugpy",
             "request": "launch",
-            "module": "sanic",
+            "module": "fastapi",
             "args": [
-                "app",
-                "--dev",
-                "--host", "0.0.0.0",
-                "--port", "80"
+                "dev",
             ],
-            "env": {
-                "LUNCH_MENU_ESTABLISHMENTS": "[bo-asi, paleta, blesk, hodonanka, pasta-a-fidli, mb-restaurace, delphi, u-zlateho-jarouse, toni, pho-bo, taj-mahal]",
-                "LUNCH_MENU_HIGHLIGHTED_WORDS": "[pizza]",
-                "LUNCH_MENU_CACHE_URL": "memory://",
-                "LUNCH_MENU_EXPIRATION": "10",
-                "LUNCH_MENU_CRAWLER_USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
-            }
         }
     ]
 }
