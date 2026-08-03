@@ -42,7 +42,7 @@
 
                 <template x-if="user">
                     <div class="navbar-item is-flex py-0">
-                        <figure class="image">
+                        <figure class="image is-24x24">
                             <img class="is-rounded" :src="user.picture">
                         </figure>
                         <div class="has-text-weight-bold" x-text="user.name"></div>
@@ -122,10 +122,10 @@
                                                         </div>
 
                                                         <template x-if="path() in votes">
-                                                            <div class="px-2 pb-2">
+                                                            <div class="is-flex px-2 pb-2">
                                                                 <template x-for="user in votes[path()]">
-                                                                    <span class="tag">
-                                                                        <figure class="image is-24x24">
+                                                                    <span class="tag pl-0 mr-2">
+                                                                        <figure class="image is-32x32">
                                                                             <img class="is-rounded" :src="user.picture">
                                                                         </figure>
                                                                         <span class="ml-1" x-text="user.name"></span>
