@@ -1,9 +1,9 @@
 import secrets
 from typing import Annotated, TypedDict
-from fastapi import Depends, Request
+from fastapi import Depends, HTTPException, Request
 from federatedidentity import Issuer, verify_id_token
 from federatedidentity.transport import AsyncRequestBase, Response
-from federatedidentity.exceptions import TransportError
+from federatedidentity.exceptions import InvalidClaimsError, TransportError
 from httpx import AsyncClient, RequestError
 from lunch_menu.models.settings import Settings, get_settings
 from lunch_menu.services.redis_client import RedisClientService
@@ -27,7 +27,6 @@ class User(TypedDict):
     picture: str | None
 
 class SessionService:
-    token_length = 32
     transport = HttpxTransport()
 
     @classmethod
@@ -48,19 +47,18 @@ class SessionService:
         self.session_expiration = settings.session_expiration
 
     async def create_session(self, id_token: str) -> str:
-        claims = verify_id_token(
-            id_token, 
-            valid_issuers = self.issuers,
-            valid_audiences = self.valid_audiences
-        )
-        token = secrets.token_urlsafe(self.token_length)
+        try:
+            claims = verify_id_token(id_token, valid_issuers = self.issuers, valid_audiences = self.valid_audiences)
+        except InvalidClaimsError:
+            raise HTTPException(403, "Invalid id token")
 
         id = f"{claims["sub"]}@{claims["iss"]}"
-
         user = User(
-            name = claims["name"] if "name" in claims else "???" ,
+            name = claims["name"] if "name" in claims else "???",
             picture = claims["picture"] if "picture" in claims else None
         )
+
+        token = secrets.token_urlsafe(32)
 
         async with self.redis_client.pipeline() as pipeline:
             await pipeline.set(f"session:{token}", id, expiration = self.session_expiration)
@@ -69,7 +67,12 @@ class SessionService:
         return token
 
     async def get_session(self, token: str) -> str | None:
-        return await self.redis_client.get(f"session:{token}", expiration = self.session_expiration)
+        user = await self.redis_client.get(f"session:{token}", expiration = self.session_expiration)
+
+        if user is None:
+            raise HTTPException(403, "Invalid session token")
+
+        return user
 
     async def get_user(self, token: str) -> User | None:
         id = await self.get_session(token)

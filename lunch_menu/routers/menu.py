@@ -15,9 +15,10 @@ router = APIRouter(tags=["Menu"])
     name = "Get Establishments",
     description = "Return all available establishments."
 )
-async def establishments(lunch_menu: Annotated[LunchMenuService, Depends()]) -> EstablishmentEntriesResponse:
+async def establishments(
+    lunch_menu: Annotated[LunchMenuService, Depends()]
+) -> EstablishmentEntriesResponse:
     establishments = await lunch_menu.get_establishments()
-
     return EstablishmentEntriesResponse(establishments)
 
 @router.get(
@@ -26,7 +27,10 @@ async def establishments(lunch_menu: Annotated[LunchMenuService, Depends()]) -> 
     name = "Get Menu",
     description = "Get menu for the given establishment."
 )
-async def establishment(establishment: str, lunch_menu: Annotated[LunchMenuService, Depends()]) -> MenuForEstablishmentResponse:
+async def establishment(
+    establishment: str, 
+    lunch_menu: Annotated[LunchMenuService, Depends()]
+) -> MenuForEstablishmentResponse:
     try:
         menu = await lunch_menu.get_menu(establishment)
     except ValueError as error:
@@ -38,15 +42,3 @@ async def establishment(establishment: str, lunch_menu: Annotated[LunchMenuServi
         raise HTTPException(500, "An error has occured while obtaining the menu")
 
     return MenuForEstablishmentResponse(menu)
-
-@router.get(
-    "/highlighted-words",
-    dependencies = [Depends(add_private_cache_header)],
-    name = "Get Highlighted Words",
-    description = "Get words that highlight a menu item."
-)
-async def highlighted_words(lunch_menu: Annotated[LunchMenuService, Depends()]) -> HighlightedWordsResponse:
-    words = lunch_menu.highlighted_words
-
-    return HighlightedWordsResponse(words)
-

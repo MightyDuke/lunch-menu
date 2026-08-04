@@ -44,7 +44,7 @@ document.addEventListener("alpine:init", () => {
     Alpine.data("app", () => ({
         selectedDate: null,
         establishments: [],
-        token: Alpine.$persist(null),
+        session: Alpine.$persist(null).as("session"),
         user: null,
         menuOpen: false,
         votes: {},
@@ -63,7 +63,7 @@ document.addEventListener("alpine:init", () => {
                 { 
                     locale: "cs",
                     theme: "filled_black",
-                    size: "medium" 
+                    size: "medium"
                 }
             );
 
@@ -78,8 +78,13 @@ document.addEventListener("alpine:init", () => {
                 this.votes = votes;
             };
 
-            if (this.token != null) {
-                await this.fetchUser();
+            if (this.session != null) {
+                try {
+                    await this.fetchUser();
+                } catch {
+                    console.log("Failed to get user");
+                    this.user = null;
+                }
             }
         },
 
@@ -98,8 +103,12 @@ document.addEventListener("alpine:init", () => {
                 })
             });
 
+            if (response.status !== 200) {
+                throw new Error();
+            }
+
             response = await response.json();
-            this.token = response.token;
+            this.session = response.token;
 
             await this.fetchUser();
         },
@@ -108,9 +117,13 @@ document.addEventListener("alpine:init", () => {
             let response = await fetch("/api/user", {
                 method: "GET",
                 headers: {
-                    "Authorization": `Bearer ${this.token}`
+                    "Authorization": `Bearer ${this.session}`
                 }
             });
+
+            if (response.status !== 200) {
+                throw new Error();
+            }
 
             response = await response.json();
             this.user = response;
@@ -120,16 +133,16 @@ document.addEventListener("alpine:init", () => {
             let response = await fetch("/api/user", {
                 method: "DELETE",
                 headers: {
-                    "Authorization": `Bearer ${this.token}`
+                    "Authorization": `Bearer ${this.session}`
                 }
             });
 
-            this.token = null;
+            this.session = null;
             this.user = null;
         },
 
         async vote(path) {
-            if (this.token == null) {
+            if (this.session == null) {
                 return;
             }
 
@@ -137,7 +150,7 @@ document.addEventListener("alpine:init", () => {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${this.token}`
+                    "Authorization": `Bearer ${this.session}`
                 },
                 body: JSON.stringify({
                     "path": path
