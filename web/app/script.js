@@ -40,6 +40,20 @@ window.isPwa = () => {
     return window?.matchMedia("(display-mode: standalone)").matches ?? false;
 }
 
+window.chain = (...items) => {
+    let result = [];
+
+    for (let item of items) {
+        if (item !== undefined) {
+            result.push(...item);
+        }
+    }
+
+    return result;
+}
+
+window.identity = (value) => value;
+
 document.addEventListener("alpine:init", () => {
     Alpine.data("app", () => ({
         selectedDate: null,
@@ -54,7 +68,6 @@ document.addEventListener("alpine:init", () => {
                 client_id: "463687060136-g6v6qjf7r1jh49lfpeogq3qm5rj7islk.apps.googleusercontent.com",
                 callback: async response => {
                     await this.fetchSession(response);
-                    await this.fetchUser();
                 }
             });
 
@@ -73,10 +86,7 @@ document.addEventListener("alpine:init", () => {
             this.establishments = await response.json();
 
             this.voteStream = new EventSource("/api/vote/stream");
-            this.voteStream.onmessage = (event) => {
-                const votes = JSON.parse(event.data);
-                this.votes = votes;
-            };
+            this.voteStream.onmessage = (event) => this.votes = JSON.parse(event.data);
 
             if (this.session != null) {
                 try {
@@ -86,10 +96,6 @@ document.addEventListener("alpine:init", () => {
                     this.user = null;
                 }
             }
-        },
-
-        toggleMenu() {
-            this.menuOpen = !this.menuOpen;
         },
 
         async fetchSession(data) {

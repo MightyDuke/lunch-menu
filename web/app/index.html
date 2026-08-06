@@ -31,8 +31,8 @@
         </div>
     </div>
 
-    <div class="navbar is-dark">
-        <div class="container px-3 is-flex-direction-row-reverse">
+    <div class="navbar has-shadow" x-data="{ 'open': false }">
+        <div class="container is-flex-direction-row-reverse">
             <div class="navbar-brand">
                 <div class="navbar-item" x-show="!user">
                     <div class="is-flex is-justify-content-center">
@@ -41,16 +41,20 @@
                 </div>
 
                 <template x-if="user">
-                    <div class="navbar-item is-flex py-0">
-                        <figure class="image is-32x32 is-square">
-                            <img class="is-rounded" style="max-height: none !important;" :src="user.picture">
-                        </figure>
-                        <div class="has-text-weight-bold" x-text="user.name"></div>
-                        <button class="button" @click="logout()">Odhlásit se</button>
+                    <div class="navbar-menu is-flex py-0">
+                        <div class="navbar-item">
+                            <figure class="image is-32x32 is-square">
+                                <img class="is-rounded" style="max-height: none !important;" :src="user.picture">
+                            </figure>
+
+                            <span x-text="user.name"></span>
+                        </div>
+
+                        <a class="navbar-item has-text-weight-bold" @click="logout()">Odhlásit se</a>
                     </div>
                 </template>
 
-                <a class="navbar-burger" @click="toggleMenu()" :class="{ 'is-active': menuOpen }">
+                <a class="navbar-burger has-text-current" @click="open = !open" :class="{ 'is-active': open }">
                     <span></span>
                     <span></span>
                     <span></span>
@@ -58,10 +62,15 @@
                 </a>
             </div>
 
-            <div class="navbar-menu" :class="{ 'is-active': menuOpen }">
+            <div class="navbar-menu" :class="{ 'is-active': open }">
                 <div class="navbar-start">
                     <template x-for="day in getDaysInWeek()">
-                        <a :class="{ 'has-background-grey-dark': selectedDate === day, 'has-text-weight-bold': selectedDate === day }" @click="selectedDate = day" class="navbar-item is-min-width-button is-capitalized" x-text="getLocalizedWeekName(day)"></a>
+                        <a 
+                            :class="{ 'has-text-weight-bold has-background-selected': selectedDate === day }" 
+                            @click="selectedDate = day" 
+                            class="navbar-item is-min-width-button is-capitalized" 
+                            x-text="getLocalizedWeekName(day)"
+                        ></a>
                     </template>
                 </div>
             </div>
@@ -78,117 +87,72 @@
         <div>
             <div class="columns is-tablet is-multiline is-8">
                 <template x-for="(establishment, name) in establishments">
-                    <div class="column is-half">
-                        <a :href="establishment.homepage" target="_blank" class="is-size-4 my-1 p-2 mx-2" x-text="establishment.name"></a>
+                    <div class="column is-half" x-data="menu(name)">
+                        <table class="table is-fullwidth" :class="{ 'is-hoverable': user }">
+                            <thead>
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="is-flex is-align-items-center">
+                                            <a class="is-size-4 mr-auto" :href="establishment.homepage" target="_blank" x-text="establishment.name"></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </thead>
 
-                        <hr class="my-2 mx-3">
-                        
-                        <template x-if="!establishment.linkOnly">
-                            <div x-data="menu(name)">
-                                <div x-show="!menu">
-                                    <div>
-                                        <div class="is-skeleton mx-2 my-3"><span>&nbsp;</span></div>
-                                        <div class="is-skeleton mx-2 my-3"><span>&nbsp;</span></div>
-                                        <div class="is-skeleton mx-2 my-3"><span>&nbsp;</span></div>
-                                        <div class="is-skeleton mx-2 my-3"><span>&nbsp;</span></div>
-                                        <div class="is-skeleton mx-2 my-3"><span>&nbsp;</span></div>
-                                    </div>
-                                </div>
+                            <template x-if="!menu">
+                                <tbody>
+                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                </tbody>
+                            </template>
 
-                                <div x-show="menu" x-transition.opacity.duration.200ms>
-                                    <div class="mx-2">
-                                        <template x-if="menu === null || !menu[selectedDate]">
-                                            <div class="my-1 p-2">
-                                                Menu není k dispozici.
-                                            </div>
-                                        </template>
+                            <template x-if="!establishment.linkOnly && menu && !(selectedDate in menu)">
+                                <tr>
+                                    <td>
+                                        <span class="has-text-body">
+                                            Menu není k dispozici
+                                        </span>
+                                    </td>
+                                </tr>
+                            </template>
 
-                                        <template x-if="menu !== null && menu[selectedDate]">
-                                            <div>
-                                                <template x-for="(item, index) in menu[selectedDate]">
-                                                    <div class="is-clickable" x-data="{
-                                                        'path': () => `${selectedDate}/${name}/${index}`
-                                                    }">
-                                                        <div 
-                                                            class="is-flex is-mobile is-rounded my-1 px-2 py-1" 
-                                                            :class="{'has-background-primary-soft': item.highlight}"
-                                                            @click="vote(path())"
-                                                        >
-                                                            <div class="is-flex-grow-5 has-text-strong pr-4" x-text="item.name"></div>
-                                                            
-                                                            <template x-if="item.price">
-                                                                <div x-text="`${item.price}&nbsp;Kč`"></div>
-                                                            </template>
-                                                        </div>
+                            <template x-if="(menu && establishment.linkOnly) || (menu && selectedDate in menu)">
+                                <tbody>
+                                    <template x-for="(item, index) in (!establishment.linkOnly ? chain(menu[selectedDate], menu['week']) : [{ 'name': '(Hlasovat)' }])">
+                                        <tr :class="{ 'is-clickable': user }" @click="vote(path())" x-data="{
+                                            'path': () => `${selectedDate}/${name}/${index}`
+                                        }">
+                                            <td>
+                                                <span x-text="item.name" :class="{ 'has-text-primary has-text-weight-bold': item.highlight }"></span>
 
-                                                        <template x-if="path() in votes">
-                                                            <div class="px-2 pt-1 pb-2">
-                                                                <template x-for="user in votes[path()]">
-                                                                    <span class="tag pl-0 mr-2">
-                                                                        <figure class="image is-32x32">
-                                                                            <img class="is-rounded" :src="user.picture">
-                                                                        </figure>
-                                                                        <span class="ml-1" x-text="user.name"></span>
-                                                                    </span>
-                                                                </template>
-                                                            </div>
+                                                <template x-if="path() in votes">
+                                                    <div class="mt-4">
+                                                        <template x-for="user in votes[path()]">
+                                                            <span class="tag pl-0 mr-2">
+                                                                <figure class="image is-32x32">
+                                                                    <img class="is-rounded" :src="user.picture">
+                                                                </figure>
+
+                                                                <span class="ml-2" x-text="user.name"></span>
+                                                            </span>
                                                         </template>
                                                     </div>
                                                 </template>
-
-                                                <template x-if="'week' in menu">
-                                                    <div>
-                                                        <div class="px-2 py-4">
-                                                            Týdenní menu
-                                                        </div>
-                                                        
-                                                        <template x-for="(item, index) in menu.week">
-                                                            <div class="is-clickable" x-data="{
-                                                                    'path': () => `${selectedDate}/${name}/week/${index}`
-                                                                }"
-                                                            >
-                                                                <div 
-                                                                    class="is-flex is-mobile is-rounded my-1 px-2 py-1" 
-                                                                    :class="{'has-background-primary-soft': item.highlight}"
-                                                                    @click="vote(path())"
-                                                                >
-                                                                    <div class="is-flex-grow-5 has-text-strong pr-4" x-text="item.name"></div>
-                                                                    
-                                                                    <template x-if="item.price">
-                                                                        <div x-text="`${item.price}&nbsp;Kč`"></div>
-                                                                    </template>
-                                                                </div>
-
-                                                                <template x-if="path() in votes">
-                                                                    <div class="px-2 pt-1 pb-2">
-                                                                        <template x-for="user in votes[path()]">
-                                                                            <span class="tag pl-0 mr-2">
-                                                                                <figure class="image is-32x32">
-                                                                                    <img class="is-rounded" :src="user.picture">
-                                                                                </figure>
-                                                                                <span class="ml-1" x-text="user.name"></span>
-                                                                            </span>
-                                                                        </template>
-                                                                    </div>
-                                                                </template>
-                                                            </div>
-                                                        </template>
-                                                    </div>
+                                            </td>
+                                            
+                                            <td class="has-text-right">
+                                                <template x-if="item.price">
+                                                    <span class="has-text-body" x-text="`${item.price}&nbsp;Kč`"></span>
                                                 </template>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-
-                        <template x-if="establishment.linkOnly">
-                            <div class="my-3">
-                                <a class="mx-2 px-2 py-1" :href="establishment.homepage" target="_blank">
-                                    Odkaz na menu
-                                </a>
-                            </div>
-                        </template>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </template>
+                        </table>
                     </div>
                 </template>
             </div>
@@ -202,6 +166,9 @@
         
         <div>
             <a href="https://github.com/MightyDuke/lunch-menu" target="_blank">GitHub</a>
+            <span> &bull; </span>
+            <a href="/docs" target="_blank">API</a>
+
         </div>
     </div>
 </body>

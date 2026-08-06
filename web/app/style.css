@@ -18,8 +18,12 @@
     --bulma-table-cell-border-width: 0;
 }
 
-.has-text-strong {
-    color: var(--bulma-text-strong) !important;
+.has-text-body {
+    color: var(--bulma-body-color) !important;
+}
+
+.has-background-selected {
+    background-color: var(--bulma-background) !important;
 }
 
 .footer {
