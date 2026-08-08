@@ -4,6 +4,9 @@ from typing import Any
 from fastapi import Request
 from redis.asyncio import ConnectionPool, Redis
 
+serialize = lambda value: json.dumps(value)
+deserialize = lambda value: json.loads(value)
+
 class RedisClientService:
     @staticmethod
     def create_connection_pool(url: str):
@@ -20,12 +23,12 @@ class RedisClientService:
             value = await self.client.getex(key, ex = expiration)
 
         if value is not None:
-            value = json.loads(value)
+            value = deserialize(value)
 
         return value
 
     async def set(self, key: str, value: Any, *, expiration: int = None):
-        value = json.dumps(value)
+        value = serialize(value)
 
         await self.client.set(key, value, ex = expiration)
     
@@ -33,12 +36,12 @@ class RedisClientService:
         value = await self.client.hget(key, field)
 
         if value is not None:
-            value = json.loads(value)
+            value = deserialize(value)
 
         return value
 
     async def hset(self, key: str, field: str, value: Any, *, expiration: int = None):
-        value = json.dumps(value)
+        value = serialize(value)
 
         if expiration is None:
             await self.client.hset(key, field, value)
@@ -51,15 +54,24 @@ class RedisClientService:
 
         if value is not None:
             for key in value.keys():
-                result[key.decode()] = json.loads(value[key])
+                result[key.decode()] = deserialize(value[key])
 
         return result
 
     async def delete(self, key: str) -> int:
         return await self.client.delete(key)
 
+    async def hgetdel(self, key: str, field: str) -> Any | None:
+        value = await self.client.hgetdel(key, field)
+        value = value[0]
+
+        if value is not None:
+            value = deserialize(value)
+
+        return value
+
     async def publish(self, channel: str, message: Any):
-        message = json.dumps(message)
+        message = serialize(message)
 
         await self.client.publish(channel, message)
 
@@ -71,7 +83,7 @@ class RedisClientService:
             await pubsub.subscribe(channel)
 
             async for message in pubsub.listen():
-                yield json.loads(message["data"])
+                yield deserialize(message["data"])
 
     @asynccontextmanager
     async def pipeline(self):
