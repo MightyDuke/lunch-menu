@@ -11,11 +11,14 @@
     <link rel="icon" href="/icon_144.png" sizes="144x144">
     <link rel="icon" href="/icon_512.png" sizes="512x512">
 
-    <script src="https://accounts.google.com/gsi/client"></script>
+    <script src="https://accounts.google.com/gsi/client?hl=cs"></script>
+    <script src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
     <script src="/script.js" type="module"></script>
 </head>
 
 <body class="is-clipped" x-data="app">
+    <div id="google-login" class="display-none"></div>
+
     <div class="hero">
         <div class="hero-body">
             <div class="container has-text-centered">
@@ -31,30 +34,26 @@
         </div>
     </div>
 
-    <div class="navbar has-shadow" x-data="{ 'open': false }">
+    <div class="navbar" x-data="{ 'open': false }">
         <div class="container is-flex-direction-row-reverse">
-            <div class="navbar-brand">
-                <div class="navbar-item" x-show="!user">
-                    <div class="is-flex is-justify-content-center">
-                        <div id="google-login"></div>
-                    </div>
-                </div>
-
+            <div class="navbar-brand ml-0">
                 <template x-if="user">
                     <div class="navbar-menu is-flex py-0">
                         <div class="navbar-item">
-                            <figure class="image is-32x32 is-square">
-                                <img class="is-rounded" style="max-height: none !important;" :src="user.picture">
-                            </figure>
+                            <template x-if="user.picture">
+                                <figure class="image is-32x32 is-square">
+                                    <img class="is-rounded" style="max-height: none !important;" :src="user.picture">
+                                </figure>
+                            </template>
 
-                            <span x-text="user.name"></span>
+                            <span class="has-text-weight-bold" x-text="user.name"></span>
                         </div>
 
-                        <a class="navbar-item has-text-weight-bold" @click="logout()">Odhlásit se</a>
+                        <a class="navbar-item is-hidden-touch" @click="logout()">Odhlásit se</a>
                     </div>
                 </template>
 
-                <a class="navbar-burger has-text-current" @click="open = !open" :class="{ 'is-active': open }">
+                <a class="navbar-burger has-text-current" @click="open = !open">
                     <span></span>
                     <span></span>
                     <span></span>
@@ -66,13 +65,45 @@
                 <div class="navbar-start">
                     <template x-for="day in getDaysInWeek()">
                         <a 
-                            :class="{ 'has-text-weight-bold has-background-selected': selectedDate === day }" 
+                            :class="{ 'is-active': selectedDate === day }" 
                             @click="selectedDate = day" 
                             class="navbar-item is-min-width-button is-capitalized" 
                             x-text="getLocalizedWeekName(day)"
                         ></a>
                     </template>
                 </div>
+
+                <hr class="my-3">
+
+                <template x-if="user">
+                    <a class="navbar-item is-hidden-desktop" @click="logout()">Odhlásit se</a>
+                </template>
+
+                <template x-if="!user">
+                    <div class="navbar-end">
+                        <div class="navbar-item">
+                            Přihlásit přes účet: 
+                        </div>
+
+                        <a class="navbar-item is-flex is-align-items-center" @click="loginMicrosoft()">
+                            <svg viewBox="0 0 512 512" style="width:24px">
+                                <path d="M0 32l214.6 0 0 214.6-214.6 0 0-214.6zm233.4 0l214.6 0 0 214.6-214.6 0 0-214.6zM0 265.4l214.6 0 0 214.6-214.6 0 0-214.6zm233.4 0l214.6 0 0 214.6-214.6 0 0-214.6z"/>
+                            </svg>
+                            <span>
+                                Microsoft
+                            </span>
+                        </a>
+
+                        <a class="navbar-item is-flex is-align-items-center" @click="loginGoogle()">
+                            <svg viewBox="0 0 512 512" style="width:24px">
+                                <path d="M500 261.8C500 403.3 403.1 504 260 504 122.8 504 12 393.2 12 256S122.8 8 260 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9c-88.3-85.2-252.5-21.2-252.5 118.2 0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9l-140.8 0 0-85.3 236.1 0c2.3 12.7 3.9 24.9 3.9 41.4z"/>
+                            </svg>
+                            <span>
+                                Google
+                            </span>
+                        </a>
+                    </div>
+                </template>
             </div>
         </div>
     </div>
@@ -129,12 +160,14 @@
                                                 <span x-text="item.name" :class="{ 'has-text-primary has-text-weight-bold': item.highlight }"></span>
 
                                                 <template x-if="path() in votes">
-                                                    <div class="mt-4">
+                                                    <div class="mt-4 is-flex is-align-items-center">
                                                         <template x-for="user in votes[path()]">
                                                             <span class="tag pl-0 mr-2">
-                                                                <figure class="image is-32x32">
-                                                                    <img class="is-rounded" :src="user.picture">
-                                                                </figure>
+                                                                <template x-if="user.picture">
+                                                                    <figure class="image is-32x32">
+                                                                        <img class="is-rounded" :src="user.picture">
+                                                                    </figure>
+                                                                </template>
 
                                                                 <span class="ml-2" x-text="user.name"></span>
                                                             </span>

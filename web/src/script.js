@@ -66,16 +66,15 @@ document.addEventListener("alpine:init", () => {
         async init() {
             google.accounts.id.initialize({
                 client_id: "463687060136-g6v6qjf7r1jh49lfpeogq3qm5rj7islk.apps.googleusercontent.com",
-                callback: async response => {
-                    await this.fetchSession(response);
-                }
+                callback: async response => await this.fetchSession(response.credential)
             });
 
             google.accounts.id.renderButton(
                 document.getElementById("google-login"),
                 { 
                     locale: "cs",
-                    theme: "filled_black",
+                    theme: "filled_blue",
+                    text: "signin_with",
                     size: "medium"
                 }
             );
@@ -92,20 +91,41 @@ document.addEventListener("alpine:init", () => {
                 try {
                     await this.fetchUser();
                 } catch {
-                    console.log("Failed to get user");
                     this.user = null;
                 }
             }
         },
 
-        async fetchSession(data) {
+        async loginMicrosoft() {
+            const msalConfig = {
+                auth: {
+                    clientId: "b600e93e-c5f6-44d3-b95f-948abfb15b80"
+                },
+                cache: {
+                    cacheLocation: "sessionStorage",
+                    storeAuthStateInCookie: false
+                }
+            };
+
+            const instance = new msal.PublicClientApplication(msalConfig); 
+            const request = {scopes: ["openid", "profile"]};
+
+            const response = await instance.loginPopup(request);
+            await this.fetchSession(response.idToken);
+        },
+
+        async loginGoogle() {
+            document.querySelector('#google-login div[role=button]').click();
+        },
+
+        async fetchSession(idToken) {
             let response = await fetch("/api/user", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "id_token": data.credential
+                    "id_token": idToken
                 })
             });
 

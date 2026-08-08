@@ -4,14 +4,29 @@
 :root {
     --bulma-body-family: "Inter Variable", sans-serif;
     --bulma-body-size: 14px;
+    --bulma-navbar-background-color: var(--bulma-text-on-scheme);
 }
 
-[x-cloak] { 
+[x-cloak], .display-none { 
     display: none !important; 
 }
 
 .hero {
     background-color: var(--bulma-scheme-main-bis);
+}
+
+.navbar, .navbar-dropdown .navbar-item {
+    background-color: var(--bulma-scheme-main-ter);
+}
+
+.navbar-menu {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.navbar-menu a.is-active {
+    font-weight: 700;
+    background-color: var(--bulma-background-hover) !important;
 }
 
 .table {
@@ -41,4 +56,8 @@
 .is-min-width-button {
     min-width: 80px;
     justify-content: center;
+}
+
+svg path {
+    fill: var(--bulma-navbar-item-color);
 }
