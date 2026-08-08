@@ -124,7 +124,7 @@
         <div>
             <div class="columns is-tablet is-multiline is-8">
                 <template x-for="(establishment, name) in establishments">
-                    <div class="column is-half" x-data="menu(name)">
+                    <div class="column is-half" x-data="menu(name, establishment.linkOnly)">
                         <table class="table is-fullwidth" :class="{ 'is-hoverable': user }">
                             <thead>
                                 <tr>
@@ -158,7 +158,7 @@
 
                             <template x-if="(menu && establishment.linkOnly) || (menu && selectedDate in menu)">
                                 <tbody>
-                                    <template x-for="(item, index) in (!establishment.linkOnly ? chain(menu[selectedDate], menu['week']) : [{ 'name': '(Hlasovat)' }])">
+                                    <template x-for="(item, index) in chain(menu[selectedDate], menu['week'])">
                                         <tr :class="{ 'is-clickable': user }" @click="vote(path())" x-data="{
                                             'path': () => `${selectedDate}/${name}/${index}`
                                         }">

@@ -185,12 +185,22 @@ document.addEventListener("alpine:init", () => {
         }
     }));
 
-    Alpine.data("menu", (establishment = null) => ({
+    Alpine.data("menu", (establishment = null, linkOnly = false) => ({
         menu: null,
 
         async init() {
-            const response = await fetch(`/api/establishments/${establishment}`);
-            this.menu = await response.json();
+            if (!linkOnly) {
+                const response = await fetch(`/api/establishments/${establishment}`);
+                this.menu = await response.json();
+            } else {
+                this.menu = {
+                    "week": [
+                        {
+                            "name": "(Hlasovat)"
+                        }
+                    ]
+                };
+            }
         }
     }));
 });
