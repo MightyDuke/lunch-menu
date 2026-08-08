@@ -75,8 +75,8 @@ class RedisClientService:
 
         await self.client.publish(channel, message)
 
-    def lock(self, key: str):
-        return self.client.lock(f"{key}:lock")
+    def lock(self, key: str, *, timeout: int = 60):
+        return self.client.lock(f"{key}:lock", timeout = timeout)
 
     async def subscribe(self, channel: str):
         async with self.client.pubsub(ignore_subscribe_messages = True) as pubsub:

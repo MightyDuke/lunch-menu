@@ -25,7 +25,7 @@ class WebScraperProvider(MenuProvider):
         menu = await self.redis_client.get(self.cache_key)
 
         if menu is None:
-            async with self.redis_client.lock(self.cache_key):
+            async with self.redis_client.lock(self.cache_key, timeout = self.http_client.timeout + 5):
                 menu = await self.redis_client.get(self.cache_key)
 
                 if menu is None:
