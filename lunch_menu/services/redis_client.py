@@ -58,6 +58,28 @@ class RedisClientService:
 
         return result
 
+    async def hgetallm(self, *keys: str) -> list[Any]:
+        async with self.client.pipeline() as pipeline:
+            for key in keys:
+                await pipeline.hgetall(key)
+
+            values = await pipeline.execute()
+
+        result = []
+
+        for value in values:
+            if value is not None:
+                item = {}
+
+                for key in value.keys():
+                    item[key.decode()] = deserialize(value[key])
+
+                result.append(item)
+            else:
+                result.append(None)
+
+        return result
+
     async def delete(self, key: str) -> int:
         return await self.client.delete(key)
 

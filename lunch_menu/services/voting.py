@@ -10,8 +10,7 @@ class VotingService:
 
     async def _get_votes(self):
         result = {}
-        votes = await self.redis_client.hgetall("votes")
-        users = await self.redis_client.hgetall("users")
+        votes, users = await self.redis_client.hgetallm("votes", "users")
 
         for key, value in votes.items():
             if value not in result:
