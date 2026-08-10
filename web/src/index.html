@@ -165,7 +165,7 @@
                                             <td>
                                                 <span x-text="item.name" :class="{ 'has-text-primary has-text-weight-bold': item.highlight }"></span>
 
-                                                <template x-if="path in votes[selectedDate]">
+                                                <template x-if="selectedDate in votes && path in votes[selectedDate]">
                                                     <div class="mt-4 is-flex is-align-items-center">
                                                         <template x-for="user in votes[selectedDate][path]">
                                                             <span class="tag pl-0 mr-2">
@@ -174,7 +174,7 @@
                                                                         <img class="is-rounded" :src="user.picture">
                                                                     </figure>
                                                                 </template>
-
+                                                                
                                                                 <span class="ml-2" x-text="user.name"></span>
                                                             </span>
                                                         </template>
