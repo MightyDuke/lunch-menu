@@ -9,14 +9,17 @@ class VotingService:
         self.redis_client = redis_client
         self.session_service = session_service
 
-    async def get_votes(self, *, filter_date: date = None):
+    async def get_votes(self, *, target_date: str = None):
         result = {}
         votes, users = await self.redis_client.hgetallm("votes", "users")
+
+        if target_date is not None:
+            result[target_date] = {}
 
         for key, path in votes.items():
             date, id = key.split(":", maxsplit = 1)
 
-            if filter_date is not None and date != filter_date:
+            if target_date is not None and date != target_date:
                 continue
 
             if date not in result:
@@ -37,7 +40,7 @@ class VotingService:
         if vote != path:
             await self.redis_client.hset("votes", field, path, expiration = 604_800)
 
-        votes = await self.get_votes(filter_date = str(date))
+        votes = await self.get_votes(target_date = str(date))
         await self.redis_client.publish("votes", votes)
 
     async def listen(self):
