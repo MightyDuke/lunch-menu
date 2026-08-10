@@ -34,7 +34,7 @@ class VotingService:
         field = f"{date}:{id}"
         vote = await self.redis_client.hgetdel("votes", field)
 
-        if vote != field:
+        if vote != path:
             await self.redis_client.hset("votes", field, path, expiration = 604_800)
 
         votes = await self.get_votes(filter_date = str(date))
