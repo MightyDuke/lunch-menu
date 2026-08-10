@@ -35,7 +35,7 @@ class UserService:
         except InvalidClaimsError:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Failed to validate id token")
 
-        id = f"{claims["sub"]}@{claims["iss"]}"
+        id = f"{claims["iss"]}:{claims["sub"]}"
         user = User(
             name = claims["name"] if "name" in claims else "???",
             picture = claims["picture"] if "picture" in claims else None
