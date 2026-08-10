@@ -66,7 +66,7 @@ document.addEventListener("alpine:init", () => {
         async init() {
             google.accounts.id.initialize({
                 client_id: "463687060136-g6v6qjf7r1jh49lfpeogq3qm5rj7islk.apps.googleusercontent.com",
-                callback: async response => await this.fetchSession(response.credential)
+                callback: async response => await this.startSession(response.credential)
             });
 
             google.accounts.id.renderButton(
@@ -85,11 +85,11 @@ document.addEventListener("alpine:init", () => {
             this.establishments = await response.json();
 
             this.voteStream = new EventSource("/api/vote/stream");
-            this.voteStream.onmessage = (event) => this.votes = JSON.parse(event.data);
+            this.voteStream.onmessage = (event) => this.votes = { ...this.votes, ...JSON.parse(event.data) };
 
             if (this.session != null) {
                 try {
-                    await this.fetchUser();
+                    await this.fetchProfile();
                 } catch {
                     this.user = null;
                 }
@@ -111,14 +111,14 @@ document.addEventListener("alpine:init", () => {
             const request = {scopes: ["openid", "profile"]};
 
             const response = await instance.loginPopup(request);
-            await this.fetchSession(response.idToken);
+            await this.startSession(response.idToken);
         },
 
         async loginGoogle() {
             document.querySelector('#google-login div[role=button]').click();
         },
 
-        async fetchSession(idToken) {
+        async startSession(idToken) {
             let response = await fetch("/api/user", {
                 method: "POST",
                 headers: {
@@ -136,10 +136,10 @@ document.addEventListener("alpine:init", () => {
             response = await response.json();
             this.session = response.token;
 
-            await this.fetchUser();
+            await this.fetchProfile();
         },
 
-        async fetchUser() {
+        async fetchProfile() {
             let response = await fetch("/api/user", {
                 method: "GET",
                 headers: {
@@ -167,7 +167,7 @@ document.addEventListener("alpine:init", () => {
             this.user = null;
         },
 
-        async vote(path) {
+        async vote(date, path) {
             if (this.session == null) {
                 return;
             }
@@ -179,6 +179,7 @@ document.addEventListener("alpine:init", () => {
                     "Authorization": `Bearer ${this.session}`
                 },
                 body: JSON.stringify({
+                    "date": date,
                     "path": path
                 })
             });

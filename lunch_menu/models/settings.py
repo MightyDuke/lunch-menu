@@ -1,4 +1,6 @@
 from functools import cache
+from typing import Annotated
+from fastapi import Depends
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -15,3 +17,5 @@ class Settings(BaseSettings):
 @cache
 def get_settings():
     return Settings()
+
+SettingsDependency = Annotated[Settings, Depends(get_settings)]

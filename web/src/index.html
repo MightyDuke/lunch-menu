@@ -159,15 +159,15 @@
                             <template x-if="(menu && establishment.linkOnly) || (menu && selectedDate in menu)">
                                 <tbody>
                                     <template x-for="(item, index) in chain(menu[selectedDate], menu['week'])">
-                                        <tr :class="{ 'is-clickable': user }" @click="vote(path())" x-data="{
-                                            'path': () => `${selectedDate}/${name}/${index}`
+                                        <tr :class="{ 'is-clickable': user }" @click="vote(selectedDate, path)" x-data="{
+                                            get path() { return `${name}/${index}` }
                                         }">
                                             <td>
                                                 <span x-text="item.name" :class="{ 'has-text-primary has-text-weight-bold': item.highlight }"></span>
 
-                                                <template x-if="path() in votes">
+                                                <template x-if="path in votes[selectedDate]">
                                                     <div class="mt-4 is-flex is-align-items-center">
-                                                        <template x-for="user in votes[path()]">
+                                                        <template x-for="user in votes[selectedDate][path]">
                                                             <span class="tag pl-0 mr-2">
                                                                 <template x-if="user.picture">
                                                                     <figure class="image is-32x32">

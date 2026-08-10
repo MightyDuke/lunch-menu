@@ -1,38 +1,47 @@
 from typing import Annotated
 from fastapi import Depends
+from datetime import date
 from lunch_menu.services.redis_client import RedisClientService
-from lunch_menu.services.session import SessionService
+from lunch_menu.services.user import UserService
 
 class VotingService:
-    def __init__(self, redis_client: Annotated[RedisClientService, Depends()], session_service: Annotated[SessionService, Depends()]):
+    def __init__(self, redis_client: Annotated[RedisClientService, Depends()], session_service: Annotated[UserService, Depends()]):
         self.redis_client = redis_client
         self.session_service = session_service
 
-    async def _get_votes(self):
+    async def get_votes(self, *, filter_date: date = None):
         result = {}
         votes, users = await self.redis_client.hgetallm("votes", "users")
 
-        for key, value in votes.items():
-            if value not in result:
-                result[value] = []
+        for key, path in votes.items():
+            date, id = key.split(":", maxsplit = 1)
 
-            if key in users:
-                result[value].append(users[key])
+            if filter_date is not None and date != filter_date:
+                continue
+
+            if date not in result:
+                result[date] = {}
+
+            if path not in result[date]:
+                result[date][path] = []
+
+            if id in users:
+                result[date][path].append(users[id])
 
         return result
 
-    async def vote(self, id: str, path: str):
-        vote = await self.redis_client.hgetdel("votes", id)
+    async def vote(self, id: str, date: date, path: str):
+        field = f"{date}:{id}"
+        vote = await self.redis_client.hgetdel("votes", field)
 
-        if vote != path:
-            await self.redis_client.hset("votes", id, path, expiration = 604_800)
+        if vote != field:
+            await self.redis_client.hset("votes", field, path, expiration = 604_800)
 
-        votes = await self._get_votes()
+        votes = await self.get_votes(filter_date = str(date))
         await self.redis_client.publish("votes", votes)
 
     async def listen(self):
-        votes = await self._get_votes()
-
+        votes = await self.get_votes()
         yield votes
 
         async for votes in self.redis_client.subscribe("votes"):

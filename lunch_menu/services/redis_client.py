@@ -32,8 +32,12 @@ class RedisClientService:
 
         await self.client.set(key, value, ex = expiration)
     
-    async def hget(self, key: str, field: str) -> Any | None:
-        value = await self.client.hget(key, field)
+    async def hget(self, key: str, field: str, *, expiration: int = None) -> Any | None:
+        if expiration is None:
+            value = await self.client.hget(key, field)
+        else:
+            value = await self.client.hgetex(key, field, ex = expiration)
+            value = value[0]
 
         if value is not None:
             value = deserialize(value)

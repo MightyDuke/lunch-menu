@@ -4,9 +4,9 @@ from fastapi import APIRouter, FastAPI
 from lunch_menu.models.settings import Settings
 from lunch_menu.services.lunch_menu import LunchMenuService
 from lunch_menu.services.redis_client import RedisClientService
-from lunch_menu.services.session import SessionService
+from lunch_menu.services.user import UserService
 from .menu import router as menu_router
-from .session import router as session_router
+from .user import router as session_router
 from .voting import router as voting_router
 
 logger = getLogger("uvicorn.error")
@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
 
     redis_pool = RedisClientService.create_connection_pool(settings.redis_url)
 
-    issuers = await SessionService.discover_issuers(settings.oauth2_clients.keys())
+    issuers = await UserService.discover_issuers(settings.oauth2_clients.keys())
     logger.info(f"Discovered {len(issuers.keys())} OAuth2 issuers: {str.join(", ", (key for key in issuers.keys()))}")
 
     app.state.establishments = establishments
