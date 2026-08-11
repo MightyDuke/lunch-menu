@@ -80,13 +80,7 @@ document.addEventListener("alpine:init", () => {
             );
 
             this.selectedDate = isoDate(new Date);
-
-            const response = await fetch("/api/establishments");
-            this.establishments = await response.json();
-
-            this.voteStream = new EventSource("/api/vote/stream");
-            this.voteStream.onmessage = (event) => this.votes = { ...this.votes, ...JSON.parse(event.data) };
-
+            
             if (this.session != null) {
                 try {
                     await this.fetchProfile();
@@ -94,6 +88,12 @@ document.addEventListener("alpine:init", () => {
                     this.user = null;
                 }
             }
+
+            this.voteStream = new EventSource("/api/vote/stream");
+            this.voteStream.onmessage = (event) => this.votes = { ...this.votes, ...JSON.parse(event.data) };
+
+            const response = await fetch("/api/establishments");
+            this.establishments = await response.json();
         },
 
         async loginMicrosoft() {
@@ -119,7 +119,7 @@ document.addEventListener("alpine:init", () => {
         },
 
         async startSession(idToken) {
-            let response = await fetch("/api/user/login", {
+            let response = await fetch("/api/user/session", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -156,8 +156,8 @@ document.addEventListener("alpine:init", () => {
         },
 
         async logout() {
-            let response = await fetch("/api/user/logout", {
-                method: "POST",
+            let response = await fetch("/api/user/session", {
+                method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${this.session}`
                 }

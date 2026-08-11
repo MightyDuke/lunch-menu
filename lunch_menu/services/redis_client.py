@@ -84,8 +84,8 @@ class RedisClientService:
 
         return result
 
-    async def delete(self, key: str) -> int:
-        return await self.client.delete(key)
+    async def delete(self, key: str) -> bool:
+        return await self.client.delete(key) > 0
 
     async def hdel(self, key: str, field: str) -> bool:
         value = await self.client.hdel(key, field)

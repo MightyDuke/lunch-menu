@@ -73,5 +73,8 @@ class UserService:
 
         return await self.redis_client.hget("users", user_id, expiration = self.user_profile_expiration)
 
-    async def delete_session(self, token: str):
-        await self.redis_client.delete(f"session:{token}")
+    async def delete_session(self, token: str) -> bool:
+        session_existed = await self.redis_client.delete(f"session:{token}") > 0
+
+        if not session_existed:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid session token")
