@@ -1,3 +1,4 @@
+import re
 from bs4 import BeautifulSoup
 from lunch_menu.providers.base import AddMenuItemCallback
 from lunch_menu.providers.web_scraper import WebScraperProvider
@@ -24,7 +25,12 @@ class PastaFidliEstablishment(WebScraperProvider):
                 if sibling.name != "tr" or sibling.has_attr("class") and "day" in sibling.attrs["class"] or "shift" in sibling.attrs["class"]:
                     break
 
-                name = clean_name(sibling.find("td").text, suffix_removal_count = 2)
+                item = sibling.find("td").text
+
+                if match := re.match(r"\d+g(.*)", item):
+                    item = match.group(1).strip()
+
+                name = clean_name(item, prefix_removal_count = 1, suffix_removal_count = 1)
                 price = parse_price(sibling.find(class_ = "price").text)
 
                 add_item(date, name, price)
