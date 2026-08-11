@@ -1,10 +1,12 @@
 from typing import Annotated
 from fastapi import Depends
-from datetime import date
+from datetime import date, datetime
 from lunch_menu.services.redis_client import RedisClientService
 from lunch_menu.services.user import UserService
 
 class VotingService:
+    vote_expiration = 604_800
+
     def __init__(self, redis_client: Annotated[RedisClientService, Depends()], session_service: Annotated[UserService, Depends()]):
         self.redis_client = redis_client
         self.session_service = session_service
@@ -16,8 +18,8 @@ class VotingService:
         if target_date is not None:
             result[target_date] = {}
 
-        for key, path in votes.items():
-            date, id = key.split(":", maxsplit = 1)
+        for key, _ in sorted(votes.items(), key = lambda key: key[1]):
+            date, establishment, item, user_id = key.split(":")
 
             if target_date is not None and date != target_date:
                 continue
@@ -25,20 +27,23 @@ class VotingService:
             if date not in result:
                 result[date] = {}
 
-            if path not in result[date]:
-                result[date][path] = []
+            item = f"{establishment}:{item}"
 
-            if id in users:
-                result[date][path].append(users[id])
+            if item not in result[date]:
+                result[date][item] = []
+
+            if user_id in users:
+                result[date][item].append(users[user_id])
 
         return result
 
-    async def vote(self, id: str, date: date, path: str):
-        field = f"{date}:{id}"
-        vote = await self.redis_client.hgetdel("votes", field)
+    async def vote(self, user_id: str, date: date, establishment: str, item: str):
+        field = f"{date}:{establishment}:{item}:{user_id}"
+        vote_exists = await self.redis_client.hdel("votes", field)
 
-        if vote != path:
-            await self.redis_client.hset("votes", field, path, expiration = 604_800)
+        if not vote_exists:
+            now = datetime.now().isoformat()
+            await self.redis_client.hset("votes", field, now, expiration = self.vote_expiration)
 
         votes = await self.get_votes(target_date = str(date))
         await self.redis_client.publish("votes", votes)

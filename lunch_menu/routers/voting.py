@@ -1,5 +1,5 @@
 from typing import Annotated, AsyncIterable
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.sse import EventSourceResponse
 from lunch_menu.models.voting import VoteRequest, VoteResponse
@@ -17,7 +17,10 @@ async def vote(
     session_service: Annotated[UserService, Depends()]
 ):
     id = await session_service.get_session(authorization.credentials)
-    await voting_service.vote(id, body.date, body.path)
+    await voting_service.vote(id, body.date, body.establishment, body.item)
+
+    return Response(status_code = status.HTTP_204_NO_CONTENT)
+
 
 @router.get("/vote/stream", name = "Vote Stream", description = "SSE stream of votes", response_class = EventSourceResponse)
 async def vote_stream(

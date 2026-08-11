@@ -4,7 +4,7 @@ from typing import Any
 from fastapi import Request
 from redis.asyncio import ConnectionPool, Redis
 
-serialize = lambda value: json.dumps(value)
+serialize = lambda value: json.dumps(value, ensure_ascii = False)
 deserialize = lambda value: json.loads(value)
 
 class RedisClientService:
@@ -87,14 +87,9 @@ class RedisClientService:
     async def delete(self, key: str) -> int:
         return await self.client.delete(key)
 
-    async def hgetdel(self, key: str, field: str) -> Any | None:
-        value = await self.client.hgetdel(key, field)
-        value = value[0]
-
-        if value is not None:
-            value = deserialize(value)
-
-        return value
+    async def hdel(self, key: str, field: str) -> bool:
+        value = await self.client.hdel(key, field)
+        return value > 0
 
     async def publish(self, channel: str, message: Any):
         message = serialize(message)

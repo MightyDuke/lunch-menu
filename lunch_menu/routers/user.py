@@ -8,7 +8,7 @@ from lunch_menu.services.user import UserService
 security = HTTPBearer()
 router = APIRouter(tags = ["User"])
 
-@router.post("/user", name = "Login", description = "Start a new user session")
+@router.post("/user/login", name = "Login", description = "Start a new user session")
 async def login(
     body: SessionRequest, 
     session_service: Annotated[UserService, Depends()]
@@ -16,7 +16,7 @@ async def login(
     token = await session_service.create_session(body.id_token)
     return SessionResponse(token = token)
 
-@router.get("/user", name = "User Information", description = "Get user profile")
+@router.get("/user/profile", name = "User Profile", description = "Get user profile")
 async def user(
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(security)], 
     session_service: Annotated[UserService, Depends()]
@@ -26,7 +26,7 @@ async def user(
 
     return UserResponse(**user)
 
-@router.delete("/user", name = "Logout", description = "Delete a user session")
+@router.post("/user/logout", name = "Logout", description = "Delete a user session")
 async def logout(
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(security)], 
     session_service: Annotated[UserService, Depends()]

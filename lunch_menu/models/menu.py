@@ -43,16 +43,3 @@ class MenuForEstablishmentResponse(RootModel):
             ]
         }
     }
-
-class HighlightedWordsResponse(RootModel):
-    root: list[str]
-
-    model_config = {
-        "json_schema_extra": {
-            "examples": [
-                [
-                    "prejt", "kari", "low carb"
-                ]
-            ]
-        }
-    }

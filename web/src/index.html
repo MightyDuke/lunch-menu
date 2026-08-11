@@ -159,8 +159,8 @@
                             <template x-if="(menu && establishment.linkOnly) || (menu && selectedDate in menu)">
                                 <tbody>
                                     <template x-for="(item, index) in chain(menu[selectedDate], menu['week'])">
-                                        <tr :class="{ 'is-clickable': user }" @click="vote(selectedDate, path)" x-data="{
-                                            get path() { return `${name}/${index}` }
+                                        <tr :class="{ 'is-clickable': user }" @click="vote(selectedDate, name, `${index}`)" x-data="{
+                                            get path() { return `${name}:${index}` }
                                         }">
                                             <td>
                                                 <span x-text="item.name" :class="{ 'has-text-primary has-text-weight-bold': item.highlight }"></span>

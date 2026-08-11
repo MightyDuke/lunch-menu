@@ -1,5 +1,7 @@
 from typing import Annotated, TypedDict
 from secrets import token_urlsafe
+from hashlib import shake_256
+from base64 import urlsafe_b64encode
 from fastapi import Depends, HTTPException, Request
 from fastapi import status
 from federatedidentity import Issuer, verify_id_token
@@ -7,13 +9,19 @@ from federatedidentity.exceptions import InvalidClaimsError
 from lunch_menu.models.settings import Settings, get_settings
 from lunch_menu.services.redis_client import RedisClientService
 
+def hash_user_id(iss: str, sub: str, *, digest_length: int = 30):
+    digest = shake_256(f"{iss}:{sub}".encode()).digest(digest_length)
+    return urlsafe_b64encode(digest).decode()
+
 class User(TypedDict):
     name: str
     picture: str | None
 
 class UserService:
-    @classmethod
-    async def discover_issuers(cls, allowed_issuers: list[str]) -> dict[str, Issuer]:
+    user_profile_expiration = 2_628_000
+
+    @staticmethod
+    async def discover_issuers(allowed_issuers: list[str]) -> dict[str, Issuer]:
         result = {}
 
         for issuer_url in allowed_issuers:
@@ -35,35 +43,35 @@ class UserService:
         except InvalidClaimsError:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Failed to validate id token")
 
-        id = f"{claims["iss"]}:{claims["sub"]}"
+        user_id = hash_user_id(claims["iss"], claims["sub"])
         user = User(
             name = claims["name"] if "name" in claims else "???",
             picture = claims["picture"] if "picture" in claims else None
         )
 
-        token = token_urlsafe(32)
+        token = token_urlsafe(30)
 
         async with self.redis_client.pipeline() as pipeline:
-            await pipeline.set(f"session:{token}", id, expiration = self.session_expiration)
-            await pipeline.hset("users", id, user, expiration = 2_628_000)
+            await pipeline.set(f"session:{token}", user_id, expiration = self.session_expiration)
+            await pipeline.hset("users", user_id, user, expiration = self.user_profile_expiration)
 
         return token
 
     async def get_session(self, token: str) -> str | None:
-        id = await self.redis_client.get(f"session:{token}", expiration = self.session_expiration)
+        user_id = await self.redis_client.get(f"session:{token}", expiration = self.session_expiration)
 
-        if id is None:
+        if user_id is None:
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid session token")
 
-        return id
+        return user_id
 
     async def get_user(self, token: str) -> User | None:
-        id = await self.get_session(token)
+        user_id = await self.get_session(token)
 
-        if id is None:
+        if user_id is None:
             return
 
-        return await self.redis_client.hget("users", id, expiration = 2_628_000)
+        return await self.redis_client.hget("users", user_id, expiration = self.user_profile_expiration)
 
     async def delete_session(self, token: str):
         await self.redis_client.delete(f"session:{token}")

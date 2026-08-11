@@ -4,7 +4,8 @@ from lunch_menu.models.user import UserResponse
 
 class VoteRequest(BaseModel):
     date: date
-    path: str
+    establishment: str
+    item: str
 
 class VoteResponse(RootModel):
     root: dict[date, dict[str, list[UserResponse]]]

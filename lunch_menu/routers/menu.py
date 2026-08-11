@@ -1,32 +1,22 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Response
 from lunch_menu.models.establishments import EstablishmentEntriesResponse
-from lunch_menu.models.menu import HighlightedWordsResponse, MenuForEstablishmentResponse
+from lunch_menu.models.menu import MenuForEstablishmentResponse
 from lunch_menu.services.lunch_menu import LunchMenuService
 
 def add_private_cache_header(response: Response):
     response.headers["Cache-control"] = "private, must-revalidate"
 
-router = APIRouter(tags=["Menu"])
+router = APIRouter(tags=["Menu"], dependencies = [Depends(add_private_cache_header)])
 
-@router.get(
-    "/establishments",
-    dependencies = [Depends(add_private_cache_header)],
-    name = "Get Establishments",
-    description = "Return all available establishments."
-)
+@router.get("/establishments", name = "Get Establishments", description = "Return all available establishments")
 async def establishments(
     lunch_menu: Annotated[LunchMenuService, Depends()]
 ) -> EstablishmentEntriesResponse:
     establishments = await lunch_menu.get_establishments()
     return EstablishmentEntriesResponse(establishments)
 
-@router.get(
-    "/establishments/{establishment}",
-    dependencies = [Depends(add_private_cache_header)],
-    name = "Get Menu",
-    description = "Get menu for the given establishment."
-)
+@router.get("/establishments/{establishment}", name = "Get Menu", description = "Get menu for the given establishment")
 async def establishment(
     establishment: str, 
     lunch_menu: Annotated[LunchMenuService, Depends()]

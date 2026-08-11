@@ -119,7 +119,7 @@ document.addEventListener("alpine:init", () => {
         },
 
         async startSession(idToken) {
-            let response = await fetch("/api/user", {
+            let response = await fetch("/api/user/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -140,7 +140,7 @@ document.addEventListener("alpine:init", () => {
         },
 
         async fetchProfile() {
-            let response = await fetch("/api/user", {
+            let response = await fetch("/api/user/profile", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${this.session}`
@@ -156,8 +156,8 @@ document.addEventListener("alpine:init", () => {
         },
 
         async logout() {
-            let response = await fetch("/api/user", {
-                method: "DELETE",
+            let response = await fetch("/api/user/logout", {
+                method: "POST",
                 headers: {
                     "Authorization": `Bearer ${this.session}`
                 }
@@ -167,7 +167,7 @@ document.addEventListener("alpine:init", () => {
             this.user = null;
         },
 
-        async vote(date, path) {
+        async vote(date, establishment, item) {
             if (this.session == null) {
                 return;
             }
@@ -180,7 +180,8 @@ document.addEventListener("alpine:init", () => {
                 },
                 body: JSON.stringify({
                     "date": date,
-                    "path": path
+                    "establishment": establishment,
+                    "item": item
                 })
             });
         }
