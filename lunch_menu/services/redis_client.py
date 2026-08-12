@@ -62,7 +62,7 @@ class RedisClientService:
 
         return result
 
-    async def hgetallm(self, *keys: str) -> list[Any]:
+    async def hgetallm(self, *keys: str) -> list[dict]:
         async with self.client.pipeline() as pipeline:
             for key in keys:
                 await pipeline.hgetall(key)

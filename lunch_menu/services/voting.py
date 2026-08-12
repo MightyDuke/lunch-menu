@@ -18,7 +18,7 @@ class VotingService:
         if target_date is not None:
             result[target_date] = {}
 
-        for key, _ in sorted(votes.items(), key = lambda key: key[1]):
+        for key in sorted(votes.keys(), key = votes.get):
             date, establishment, item, user_id = key.split(":")
 
             if target_date is not None and date != target_date:
