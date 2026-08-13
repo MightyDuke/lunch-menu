@@ -18,14 +18,14 @@ async def login(
 @router.get("/user/profile", name = "User Profile", description = "Get user profile")
 async def user(
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(security)], 
-    session_service: Annotated[UserService, Depends()]
+    user_service: Annotated[UserService, Depends()]
 ) -> UserResponse:
-    user = await session_service.get_user(authorization.credentials)
+    user = await user_service.get_user(authorization.credentials)
     return UserResponse(**user)
 
 @router.delete("/user/session", name = "Logout", description = "Delete a user session", status_code = status.HTTP_204_NO_CONTENT)
 async def logout(
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(security)], 
-    session_service: Annotated[UserService, Depends()]
+    user_service: Annotated[UserService, Depends()]
 ):
-    await session_service.delete_session(authorization.credentials)
+    await user_service.delete_session(authorization.credentials)

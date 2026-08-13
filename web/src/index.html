@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <title>Kam na oběd?</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Kam na oběd?</title>
 
     <link rel="stylesheet" href="/style.css">
     <link rel="manifest" href="/app.webmanifest">
@@ -11,8 +12,6 @@
     <link rel="icon" href="/icon_144.png" sizes="144x144">
     <link rel="icon" href="/icon_512.png" sizes="512x512">
 
-    <script src="https://accounts.google.com/gsi/client?hl=cs"></script>
-    <script src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
     <script src="/script.js" type="module"></script>
 </head>
 
@@ -167,9 +166,9 @@
                             <template x-if="(menu && establishment.linkOnly) || (menu && selectedDate in menu)">
                                 <tbody>
                                     <template x-for="(item, index) in chain(menu[selectedDate], menu['week'])">
-                                        <tr :class="{ 'is-clickable': user }" @click="vote(selectedDate, name, `${index}`)" x-data="{
-                                            get path() { return `${name}:${index}` }
-                                        }">
+                                        <tr :class="{ 'is-clickable': user }" @click="vote(selectedDate, name, `${index}`)" 
+                                            x-data="{ get path() { return `${name}:${index}` } }"
+                                        >
                                             <td>
                                                 <span x-text="item.name" :class="{ 'has-text-primary has-text-weight-bold': item.highlight }"></span>
 

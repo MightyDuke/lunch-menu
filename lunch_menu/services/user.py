@@ -5,7 +5,7 @@ from base64 import urlsafe_b64encode
 from fastapi import Depends, HTTPException, Request
 from fastapi import status
 from federatedidentity import Issuer, verify_id_token
-from federatedidentity.exceptions import InvalidClaimsError
+from federatedidentity.exceptions import FederatedIdentityError
 from lunch_menu.models.settings import Settings, get_settings
 from lunch_menu.services.redis_client import RedisClientService
 
@@ -40,7 +40,7 @@ class UserService:
     async def create_session(self, id_token: str) -> str:
         try:
             claims = verify_id_token(id_token, valid_issuers = self.issuers, valid_audiences = self.valid_audiences)
-        except InvalidClaimsError:
+        except FederatedIdentityError:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Failed to validate id token")
 
         user_id = hash_user_id(claims["iss"], claims["sub"])

@@ -3,14 +3,10 @@ import persist from "/node_modules/@alpinejs/persist/dist/module.esm.js"
 
 window.locale = "cs";
 
-window.isoDate = date => {
+window.getIsoDate = date => {
     return `${date.getFullYear().toString().padStart(4, "0")}-` +
         `${(date.getMonth() + 1).toString().padStart(2, "0")}-` + 
         `${date.getDate().toString().padStart(2, "0")}`
-}
-
-window.capitalize = text => {
-    return text[0].toUpperCase() + text.slice(1);
 }
 
 window.getDaysInWeek = () => {
@@ -20,7 +16,8 @@ window.getDaysInWeek = () => {
     for (let i = 0; i < 5; i++) {
         let date = new Date;
         date.setDate(now.getDate() - now.getDay() + 1 + i);
-        result.push(isoDate(date));
+
+        result.push(getIsoDate(date));
     }
 
     return result;
@@ -41,7 +38,7 @@ window.isPwa = () => {
 }
 
 window.chain = (...items) => {
-    let result = [];
+    const result = [];
 
     for (let item of items) {
         if (item !== undefined) {
@@ -52,34 +49,17 @@ window.chain = (...items) => {
     return result;
 }
 
-window.identity = (value) => value;
-
 document.addEventListener("alpine:init", () => {
     Alpine.data("app", () => ({
         selectedDate: null,
         establishments: [],
+        votes: {},
+        
         session: Alpine.$persist(null).as("session"),
         user: null,
-        menuOpen: false,
-        votes: {},
 
         async init() {
-            google.accounts.id.initialize({
-                client_id: "463687060136-g6v6qjf7r1jh49lfpeogq3qm5rj7islk.apps.googleusercontent.com",
-                callback: async response => await this.startSession(response.credential)
-            });
-
-            google.accounts.id.renderButton(
-                document.getElementById("google-login"),
-                { 
-                    locale: "cs",
-                    theme: "filled_blue",
-                    text: "signin_with",
-                    size: "medium"
-                }
-            );
-
-            this.selectedDate = isoDate(new Date);
+            this.selectedDate = getIsoDate(new Date);
             
             if (this.session != null) {
                 try {
@@ -89,79 +69,95 @@ document.addEventListener("alpine:init", () => {
                 }
             }
 
+            window.sendSessionToken = token => this.startSession(token);
+
             this.voteStream = new EventSource("/api/vote/stream");
             this.voteStream.onmessage = (event) => this.votes = { ...this.votes, ...JSON.parse(event.data) };
 
-            const response = await fetch("/api/establishments");
-            this.establishments = await response.json();
+            const response = await this.fetch("GET", "/establishments");
+            this.establishments = response;
         },
 
-        async loginMicrosoft() {
-            const msalConfig = {
-                auth: {
-                    clientId: "b600e93e-c5f6-44d3-b95f-948abfb15b80"
-                },
-                cache: {
-                    cacheLocation: "sessionStorage",
-                    storeAuthStateInCookie: false
-                }
-            };
+        async fetch(method, url, headers = {}, body = null) {
+            const response = await fetch(`/api${url}`, {
+                method: method,
+                headers: headers,
+                body: body == null ? null : JSON.stringify(body)
+            });
 
-            const instance = new msal.PublicClientApplication(msalConfig); 
-            const request = {scopes: ["openid", "profile"]};
+            if (!response.ok) {
+                console.error("Failed to fetch resource", method, url, headers, body);
+                return;
+            }
 
-            const response = await instance.loginPopup(request);
-            await this.startSession(response.idToken);
+            if (response.status == 204) {
+                return null;
+            }
+
+            return await response.json();
         },
 
-        async loginGoogle() {
-            document.querySelector('#google-login div[role=button]').click();
+        openLoginWindow(url, client_id, width = 500, height = 700) {
+            const parameters = new URLSearchParams({
+                "url": url,
+                "client_id": client_id,
+                "redirect_uri": `${location.protocol}//${location.host}`
+            })
+
+            window.open(`/auth?${parameters.toString()}`, "auth", `popup,width=${width},height=${height}`);
+        },
+
+        loginMicrosoft() {
+            this.openLoginWindow(
+                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize", 
+                "b600e93e-c5f6-44d3-b95f-948abfb15b80"
+            );
+        },
+
+        loginGoogle() {
+            this.openLoginWindow(
+                "https://accounts.google.com/o/oauth2/v2/auth", 
+                "463687060136-g6v6qjf7r1jh49lfpeogq3qm5rj7islk.apps.googleusercontent.com"
+            );
         },
 
         async startSession(idToken) {
-            let response = await fetch("/api/user/session", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    "id_token": idToken
-                })
-            });
-
-            if (response.status !== 200) {
-                throw new Error();
+            if (idToken == null) {
+                return;
             }
 
-            response = await response.json();
-            this.session = response.token;
+            const response = await this.fetch(
+                "POST", "/user/session", 
+                { "Content-Type": "application/json" }, 
+                { "id_token": idToken }
+            );
 
+            this.session = response.token;
             await this.fetchProfile();
         },
 
         async fetchProfile() {
-            let response = await fetch("/api/user/profile", {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${this.session}`
-                }
-            });
-
-            if (response.status !== 200) {
-                throw new Error();
+            if (this.session == null) {
+                return;
             }
+            
+            const response = await this.fetch(
+                "GET", "/user/profile", 
+                { "Authorization": `Bearer ${this.session}` }
+            );
 
-            response = await response.json();
             this.user = response;
         },
 
         async logout() {
-            let response = await fetch("/api/user/session", {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${this.session}`
-                }
-            });
+            if (this.session == null) {
+                return;
+            }
+
+            const response = await this.fetch(
+                "DELETE", "/user/session", 
+                { "Authorization": `Bearer ${this.session}` }
+            );
 
             this.session = null;
             this.user = null;
@@ -172,18 +168,11 @@ document.addEventListener("alpine:init", () => {
                 return;
             }
 
-            let response = await fetch("/api/vote", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${this.session}`
-                },
-                body: JSON.stringify({
-                    "date": date,
-                    "establishment": establishment,
-                    "item": item
-                })
-            });
+            await this.fetch(
+                "PUT", "/vote", 
+                { "Authorization": `Bearer ${this.session}`, "Content-Type": "application/json" },
+                { "date": date, "establishment": establishment, "item": item }
+            );
         }
     }));
 
@@ -192,8 +181,11 @@ document.addEventListener("alpine:init", () => {
 
         async init() {
             if (!linkOnly) {
-                const response = await fetch(`/api/establishments/${establishment}`);
-                this.menu = await response.json();
+                const response = await this.fetch(
+                    "GET", `/establishments/${establishment}`
+                );
+
+                this.menu = response;
             } else {
                 this.menu = {
                     "week": [
