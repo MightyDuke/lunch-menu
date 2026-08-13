@@ -84,7 +84,7 @@
                     <a class="navbar-item is-hidden-desktop" @click="logout()">Odhlásit se</a>
                 </template>
 
-                <template x-if="!user">
+                <template x-if="user === null">
                     <div class="navbar-end">
                         <div class="navbar-item">
                             Přihlásit se přes účet: 
@@ -214,7 +214,6 @@
             <a href="https://github.com/MightyDuke/lunch-menu" target="_blank">GitHub</a>
             <span> &bull; </span>
             <a href="/docs" target="_blank">API</a>
-
         </div>
     </div>
 </body>

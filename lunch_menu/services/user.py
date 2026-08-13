@@ -37,6 +37,7 @@ class UserService:
         self.valid_audiences = settings.oauth2_clients.values()
         self.session_expiration = settings.session_expiration
 
+
     async def create_session(self, id_token: str) -> str:
         try:
             claims = verify_id_token(id_token, valid_issuers = self.issuers, valid_audiences = self.valid_audiences)

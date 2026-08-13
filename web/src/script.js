@@ -56,26 +56,18 @@ document.addEventListener("alpine:init", () => {
         votes: {},
         
         session: Alpine.$persist(null).as("session"),
-        user: null,
+        user: undefined,
+        nonce: null,
 
         async init() {
             this.selectedDate = getIsoDate(new Date);
-            
-            if (this.session != null) {
-                try {
-                    await this.fetchProfile();
-                } catch {
-                    this.user = null;
-                }
-            }
-
-            window.sendSessionToken = token => this.startSession(token);
-
             this.voteStream = new EventSource("/api/vote/stream");
             this.voteStream.onmessage = (event) => this.votes = { ...this.votes, ...JSON.parse(event.data) };
 
-            const response = await this.fetch("GET", "/establishments");
-            this.establishments = response;
+            window.sendIdToken = (idToken) => this.startSession(idToken);
+            
+            await this.fetchProfile();
+            await this.fetchEstablishments();
         },
 
         async fetch(method, url, headers = {}, body = null) {
@@ -86,8 +78,7 @@ document.addEventListener("alpine:init", () => {
             });
 
             if (!response.ok) {
-                console.error("Failed to fetch resource", method, url, headers, body);
-                return;
+                throw new Error("Failed to fetch resource");
             }
 
             if (response.status == 204) {
@@ -97,14 +88,18 @@ document.addEventListener("alpine:init", () => {
             return await response.json();
         },
 
-        openLoginWindow(url, client_id, width = 500, height = 700) {
+        openLoginWindow(url, client_id, width = 500, height = 600) {
             const parameters = new URLSearchParams({
-                "url": url,
                 "client_id": client_id,
-                "redirect_uri": `${location.protocol}//${location.host}`
+                "redirect_uri": `${location.protocol}//${location.host}/auth`,
+                "response_type": "id_token", 
+                "scope": "openid profile",
+                "prompt": "select_account",
+                "response_mode": "form_post",
+                "nonce": window.crypto.randomUUID()
             })
 
-            window.open(`/auth?${parameters.toString()}`, "auth", `popup,width=${width},height=${height}`);
+            window.open(`${url}?${parameters.toString()}`, "oauth2LoginWindow", `popup,width=${width},height=${height}`);
         },
 
         loginMicrosoft() {
@@ -119,6 +114,14 @@ document.addEventListener("alpine:init", () => {
                 "https://accounts.google.com/o/oauth2/v2/auth", 
                 "463687060136-g6v6qjf7r1jh49lfpeogq3qm5rj7islk.apps.googleusercontent.com"
             );
+        },
+
+        async fetchEstablishments() {
+            const response = await this.fetch(
+                "GET", "/establishments", 
+            );
+
+            this.establishments = response;
         },
 
         async startSession(idToken) {
@@ -138,15 +141,20 @@ document.addEventListener("alpine:init", () => {
 
         async fetchProfile() {
             if (this.session == null) {
+                this.user = null;
                 return;
             }
             
-            const response = await this.fetch(
-                "GET", "/user/profile", 
-                { "Authorization": `Bearer ${this.session}` }
-            );
+            try {
+                const response = await this.fetch(
+                    "GET", "/user/profile", 
+                    { "Authorization": `Bearer ${this.session}` }
+                );
 
-            this.user = response;
+                this.user = response;
+            } catch {
+                this.user = null;
+            } 
         },
 
         async logout() {
