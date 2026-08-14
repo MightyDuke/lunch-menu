@@ -4,8 +4,8 @@ from datetime import date
 AddMenuItemCallback = Callable[[date | Literal["week"] | str, str, int], None]
 
 class Provider:
-    name: str = None
-    homepage: str = None
+    name: str
+    homepage: str
     link_only: bool = True
 
     def __init__(self, *, key: str, **kwargs):
@@ -25,7 +25,7 @@ class MenuProvider(Provider):
     def create_menu(self) -> tuple[dict, AddMenuItemCallback]:
         menu = {}
 
-        def add_menu_item_callback(when: date | Literal["week"] | str, name: str, price: int = None):
+        def add_menu_item_callback(when: date | Literal["week"] | str, name: str, price: int | None = None):
             if isinstance(when, date):
                 when = when.isoformat()
             elif when is None or when != "week":

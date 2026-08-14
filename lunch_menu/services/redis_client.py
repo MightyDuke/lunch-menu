@@ -16,7 +16,7 @@ class RedisClientService:
         self.request = request
         self.client = request.app.state.redis_client if client is None else client
 
-    async def get(self, key: str, *, expiration: int = None) -> Any:
+    async def get(self, key: str, *, expiration: int | None = None) -> Any:
         if expiration is None:
             value = await self.client.get(key)
         else:
@@ -27,12 +27,12 @@ class RedisClientService:
 
         return value
 
-    async def set(self, key: str, value: Any, *, expiration: int = None):
+    async def set(self, key: str, value: Any, *, expiration: int | None = None):
         value = serialize(value)
 
         await self.client.set(key, value, ex = expiration)
     
-    async def hget(self, key: str, field: str, *, expiration: int = None) -> Any | None:
+    async def hget(self, key: str, field: str, *, expiration: int | None = None) -> Any | None:
         if expiration is None:
             value = await self.client.hget(key, field)
         else:
@@ -44,7 +44,7 @@ class RedisClientService:
 
         return value
 
-    async def hset(self, key: str, field: str, value: Any, *, expiration: int = None):
+    async def hset(self, key: str, field: str, value: Any, *, expiration: int | None = None):
         value = serialize(value)
 
         if expiration is None:

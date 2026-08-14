@@ -21,7 +21,7 @@ async def user(
     user_service: Annotated[UserService, Depends()]
 ) -> UserResponse:
     user = await user_service.get_user(authorization.credentials)
-    return UserResponse(**user)
+    return UserResponse(name = user["name"], picture = user["picture"])
 
 @router.delete("/user/session", name = "Logout", description = "Delete a user session", status_code = status.HTTP_204_NO_CONTENT)
 async def logout(

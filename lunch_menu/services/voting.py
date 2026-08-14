@@ -11,7 +11,7 @@ class VotingService:
         self.redis_client = redis_client
         self.session_service = session_service
 
-    async def get_votes(self, *, target_date: str = None):
+    async def get_votes(self, *, target_date: str | None = None):
         result = {}
         votes, users = await self.redis_client.hgetallm("votes", "users")
 

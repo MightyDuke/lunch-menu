@@ -10,7 +10,7 @@ router = APIRouter(include_in_schema = False)
 
 router.frontend(
     "/", 
-    directory = "web/dist/" if Path.exists("web/dist/") else "web/src/", 
+    directory = "web/dist/" if Path("web/dist/").exists() else "web/src/", 
     fallback = "404.html"
 )
 

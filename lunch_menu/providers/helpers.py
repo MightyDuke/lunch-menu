@@ -23,11 +23,11 @@ def clean_name(text: str, *, remove_numbering: bool = False, prefix_removal_coun
 
     return text
 
-def parse_date(text: str) -> date:
+def parse_date(text: str) -> date | None:
     result = dateparser.parse(text, languages = ["cs"]) 
     return result.date() if result else None
 
-def parse_price(text: str) -> int:
+def parse_price(text: str) -> int | None:
     if match := re.match(r"(\d+)", text):
         return int(match.group(1))
 

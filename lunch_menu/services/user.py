@@ -58,7 +58,7 @@ class UserService:
 
         return token
 
-    async def get_session(self, token: str) -> str | None:
+    async def get_session(self, token: str) -> str:
         user_id = await self.redis_client.get(f"session:{token}", expiration = self.session_expiration)
 
         if user_id is None:
@@ -66,15 +66,20 @@ class UserService:
 
         return user_id
 
-    async def get_user(self, token: str) -> User | None:
+    async def get_user(self, token: str) -> User:
         user_id = await self.get_session(token)
 
         if user_id is None:
-            return
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid session token")
 
-        return await self.redis_client.hget("users", user_id, expiration = self.user_profile_expiration)
+        user = await self.redis_client.hget("users", user_id, expiration = self.user_profile_expiration)
 
-    async def delete_session(self, token: str) -> bool:
+        if user is None:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid user")
+
+        return user
+
+    async def delete_session(self, token: str):
         session_existed = await self.redis_client.delete(f"session:{token}") > 0
 
         if not session_existed:
