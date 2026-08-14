@@ -14,7 +14,7 @@ class HttpClientService:
         if settings.user_agent is not None:
             headers["User-agent"] = settings.user_agent
 
-        self.timeout = settings.timeout
+        self.timeout = settings.http_timeout
         self.client = AsyncClient(http2 = True, timeout = self.timeout, headers = headers)
 
     async def fetch(self, url: str) -> BeautifulSoup:
