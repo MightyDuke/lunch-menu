@@ -8,9 +8,11 @@ FROM python:3.14-alpine
 WORKDIR /app
 EXPOSE 8000
 
-RUN pip install --no-cache-dir poetry
+ENV UV_PROJECT_ENVIRONMENT=/usr/local
+
+RUN pip install --no-cache-dir uv
 COPY . .
-RUN poetry config virtualenvs.create false && poetry install
+RUN uv sync --locked
 
 COPY --from=frontend /app/dist/ web/dist/
 
