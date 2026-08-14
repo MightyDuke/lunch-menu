@@ -2,19 +2,19 @@ import json
 from contextlib import asynccontextmanager
 from typing import Any
 from fastapi import Request
-from redis.asyncio import ConnectionPool, Redis
+from redis.asyncio import Redis
 
 serialize = lambda value: json.dumps(value, ensure_ascii = False)
 deserialize = lambda value: json.loads(value)
 
 class RedisClientService:
     @staticmethod
-    def create_connection_pool(url: str):
-        return ConnectionPool.from_url(url)
+    def create_client(url: str):
+        return Redis.from_url(url)
 
     def __init__(self, request: Request, *, client = None):
         self.request = request
-        self.client = Redis(connection_pool = request.app.state.redis_pool) if client is None else client
+        self.client = request.app.state.redis_client if client is None else client
 
     async def get(self, key: str, *, expiration: int = None) -> Any:
         if expiration is None:

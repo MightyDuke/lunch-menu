@@ -18,18 +18,19 @@ async def lifespan(app: FastAPI):
     establishments = LunchMenuService.discover_establishments(settings.establishments_module)
     logger.info(f"Discovered {len(establishments.keys())} establishments: {str.join(", ", establishments.keys())}")
 
-    redis_pool = RedisClientService.create_connection_pool(settings.redis_url)
+    redis_client = RedisClientService.create_client(settings.redis_url)
+    logger.info(f"Redis connection at {settings.redis_url}")
 
     issuers = await UserService.discover_issuers(settings.oauth2_clients.keys())
     logger.info(f"Discovered {len(issuers.keys())} OAuth2 issuers: {str.join(", ", (key for key in issuers.keys()))}")
 
     app.state.establishments = establishments
-    app.state.redis_pool = redis_pool
+    app.state.redis_client = redis_client
     app.state.issuers = issuers.values()
 
     yield 
 
-    await app.state.redis_pool.aclose()
+    await app.state.redis_client.aclose()
 
 router = APIRouter(lifespan = lifespan)
 
