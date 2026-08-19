@@ -16,8 +16,6 @@
 </head>
 
 <body class="is-clipped" x-data="app">
-    <div id="google-login" class="display-none"></div>
-
     <div class="hero">
         <div class="hero-body">
             <div class="container has-text-centered">
@@ -38,7 +36,7 @@
             <div class="navbar-brand ml-0" @click="open = !open">
                 <template x-if="user">
                     <div class="navbar-menu is-flex py-0">
-                        <div class="navbar-item">
+                        <div class="navbar-item py-0">
                             <template x-if="user.picture">
                                 <figure class="image is-32x32 is-square">
                                     <img class="is-rounded" style="max-height: none !important;" :src="user.picture">
@@ -48,6 +46,7 @@
                             <span class="has-text-weight-bold" x-text="user.name"></span>
                         </div>
 
+                        <a class="navbar-item is-hidden-touch" @click="settingsOpen = true">Přizpůsobit</a>
                         <a class="navbar-item is-hidden-touch" @click="logout()">Odhlásit se</a>
                     </div>
                 </template>
@@ -81,7 +80,10 @@
                 <hr class="my-3">
 
                 <template x-if="user">
-                    <a class="navbar-item is-hidden-desktop" @click="logout()">Odhlásit se</a>
+                    <div>
+                        <a class="navbar-item is-hidden-desktop" @click="settingsOpen = true">Přizpůsobit</a>
+                        <a class="navbar-item is-hidden-desktop" @click="logout()">Odhlásit se</a>
+                    </div>
                 </template>
 
                 <template x-if="user === null">
@@ -130,77 +132,107 @@
 
         <div>
             <div class="columns is-tablet is-multiline is-8">
-                <template x-for="(establishment, name) in establishments">
-                    <div class="column is-half" x-data="menu(name, establishment.linkOnly)">
-                        <table class="table is-fullwidth" :class="{ 'is-hoverable': user }">
-                            <thead>
-                                <tr>
-                                    <td colspan="2">
-                                        <div class="is-flex is-align-items-center">
-                                            <a class="is-size-4 mr-auto" :href="establishment.homepage" target="_blank" x-text="establishment.name"></a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </thead>
+                <template x-for="establishment in establishments" :key="establishment.key">
+                    <template x-if="establishment.enabled">
+                        <div class="column is-half" x-data="menu(establishment.key, establishment.linkOnly)">
+                            <table class="table is-fullwidth" :class="{ 'is-hoverable': user }">
+                                <thead>
+                                    <tr>
+                                        <td colspan="2">
+                                            <div class="is-flex is-align-items-center">
+                                                <a class="is-size-4 mr-auto" :href="establishment.homepage" target="_blank" x-text="establishment.name"></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </thead>
 
-                            <template x-if="!menu">
-                                <tbody>
-                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
-                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
-                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
-                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
-                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
-                                </tbody>
-                            </template>
+                                <template x-if="!menu">
+                                    <tbody>
+                                        <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                        <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                        <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                        <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                        <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                    </tbody>
+                                </template>
 
-                            <template x-if="!establishment.linkOnly && menu && !(selectedDate in menu)">
-                                <tr>
-                                    <td>
-                                        <span class="has-text-body">
-                                            Menu není k dispozici
-                                        </span>
-                                    </td>
-                                </tr>
-                            </template>
+                                <template x-if="!establishment.linkOnly && menu && !(selectedDate in menu)">
+                                    <tr>
+                                        <td>
+                                            <span class="has-text-body">
+                                                Menu není k dispozici
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </template>
 
-                            <template x-if="(menu && establishment.linkOnly) || (menu && selectedDate in menu)">
-                                <tbody>
-                                    <template x-for="(item, index) in chain(menu[selectedDate], menu['week'])">
-                                        <tr :class="{ 'is-clickable': user }" @click="vote(selectedDate, name, `${index}`)" 
-                                            x-data="{ get path() { return `${name}:${index}` } }"
-                                        >
-                                            <td>
-                                                <span x-text="item.name" :class="{ 'has-text-primary has-text-weight-bold': item.highlight }"></span>
+                                <template x-if="(menu && establishment.linkOnly) || (menu && selectedDate in menu)">
+                                    <tbody>
+                                        <template x-for="(item, index) in chain(menu[selectedDate], menu['week'])">
+                                            <tr :class="{ 'is-clickable': user }" @click="vote(selectedDate, establishment.key, `${index}`)" 
+                                                x-data="{ get path() { return `${establishment.key}:${index}` } }"
+                                            >
+                                                <td>
+                                                    <span x-text="item.name" :class="{ 'has-text-primary has-text-weight-bold': item.highlight }"></span>
 
-                                                <template x-if="selectedDate in votes && path in votes[selectedDate]">
-                                                    <div class="mt-4 is-flex is-align-items-center">
-                                                        <template x-for="user in votes[selectedDate][path]">
-                                                            <span class="tag pl-0 mr-2">
-                                                                <template x-if="user.picture">
-                                                                    <figure class="image is-32x32">
-                                                                        <img class="is-rounded" :src="user.picture">
-                                                                    </figure>
-                                                                </template>
-                                                                
-                                                                <span class="ml-2" x-text="user.name"></span>
-                                                            </span>
-                                                        </template>
-                                                    </div>
-                                                </template>
-                                            </td>
-                                            
-                                            <td class="has-text-right">
-                                                <template x-if="item.price">
-                                                    <span class="has-text-body" x-text="`${item.price}&nbsp;Kč`"></span>
-                                                </template>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                </tbody>
-                            </template>
-                        </table>
-                    </div>
+                                                    <template x-if="selectedDate in votes && path in votes[selectedDate]">
+                                                        <div class="mt-4 is-flex is-align-items-center">
+                                                            <template x-for="user in votes[selectedDate][path]">
+                                                                <span class="tag pl-0 mr-2">
+                                                                    <template x-if="user.picture">
+                                                                        <figure class="image is-32x32">
+                                                                            <img class="is-rounded" :src="user.picture">
+                                                                        </figure>
+                                                                    </template>
+                                                                    
+                                                                    <span class="ml-2" x-text="user.name"></span>
+                                                                </span>
+                                                            </template>
+                                                        </div>
+                                                    </template>
+                                                </td>
+                                                
+                                                <td class="has-text-right">
+                                                    <template x-if="item.price">
+                                                        <span class="has-text-body" x-text="`${item.price}&nbsp;Kč`"></span>
+                                                    </template>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </template>
+                            </table>
+                        </div>
+                    </template>
                 </template>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" :class="{ 'is-active': settingsOpen }">
+        <div class="modal-background"></div>
+
+        <div class="modal-card">
+            <div class="modal-card-head has-text-weight-bold is-shadowless pb-0">
+                Vyberte, které restaurace chcete vidět. Položky lze přetahovat.
+            </div>
+            
+            <div class="modal-card-body p-5">
+                <div x-sort="reorderLayout($item, $position)" class="x-flex">
+                    <template x-for="establishment in establishments" :key="establishment.key">
+                        <div x-sort:item="establishment.key" class="p-2 my-1 is-grabbable">
+                            <input type="checkbox" class="checkbox" x-model="establishment.pendingEnabled">
+
+                            <span x-text="establishment.name" class="pl-1"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            
+            <div class="modal-card-foot p-5 buttons">
+                <button class="button" @click="deleteLayout">Výchozí stav</button>
+                <button class="button ml-auto" @click="settingsOpen = false">Zrušit</button>
+                <button class="button is-success" @click="saveLayout">Uložit</button>
             </div>
         </div>
     </div>

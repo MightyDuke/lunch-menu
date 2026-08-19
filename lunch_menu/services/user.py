@@ -1,4 +1,4 @@
-from typing import Annotated, TypedDict
+from typing import Annotated, Any, TypedDict
 from secrets import token_urlsafe
 from hashlib import shake_256
 from base64 import urlsafe_b64encode
@@ -36,7 +36,6 @@ class UserService:
 
         self.valid_audiences = settings.oauth2_clients.values()
         self.session_expiration = settings.session_expiration
-
 
     async def create_session(self, id_token: str) -> str:
         try:
@@ -84,3 +83,17 @@ class UserService:
 
         if not session_existed:
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid session token")
+
+    async def get_layout(self, token: str) -> Any| None:
+        user_id = await self.get_session(token)
+        layout = await self.redis_client.get(f"layout:{user_id}")
+
+        return layout
+
+    async def set_layout(self, token: str, layout: Any):
+        user_id = await self.get_session(token)
+        await self.redis_client.set(f"layout:{user_id}", layout)
+
+    async def delete_layout(self, token: str):
+        user_id = await self.get_session(token)
+        await self.redis_client.delete(f"layout:{user_id}")        

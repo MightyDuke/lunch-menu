@@ -1,5 +1,6 @@
 import Alpine from "/node_modules/alpinejs/dist/module.esm.js"
 import persist from "/node_modules/@alpinejs/persist/dist/module.esm.js"
+import sort from "/node_modules/@alpinejs/sort/dist/module.esm.js"
 
 window.locale = "cs";
 
@@ -40,7 +41,7 @@ window.isPwa = () => {
 window.chain = (...items) => {
     const result = [];
 
-    for (let item of items) {
+    for (const item of items) {
         if (item !== undefined) {
             result.push(...item);
         }
@@ -57,7 +58,9 @@ document.addEventListener("alpine:init", () => {
         
         session: Alpine.$persist(null).as("session"),
         user: undefined,
-        nonce: null,
+        layout: null,
+
+        settingsOpen: false,
 
         async init() {
             this.selectedDate = getIsoDate(new Date);
@@ -99,7 +102,10 @@ document.addEventListener("alpine:init", () => {
                 "nonce": window.crypto.randomUUID()
             })
 
-            window.open(`${url}?${parameters.toString()}`, "oauth2LoginWindow", `popup,width=${width},height=${height}`);
+            const x = window.screen.width / 2 - width / 2;
+            const y = window.screen.height / 2 - height / 2;
+
+            window.open(`${url}?${parameters.toString()}`, "oauth2LoginWindow", `popup,width=${width},height=${height},screenX=${x},screenY=${y}`);
         },
 
         loginMicrosoft() {
@@ -117,11 +123,47 @@ document.addEventListener("alpine:init", () => {
         },
 
         async fetchEstablishments() {
-            const response = await this.fetch(
+            const availableEstablishments = await this.fetch(
                 "GET", "/establishments", 
             );
 
-            this.establishments = response;
+            if (this.session != null) {
+                try {
+                    const layout = await this.fetch(
+                        "GET", "/user/layout",
+                        { "Authorization": `Bearer ${this.session}` }
+                    );
+
+                    this.layout = layout;
+                } catch {
+                    this.layout = null;
+                }
+            } else {
+                this.layout = null;
+            }
+
+            const establishments = Object.entries(availableEstablishments);
+            
+            for (let i = 0; i < establishments.length; i++) {
+                const [key, establishment] = establishments[i];
+
+                if (this.layout == null) {
+                    establishment.enabled = true;
+                    establishment.order = i;
+                } else if (this.layout[key] == null) {
+                    establishment.enabled = false;
+                    establishment.order = i;
+                } else {
+                    Object.assign(establishment, this.layout[key]);
+                }
+                
+                establishment.key = key;
+                establishment.pendingEnabled = establishment.enabled;
+            }
+
+            this.establishments = establishments
+                .map(x => x[1])
+                .sort((a, b) => a.order > b.order ? 1 : a.order < b.order ? -1 : 0);
         },
 
         async startSession(idToken) {
@@ -136,7 +178,9 @@ document.addEventListener("alpine:init", () => {
             );
 
             this.session = response.token;
+
             await this.fetchProfile();
+            await this.fetchEstablishments();
         },
 
         async fetchProfile() {
@@ -169,6 +213,9 @@ document.addEventListener("alpine:init", () => {
 
             this.session = null;
             this.user = null;
+            this.layout = null;
+
+            await this.fetchEstablishments();
         },
 
         async vote(date, establishment, item) {
@@ -181,6 +228,67 @@ document.addEventListener("alpine:init", () => {
                 { "Authorization": `Bearer ${this.session}`, "Content-Type": "application/json" },
                 { "date": date, "establishment": establishment, "item": item }
             );
+        },
+
+        reorderLayout(key, toIndex) {
+            const oldEstablishment = this.establishments.find(x => x.order == toIndex);
+            const newEstablishment = this.establishments.find(x => x.key == key);
+            
+            if (oldEstablishment == null || newEstablishment == null) {
+                return;
+            }
+
+            oldEstablishment.order = newEstablishment.order;
+            newEstablishment.order = toIndex;
+        },
+
+        async saveLayout() {
+            if (this.session == null) {
+                return;
+            }
+
+            let layout = {};
+
+            for (const establishment of this.establishments) {
+                layout[establishment.key] = { 
+                    "enabled": establishment.pendingEnabled, 
+                    "order": establishment.order 
+                };
+            }
+
+            await this.fetch(
+                "PUT", "/user/layout",
+                { "Authorization": `Bearer ${this.session}`, "Content-Type": "application/json" },
+                layout
+            );
+
+            this.settingsOpen = false;
+            await this.fetchEstablishments();
+        },
+
+        async deleteLayout() {
+            if (this.session == null) {
+                return;
+            }
+
+            const prompt = new Promise((resolve, reject) => {
+                const result = window.confirm("Vrátit rozložení do výchozího stavu?");
+                resolve(result);
+            });
+
+            const result = await prompt;
+
+            if (!result) {
+                return;
+            }
+
+            await this.fetch(
+                "DELETE", "/user/layout",
+                { "Authorization": `Bearer ${this.session}` }
+            );
+
+            this.settingsOpen = false;
+            await this.fetchEstablishments();
         }
     }));
 
@@ -210,4 +318,5 @@ document.addEventListener("alpine:init", () => {
 window.Alpine = Alpine;
 
 Alpine.plugin(persist);
+Alpine.plugin(sort);
 Alpine.start();

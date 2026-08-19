@@ -7,7 +7,7 @@
     --bulma-navbar-background-color: var(--bulma-text-on-scheme);
 }
 
-[x-cloak], .display-none { 
+[x-cloak] { 
     display: none !important; 
 }
 
@@ -60,4 +60,10 @@
 
 svg path {
     fill: var(--bulma-navbar-item-color);
+}
+
+.is-grabbable {
+    cursor: grab !important;
+    border-radius: var(--bulma-radius-small);
+    background-color: var(--bulma-scheme-main-bis);
 }
