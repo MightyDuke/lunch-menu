@@ -17,7 +17,7 @@ async def vote(
     session_service: Annotated[UserService, Depends()]
 ):
     user_id = await session_service.get_session(authorization.credentials)
-    await voting_service.vote(user_id, body.date, body.establishment, body.item)
+    await voting_service.vote(user_id, body.date, body.establishment)
 
 
 @router.get("/vote/stream", name = "Vote Stream", description = "SSE stream of votes", response_class = EventSourceResponse)

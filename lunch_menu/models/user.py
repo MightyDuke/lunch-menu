@@ -23,6 +23,7 @@ class SessionResponse(BaseModel):
     }
 
 class UserResponse(BaseModel):
+    id: str
     name: str
     picture: str | None
 

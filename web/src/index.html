@@ -135,16 +135,54 @@
                 <template x-for="establishment in establishments" :key="establishment.key">
                     <template x-if="establishment.enabled">
                         <div class="column is-half" x-data="menu(establishment.key, establishment.linkOnly)">
-                            <table class="table is-fullwidth" :class="{ 'is-hoverable': user }">
+                            <table class="table is-fullwidth is-hoverable">
                                 <thead>
                                     <tr>
                                         <td colspan="2">
                                             <div class="is-flex is-align-items-center">
                                                 <a class="is-size-4 mr-auto" :href="establishment.homepage" target="_blank" x-text="establishment.name"></a>
+                                                
+                                                <template x-if="user">
+                                                    <div>
+                                                        <template x-if="!containsCurrentUserVote(selectedDate, establishment.key)">
+                                                            <button class="button is-small" @click="vote(selectedDate, establishment.key)">
+                                                                Hlasovat
+                                                            </button>
+                                                        </template>
+                                                        
+                                                        <template x-if="containsCurrentUserVote(selectedDate, establishment.key)">
+                                                            <button class="button is-info is-small" @click="vote(selectedDate, establishment.key)">
+                                                                Odebrat hlas
+                                                            </button>
+                                                        </template>
+                                                    </div>
+                                                </template>
                                             </div>
                                         </td>
                                     </tr>
                                 </thead>
+
+                                <template x-if="selectedDate in votes && establishment.key in votes[selectedDate]">
+                                    <thead>
+                                        <tr>
+                                            <td colspan="2">
+                                                <div class="py-2 is-flex is-align-items-center">
+                                                    <template x-for="user in votes[selectedDate][establishment.key]">
+                                                        <span class="tag pl-0 mr-2">
+                                                            <template x-if="user.picture">
+                                                                <figure class="image is-32x32">
+                                                                    <img class="is-rounded" :src="user.picture">
+                                                                </figure>
+                                                            </template>
+                                                            
+                                                            <span class="ml-2" x-text="user.name"></span>
+                                                        </span>
+                                                    </template>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                </template>
 
                                 <template x-if="!menu">
                                     <tbody>
@@ -169,27 +207,9 @@
                                 <template x-if="(menu && establishment.linkOnly) || (menu && selectedDate in menu)">
                                     <tbody>
                                         <template x-for="(item, index) in chain(menu[selectedDate], menu['week'])">
-                                            <tr :class="{ 'is-clickable': user }" @click="vote(selectedDate, establishment.key, `${index}`)" 
-                                                x-data="{ get path() { return `${establishment.key}:${index}` } }"
-                                            >
+                                            <tr>
                                                 <td>
                                                     <span x-text="item.name" :class="{ 'has-text-primary has-text-weight-bold': item.highlight }"></span>
-
-                                                    <template x-if="selectedDate in votes && path in votes[selectedDate]">
-                                                        <div class="mt-4 is-flex is-align-items-center">
-                                                            <template x-for="user in votes[selectedDate][path]">
-                                                                <span class="tag pl-0 mr-2">
-                                                                    <template x-if="user.picture">
-                                                                        <figure class="image is-32x32">
-                                                                            <img class="is-rounded" :src="user.picture">
-                                                                        </figure>
-                                                                    </template>
-                                                                    
-                                                                    <span class="ml-2" x-text="user.name"></span>
-                                                                </span>
-                                                            </template>
-                                                        </div>
-                                                    </template>
                                                 </td>
                                                 
                                                 <td class="has-text-right">

@@ -206,7 +206,7 @@ document.addEventListener("alpine:init", () => {
                 return;
             }
 
-            const response = await this.fetch(
+            await this.fetch(
                 "DELETE", "/user/session", 
                 { "Authorization": `Bearer ${this.session}` }
             );
@@ -218,7 +218,7 @@ document.addEventListener("alpine:init", () => {
             await this.fetchEstablishments();
         },
 
-        async vote(date, establishment, item) {
+        async vote(date, establishment) {
             if (this.session == null) {
                 return;
             }
@@ -226,8 +226,26 @@ document.addEventListener("alpine:init", () => {
             await this.fetch(
                 "PUT", "/vote", 
                 { "Authorization": `Bearer ${this.session}`, "Content-Type": "application/json" },
-                { "date": date, "establishment": establishment, "item": item }
+                { "date": date, "establishment": establishment }
             );
+        },
+
+        containsCurrentUserVote(selectedDate, establishment) {
+            if (!(selectedDate in this.votes)) {
+                return false;
+            }
+            
+            if (!(establishment in this.votes[selectedDate])) {
+                return false;
+            }
+            
+            const ids = this.votes[selectedDate][establishment].map(x => x.id);
+            
+            if (ids.includes(this.user.id)) {
+                return true;
+            }
+
+            return false;
         },
 
         reorderLayout(key, toIndex) {
@@ -303,13 +321,7 @@ document.addEventListener("alpine:init", () => {
 
                 this.menu = response;
             } else {
-                this.menu = {
-                    "week": [
-                        {
-                            "name": "(Hlasovat)"
-                        }
-                    ]
-                };
+                this.menu = {};
             }
         }
     }));

@@ -19,7 +19,7 @@ class VotingService:
             result[target_date] = {}
 
         for key in sorted(votes.keys(), key = votes.get):
-            date, establishment, item, user_id = key.split(":")
+            date, establishment, user_id = key.split(":")
 
             if target_date is not None and date != target_date:
                 continue
@@ -27,18 +27,16 @@ class VotingService:
             if date not in result:
                 result[date] = {}
 
-            item = f"{establishment}:{item}"
-
-            if item not in result[date]:
-                result[date][item] = []
+            if establishment not in result[date]:
+                result[date][establishment] = []
 
             if user_id in users:
-                result[date][item].append(users[user_id])
+                result[date][establishment].append({"id": user_id, **users[user_id]})
 
         return result
 
-    async def vote(self, user_id: str, date: date, establishment: str, item: str):
-        field = f"{date}:{establishment}:{item}:{user_id}"
+    async def vote(self, user_id: str, date: date, establishment: str):
+        field = f"{date}:{establishment}:{user_id}"
         vote_exists = await self.redis_client.hdel("votes", field)
 
         if not vote_exists:

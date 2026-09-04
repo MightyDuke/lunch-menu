@@ -5,14 +5,12 @@ from lunch_menu.models.user import UserResponse
 class VoteRequest(BaseModel):
     date: date
     establishment: str
-    item: str
 
     model_config = {
         "json_schema_extra": {
             "examples": [{
                 "date": "2026-08-11",
-                "establishment": "bo-asi",
-                "item": "2"
+                "establishment": "bo-asi"
             }]
         }
     }

@@ -76,7 +76,7 @@ class UserService:
         if user is None:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid user")
 
-        return user
+        return {"id": user_id, **user}
 
     async def delete_session(self, token: str):
         session_existed = await self.redis_client.delete(f"session:{token}") > 0
