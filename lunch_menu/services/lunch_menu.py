@@ -38,7 +38,6 @@ class LunchMenuService:
         self.http_client = http_client
         self.redis_client = redis_client
 
-        self.highlighted_words = settings.highlighted_words
         self.enabled_establishments = settings.establishments
         self.expiration = settings.cache_expiration
 
@@ -56,7 +55,6 @@ class LunchMenuService:
             http_client = self.http_client,
             redis_client = self.redis_client,
             expiration = self.expiration,
-            highlighted_words = self.highlighted_words
         )        
 
     async def get_establishments(self) -> dict:

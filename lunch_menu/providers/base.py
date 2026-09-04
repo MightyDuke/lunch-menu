@@ -17,10 +17,8 @@ class Provider:
 class MenuProvider(Provider):
     link_only: bool = False
 
-    def __init__(self, *, highlighted_words: list[str], **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        self.highlighted_words = highlighted_words
 
     def create_menu(self) -> tuple[dict, AddMenuItemCallback]:
         menu = {}
@@ -37,7 +35,6 @@ class MenuProvider(Provider):
             menu[when].append({
                 "name": name,
                 "price": price,
-                "highlight": any(word.lower() in name.lower() for word in self.highlighted_words)
             })
 
         return (menu, add_menu_item_callback)
