@@ -6,8 +6,7 @@ from lunch_menu.providers.helpers import clean_name, parse_date, parse_price
 class MenickaCzProvider(WebScraperProvider): 
     id: int
 
-    @property
-    def url(self):
+    def get_fetch_url(self):
         return f"https://www.menicka.cz/api/iframe/?id={self.id}"
 
     def process_site(self, site: BeautifulSoup, add_item: AddMenuItemCallback):

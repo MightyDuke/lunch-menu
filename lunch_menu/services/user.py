@@ -1,4 +1,4 @@
-from typing import Annotated, Any, TypedDict
+from typing import Annotated, Any
 from secrets import token_urlsafe
 from hashlib import shake_256
 from base64 import urlsafe_b64encode
@@ -12,10 +12,6 @@ from lunch_menu.services.redis_client import RedisClientService
 def hash_user_id(iss: str, sub: str, *, digest_length: int = 30):
     digest = shake_256(f"{iss}:{sub}".encode()).digest(digest_length)
     return urlsafe_b64encode(digest).decode()
-
-class User(TypedDict):
-    name: str
-    picture: str | None
 
 class UserService:
     user_profile_expiration = 2_628_000
@@ -43,12 +39,12 @@ class UserService:
         except FederatedIdentityError:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Failed to validate id token")
 
-        user_id = hash_user_id(claims["iss"], claims["sub"])
-        user = User(
-            name = claims["name"] if "name" in claims else "???",
-            picture = claims["picture"] if "picture" in claims else None
-        )
+        user = {
+            "name": claims["name"] if "name" in claims else "???",
+            "picture": claims["picture"] if "picture" in claims else None
+        }
 
+        user_id = hash_user_id(claims["iss"], claims["sub"])
         token = token_urlsafe(30)
 
         async with self.redis_client.pipeline() as pipeline:
@@ -65,7 +61,7 @@ class UserService:
 
         return user_id
 
-    async def get_user(self, token: str) -> User:
+    async def get_user(self, token: str) -> dict:
         user_id = await self.get_session(token)
 
         if user_id is None:
@@ -84,16 +80,16 @@ class UserService:
         if not session_existed:
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid session token")
 
-    async def get_layout(self, token: str) -> Any| None:
-        user_id = await self.get_session(token)
-        layout = await self.redis_client.get(f"layout:{user_id}")
+    async def get_user_settings(self, token3: str) -> Any | None:
+        user_id = await self.get_session(token3)
+        settings = await self.redis_client.get(f"settings:{user_id}")
 
-        return layout
+        return settings
 
-    async def set_layout(self, token: str, layout: Any):
+    async def set_user_settings(self, token: str, settings: Any):
         user_id = await self.get_session(token)
-        await self.redis_client.set(f"layout:{user_id}", layout)
+        await self.redis_client.set(f"settings:{user_id}", settings)
 
-    async def delete_layout(self, token: str):
+    async def delete_user_settings(self, token: str):
         user_id = await self.get_session(token)
-        await self.redis_client.delete(f"layout:{user_id}")        
+        await self.redis_client.delete(f"settings:{user_id}")        

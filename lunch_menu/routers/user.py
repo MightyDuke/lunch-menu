@@ -30,26 +30,26 @@ async def logout(
 ):
     await user_service.delete_session(authorization.credentials)
 
-@router.put("/user/layout", name = "Save layout", description = "Save user layout", status_code = status.HTTP_204_NO_CONTENT)
-async def layout_save(
+@router.put("/user/settings", name = "Save settings", description = "Save user settings", status_code = status.HTTP_204_NO_CONTENT)
+async def settings_save(
     body: Request,
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(security)], 
     user_service: Annotated[UserService, Depends()]
 ):
-    await user_service.set_layout(authorization.credentials, await body.json())
+    await user_service.set_user_settings(authorization.credentials, await body.json())
 
-@router.get("/user/layout", name = "Get layout", description = "Get user layout")
-async def layout_get(
+@router.get("/user/settings", name = "Get settings", description = "Get user settings")
+async def settings_get(
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(security)], 
     user_service: Annotated[UserService, Depends()]
 ) -> Any | None:
-    layout = await user_service.get_layout(authorization.credentials)
-    return layout
+    settings = await user_service.get_user_settings(authorization.credentials)
+    return settings
 
-@router.delete("/user/layout", name = "Delete layout", description = "Delete user layout")
-async def layout_get(
+@router.delete("/user/settings", name = "Delete settings", description = "Delete user settings")
+async def settings_delete(
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(security)], 
     user_service: Annotated[UserService, Depends()]
 ) -> Any | None:
-    await user_service.delete_layout(authorization.credentials)
+    await user_service.delete_user_settings(authorization.credentials)
 

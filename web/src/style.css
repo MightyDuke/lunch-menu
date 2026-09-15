@@ -59,11 +59,14 @@
 }
 
 svg path {
-    fill: var(--bulma-navbar-item-color);
+    fill: var(--bulma-text);
 }
 
 .is-grabbable {
     cursor: grab !important;
+}
+
+.is-layout-item {
     border-radius: var(--bulma-radius-small);
     background-color: var(--bulma-scheme-main-bis);
 }

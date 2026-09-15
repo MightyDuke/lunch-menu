@@ -209,7 +209,7 @@
                                         <template x-for="(item, index) in chain(menu[selectedDate], menu['week'])">
                                             <tr>
                                                 <td>
-                                                    <span x-text="item.name"></span>
+                                                    <span x-text="item.name" :class="{'has-text-primary has-text-weight-bold': containsKeyword(item.name)}"></span>
                                                 </td>
                                                 
                                                 <td class="has-text-right">
@@ -229,33 +229,60 @@
         </div>
     </div>
 
-    <div class="modal" :class="{ 'is-active': settingsOpen }">
-        <div class="modal-background"></div>
+    <template x-if="settingsOpen">
+        <div class="modal is-active" x-data="{_keywords: keywords?.join(', ')}">
+            <div class="modal-background"></div>
 
-        <div class="modal-card">
-            <div class="modal-card-head has-text-weight-bold is-shadowless pb-0">
-                Vyberte, které restaurace chcete vidět. Položky lze přetahovat.
-            </div>
-            
-            <div class="modal-card-body p-5">
-                <div x-sort="reorderLayout($item, $position)" class="x-flex">
-                    <template x-for="establishment in establishments" :key="establishment.key">
-                        <div x-sort:item="establishment.key" class="p-2 my-1 is-grabbable">
-                            <input type="checkbox" class="checkbox" x-model="establishment.pendingEnabled">
+            <div class="modal-card">
+                <div class="modal-card-head is-shadowless p-1">
+                </div>
+                
+                <div class="modal-card-body p-5">
+                    <div class="has-text-weight-bold">
+                        Zvýrazňovaná slova
+                    </div>
+                    
+                    <div class="is-size-7">
+                        Položky menu s těmito slovy budou zvýrazňována. Je možné zadat několik slov oddělených čárkou.
+                    </div>
 
-                            <span x-text="establishment.name" class="pl-1"></span>
-                        </div>
-                    </template>
+                    <input type="text" class="mt-2 input" x-model="_keywords" placeholder="Guláš, kari, boršč...">
+
+                    <div class="has-text-weight-bold mt-5">
+                        Restaurace
+                    </div>
+                    
+                    <div class="is-size-7 mb-2">
+                        Vyberte restaurace, které chcete vidět. Položky lze přetahovat a tím měnit jejich pořadí.
+                    </div>
+
+                    <div x-sort="reorderLayout($item, $position)" class="x-flex">
+                        <template x-for="establishment in establishments" :key="establishment.key">
+                            <div x-sort:item="establishment.key" class="py-2 my-1 is-grabbable is-layout-item">
+                                <div class="is-flex is-align-items-center">
+                                    <div class="icon mx-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style="height:16px">
+                                            <path d="M128 40c0-22.1-17.9-40-40-40L40 0C17.9 0 0 17.9 0 40L0 88c0 22.1 17.9 40 40 40l48 0c22.1 0 40-17.9 40-40l0-48zm0 192c0-22.1-17.9-40-40-40l-48 0c-22.1 0-40 17.9-40 40l0 48c0 22.1 17.9 40 40 40l48 0c22.1 0 40-17.9 40-40l0-48zM0 424l0 48c0 22.1 17.9 40 40 40l48 0c22.1 0 40-17.9 40-40l0-48c0-22.1-17.9-40-40-40l-48 0c-22.1 0-40 17.9-40 40zM320 40c0-22.1-17.9-40-40-40L232 0c-22.1 0-40 17.9-40 40l0 48c0 22.1 17.9 40 40 40l48 0c22.1 0 40-17.9 40-40l0-48zM192 232l0 48c0 22.1 17.9 40 40 40l48 0c22.1 0 40-17.9 40-40l0-48c0-22.1-17.9-40-40-40l-48 0c-22.1 0-40 17.9-40 40zM320 424c0-22.1-17.9-40-40-40l-48 0c-22.1 0-40 17.9-40 40l0 48c0 22.1 17.9 40 40 40l48 0c22.1 0 40-17.9 40-40l0-48z"/>
+                                        </svg>
+                                    </div>
+                                    
+                                    <input type="checkbox" class="checkbox" x-model="establishment.pendingEnabled">
+                                    
+                                    <span x-text="establishment.name" class="pl-1"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                
+                <div class="modal-card-foot p-5 buttons">
+                    <button class="button" @click="deleteSettings()">Výchozí stav</button>
+                    <button class="button ml-auto" @click="settingsOpen = false">Zrušit</button>
+                    <button class="button is-success" @click="saveSettings(_keywords)">Uložit</button>
                 </div>
             </div>
-            
-            <div class="modal-card-foot p-5 buttons">
-                <button class="button" @click="deleteLayout">Výchozí stav</button>
-                <button class="button ml-auto" @click="settingsOpen = false">Zrušit</button>
-                <button class="button is-success" @click="saveLayout">Uložit</button>
-            </div>
         </div>
-    </div>
+    </template>
 
     <div x-show="!isPwa()" x-cloak class="footer has-text-centered">
         <div>

@@ -59,8 +59,9 @@ document.addEventListener("alpine:init", () => {
         session: Alpine.$persist(null).as("session"),
         user: undefined,
         layout: null,
+        keywords: null,
 
-        settingsOpen: false,
+        settingsOpen: true,
 
         async init() {
             this.selectedDate = getIsoDate(new Date);
@@ -129,14 +130,16 @@ document.addEventListener("alpine:init", () => {
 
             if (this.session != null) {
                 try {
-                    const layout = await this.fetch(
-                        "GET", "/user/layout",
+                    const settings = await this.fetch(
+                        "GET", "/user/settings",
                         { "Authorization": `Bearer ${this.session}` }
                     );
 
-                    this.layout = layout;
+                    this.layout = settings.layout;
+                    this.keywords = settings.keywords;
                 } catch {
                     this.layout = null;
+                    this.keywords = null;
                 }
             } else {
                 this.layout = null;
@@ -248,6 +251,22 @@ document.addEventListener("alpine:init", () => {
             return false;
         },
 
+        containsKeyword(text) {
+            if (this.keywords == null) {
+                return false;
+            }
+
+            text = text.toLowerCase();
+
+            for (const keyword of this.keywords) {
+                if (text.includes(keyword.toLowerCase())) {
+                    return true;
+                }
+            }
+
+            return false;
+        },
+
         reorderLayout(key, toIndex) {
             const oldEstablishment = this.establishments.find(x => x.order == toIndex);
             const newEstablishment = this.establishments.find(x => x.key == key);
@@ -260,37 +279,49 @@ document.addEventListener("alpine:init", () => {
             newEstablishment.order = toIndex;
         },
 
-        async saveLayout() {
+        async saveSettings(keywords) {
             if (this.session == null) {
                 return;
             }
 
-            let layout = {};
+            let settings = {
+                "keywords": [],
+                "layout": {}
+            };
 
             for (const establishment of this.establishments) {
-                layout[establishment.key] = { 
+                settings.layout[establishment.key] = { 
                     "enabled": establishment.pendingEnabled, 
                     "order": establishment.order 
                 };
             }
 
+            keywords = keywords.trim();
+
+            if (keywords != "") {
+                settings.keywords = keywords.split(",").map(x => x.trim());
+            }
+            else {
+                settings.keywords = [];
+            }
+
             await this.fetch(
-                "PUT", "/user/layout",
+                "PUT", "/user/settings",
                 { "Authorization": `Bearer ${this.session}`, "Content-Type": "application/json" },
-                layout
+                settings
             );
 
             this.settingsOpen = false;
             await this.fetchEstablishments();
         },
 
-        async deleteLayout() {
+        async deleteSettings() {
             if (this.session == null) {
                 return;
             }
 
-            const prompt = new Promise((resolve, reject) => {
-                const result = window.confirm("Vrátit rozložení do výchozího stavu?");
+            const prompt = new Promise(resolve => {
+                const result = window.confirm("Vrátit nastavení do výchozího stavu?");
                 resolve(result);
             });
 
@@ -301,7 +332,7 @@ document.addEventListener("alpine:init", () => {
             }
 
             await this.fetch(
-                "DELETE", "/user/layout",
+                "DELETE", "/user/settings",
                 { "Authorization": `Bearer ${this.session}` }
             );
 
