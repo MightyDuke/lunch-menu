@@ -299,8 +299,7 @@ document.addEventListener("alpine:init", () => {
             if (keywords != null && keywords != "") {
                 keywords = keywords.trim();
                 settings.keywords = keywords.split(",").map(x => x.trim());
-            }
-            else {
+            } else {
                 settings.keywords = [];
             }
 
