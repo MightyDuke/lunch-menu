@@ -61,7 +61,7 @@ document.addEventListener("alpine:init", () => {
         layout: null,
         keywords: null,
 
-        settingsOpen: true,
+        settingsOpen: false,
 
         async init() {
             this.selectedDate = getIsoDate(new Date);
