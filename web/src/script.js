@@ -296,9 +296,8 @@ document.addEventListener("alpine:init", () => {
                 };
             }
 
-            keywords = keywords.trim();
-
-            if (keywords != "") {
+            if (keywords != null && keywords != "") {
+                keywords = keywords.trim();
                 settings.keywords = keywords.split(",").map(x => x.trim());
             }
             else {
