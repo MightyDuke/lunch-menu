@@ -143,6 +143,7 @@ document.addEventListener("alpine:init", () => {
                 }
             } else {
                 this.layout = null;
+                this.keywords = null;
             }
 
             const establishments = Object.entries(availableEstablishments);
@@ -217,6 +218,7 @@ document.addEventListener("alpine:init", () => {
             this.session = null;
             this.user = null;
             this.layout = null;
+            this.keywords = null;
 
             await this.fetchEstablishments();
         },
