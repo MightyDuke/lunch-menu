@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     
     <title>Kam na oběd?</title>
 
@@ -46,7 +46,7 @@
                             <span class="has-text-weight-bold" x-text="user.name"></span>
                         </div>
 
-                        <a class="navbar-item is-hidden-touch" @click="settingsOpen = true">Přizpůsobit</a>
+                        <a class="navbar-item is-hidden-touch" @click="settingsOpen = true">Nastavení</a>
                         <a class="navbar-item is-hidden-touch" @click="logout()">Odhlásit se</a>
                     </div>
                 </template>
@@ -130,102 +130,100 @@
             </div>
         </noscript>
 
-        <div>
-            <div class="columns is-tablet is-multiline is-8">
-                <template x-for="establishment in establishments" :key="establishment.key">
-                    <template x-if="establishment.enabled">
-                        <div class="column is-half" x-data="menu(establishment.key, establishment.linkOnly)">
-                            <table class="table is-fullwidth is-hoverable">
+        <div class="columns is-tablet is-multiline is-8">
+            <template x-for="establishment in establishments" :key="establishment.key">
+                <template x-if="establishment.enabled">
+                    <div class="column is-half" x-data="menu(establishment.key, establishment.linkOnly)">
+                        <table class="table is-fullwidth is-hoverable">
+                            <thead>
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="is-flex is-align-items-center">
+                                            <a class="is-size-4 mr-auto" :href="establishment.homepage" target="_blank" x-text="establishment.name"></a>
+                                            
+                                            <template x-if="user">
+                                                <div>
+                                                    <template x-if="!containsCurrentUserVote(selectedDate, establishment.key)">
+                                                        <button class="button is-small" @click="vote(selectedDate, establishment.key)">
+                                                            Hlasovat
+                                                        </button>
+                                                    </template>
+                                                    
+                                                    <template x-if="containsCurrentUserVote(selectedDate, establishment.key)">
+                                                        <button class="button is-info is-small" @click="vote(selectedDate, establishment.key)">
+                                                            Odebrat hlas
+                                                        </button>
+                                                    </template>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </thead>
+
+                            <template x-if="selectedDate in votes && establishment.key in votes[selectedDate]">
                                 <thead>
                                     <tr>
                                         <td colspan="2">
-                                            <div class="is-flex is-align-items-center">
-                                                <a class="is-size-4 mr-auto" :href="establishment.homepage" target="_blank" x-text="establishment.name"></a>
-                                                
-                                                <template x-if="user">
-                                                    <div>
-                                                        <template x-if="!containsCurrentUserVote(selectedDate, establishment.key)">
-                                                            <button class="button is-small" @click="vote(selectedDate, establishment.key)">
-                                                                Hlasovat
-                                                            </button>
+                                            <div class="py-2 is-flex is-align-items-center">
+                                                <template x-for="user in votes[selectedDate][establishment.key]">
+                                                    <span class="tag pl-0 mr-2">
+                                                        <template x-if="user.picture">
+                                                            <figure class="image is-32x32">
+                                                                <img class="is-rounded" :src="user.picture">
+                                                            </figure>
                                                         </template>
                                                         
-                                                        <template x-if="containsCurrentUserVote(selectedDate, establishment.key)">
-                                                            <button class="button is-info is-small" @click="vote(selectedDate, establishment.key)">
-                                                                Odebrat hlas
-                                                            </button>
-                                                        </template>
-                                                    </div>
+                                                        <span class="ml-2" x-text="user.name"></span>
+                                                    </span>
                                                 </template>
                                             </div>
                                         </td>
                                     </tr>
                                 </thead>
+                            </template>
 
-                                <template x-if="selectedDate in votes && establishment.key in votes[selectedDate]">
-                                    <thead>
+                            <template x-if="!menu">
+                                <tbody>
+                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                    <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
+                                </tbody>
+                            </template>
+
+                            <template x-if="!establishment.linkOnly && menu && !(selectedDate in menu)">
+                                <tr>
+                                    <td>
+                                        <span class="has-text-body">
+                                            Menu není k dispozici
+                                        </span>
+                                    </td>
+                                </tr>
+                            </template>
+
+                            <template x-if="(menu && establishment.linkOnly) || (menu && selectedDate in menu)">
+                                <tbody>
+                                    <template x-for="(item, index) in chain(menu[selectedDate], menu['week'])">
                                         <tr>
-                                            <td colspan="2">
-                                                <div class="py-2 is-flex is-align-items-center">
-                                                    <template x-for="user in votes[selectedDate][establishment.key]">
-                                                        <span class="tag pl-0 mr-2">
-                                                            <template x-if="user.picture">
-                                                                <figure class="image is-32x32">
-                                                                    <img class="is-rounded" :src="user.picture">
-                                                                </figure>
-                                                            </template>
-                                                            
-                                                            <span class="ml-2" x-text="user.name"></span>
-                                                        </span>
-                                                    </template>
-                                                </div>
+                                            <td>
+                                                <span x-text="item.name" :class="{'has-text-primary has-text-weight-bold': containsKeyword(item.name)}"></span>
+                                            </td>
+                                            
+                                            <td class="has-text-right">
+                                                <template x-if="item.price">
+                                                    <span class="has-text-body" x-text="`${item.price}&nbsp;Kč`"></span>
+                                                </template>
                                             </td>
                                         </tr>
-                                    </thead>
-                                </template>
-
-                                <template x-if="!menu">
-                                    <tbody>
-                                        <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
-                                        <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
-                                        <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
-                                        <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
-                                        <tr><td><div class="is-skeleton"><span>&nbsp;</span></div></td></tr>
-                                    </tbody>
-                                </template>
-
-                                <template x-if="!establishment.linkOnly && menu && !(selectedDate in menu)">
-                                    <tr>
-                                        <td>
-                                            <span class="has-text-body">
-                                                Menu není k dispozici
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </template>
-
-                                <template x-if="(menu && establishment.linkOnly) || (menu && selectedDate in menu)">
-                                    <tbody>
-                                        <template x-for="(item, index) in chain(menu[selectedDate], menu['week'])">
-                                            <tr>
-                                                <td>
-                                                    <span x-text="item.name" :class="{'has-text-primary has-text-weight-bold': containsKeyword(item.name)}"></span>
-                                                </td>
-                                                
-                                                <td class="has-text-right">
-                                                    <template x-if="item.price">
-                                                        <span class="has-text-body" x-text="`${item.price}&nbsp;Kč`"></span>
-                                                    </template>
-                                                </td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </template>
-                            </table>
-                        </div>
-                    </template>
+                                    </template>
+                                </tbody>
+                            </template>
+                        </table>
+                    </div>
                 </template>
-            </div>
+            </template>
         </div>
     </div>
 
@@ -268,7 +266,7 @@
                                     
                                     <input type="checkbox" class="checkbox" x-model="establishment.pendingEnabled">
                                     
-                                    <span x-text="establishment.name" class="pl-1"></span>
+                                    <span x-text="establishment.name" class="pl-2"></span>
                                 </div>
                             </div>
                         </template>
