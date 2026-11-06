@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.14"
 
 [[package]]
@@ -514,7 +514,7 @@ dependencies = [
 requires-dist = [
     { name = "beautifulsoup4", extras = ["lxml"], specifier = ">=4.15.0,<5.0.0" },
     { name = "dateparser", specifier = ">=1.4.0,<2.0.0" },
-    { name = "fastapi", extras = ["standard-no-fastapi-cloud-cli"], specifier = ">=0.141.0,<0.142.0" },
+    { name = "fastapi", extras = ["standard-no-fastapi-cloud-cli"], specifier = ">=0.141.0,<0.162.1" },
     { name = "httpx", extras = ["http2"], specifier = ">=0.28.0,<0.29.0" },
     { name = "redis", specifier = ">=8.1.0,<9.0.0" },
     { name = "requests", specifier = ">=2.34.0,<3.0.0" },
