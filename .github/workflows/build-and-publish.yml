@@ -32,6 +32,10 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+          flavor: |
+            latest=true
 
       - name: Build and push
         uses: docker/build-push-action@v7
