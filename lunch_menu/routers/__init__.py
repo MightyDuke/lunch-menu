@@ -19,7 +19,7 @@ async def lifespan(app: FastAPI):
     logger.info(f"Discovered {len(establishments.keys())} establishments: {str.join(", ", establishments.keys())}")
 
     redis_client = RedisClientService.create_client(settings.redis_url)
-    logger.info(f"Redis connection at {settings.redis_url}")
+    logger.info(f"Redis connection at \"{settings.redis_url}\"")
 
     issuers = await UserService.discover_issuers(settings.oauth2_clients.keys())
     logger.info(f"Discovered {len(issuers.keys())} OAuth2 issuers: {str.join(", ", (key for key in issuers.keys()))}")

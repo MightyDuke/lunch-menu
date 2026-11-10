@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Annotated, AsyncIterable
 from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -19,6 +20,20 @@ async def vote(
     user_id = await session_service.get_session(authorization.credentials)
     await voting_service.vote(user_id, body.date, body.establishment)
 
+@router.get(
+    "/votes/{date}", 
+    name = "Get Votes", 
+    description = 
+        "Get votes for the given day. The date is in the ISO format.",
+    tags = ["MCP"],
+    operation_id = "get_votes_for_given_date"
+)
+async def get_votes(
+    date: date,
+    voting_service: Annotated[VotingService, Depends()]
+) -> VoteResponse:
+    votes = await voting_service.get_votes(target_date = str(date))
+    return votes
 
 @router.get("/vote/stream", name = "Vote Stream", description = "SSE stream of votes", response_class = EventSourceResponse)
 async def vote_stream(
