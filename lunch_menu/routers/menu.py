@@ -27,7 +27,7 @@ async def establishments(lunch_menu: Annotated[LunchMenuService, Depends()]) -> 
     description = 
         "Get the menu for the given establishment. Use the dictionary key acquired from "
         "`get_available_establishments` as a paramater. If the user asks for a specific day, "
-        "make sure to also include the weekly menu.",
+        "make sure to also include the weekly menu. Weekly menu has `week` as the key.",
     operation_id = "get_menu_for_establishment",
     responses = {
         404: {
