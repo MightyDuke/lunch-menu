@@ -12,6 +12,7 @@ dependencies = [
     "requests (>=2.34.0,<3.0.0)",
     "mcp==1.30.0",
     "fastapi-mcp>=0.4.0",
+    "fastapi-singleton>=0.3.0",
 ]
 
 [tool.fastapi]

@@ -2,33 +2,41 @@ from typing import Annotated, Any
 from secrets import token_urlsafe
 from hashlib import shake_256
 from base64 import urlsafe_b64encode
-from fastapi import Depends, HTTPException, Request
+from fastapi import Depends, HTTPException
 from fastapi import status
+from fastapi_singleton import singleton
 from federatedidentity import Issuer, verify_id_token
 from federatedidentity.exceptions import FederatedIdentityError
 from lunch_menu.models.settings import Settings, get_settings
+from lunch_menu.services.logger import LoggerService
 from lunch_menu.services.redis_client import RedisClientService
 
 def hash_user_id(iss: str, sub: str, *, digest_length: int = 30):
     digest = shake_256(f"{iss}:{sub}".encode()).digest(digest_length)
     return urlsafe_b64encode(digest).decode()
 
+def discover_issuers(allowed_issuers: list[str]) -> dict[str, Issuer]:
+    result = []
+
+    for issuer_url in allowed_issuers:
+        result.append(Issuer.from_discovery(issuer_url))
+
+    return result
+
+@singleton
 class UserService:
     user_profile_expiration = 2_628_000
 
-    @staticmethod
-    async def discover_issuers(allowed_issuers: list[str]) -> dict[str, Issuer]:
-        result = {}
-
-        for issuer_url in allowed_issuers:
-            issuer = await Issuer.async_from_discovery(issuer_url)
-            result[issuer_url] = issuer
-
-        return result
-
-    def __init__(self, request: Request, redis_client: Annotated[RedisClientService, Depends()], settings: Annotated[Settings, Depends(get_settings)]):
-        self.issuers = request.app.state.issuers
+    def __init__(
+        self, 
+        settings: Annotated[Settings, Depends(get_settings)],
+        redis_client: Annotated[RedisClientService, Depends(RedisClientService)], 
+        logger: Annotated[LoggerService, Depends(LoggerService)]
+    ):
+        self.issuers = discover_issuers(settings.oauth2_clients.keys())
         self.redis_client = redis_client
+
+        logger.info(f"Discovered {len(self.issuers)} issuers: {str.join(", ", (issuser.name for issuser in self.issuers))}")
 
         self.valid_audiences = settings.oauth2_clients.values()
         self.session_expiration = settings.session_expiration
@@ -79,8 +87,8 @@ class UserService:
         if not session_existed:
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid session token")
 
-    async def get_user_settings(self, token3: str) -> Any | None:
-        user_id = await self.get_session(token3)
+    async def get_user_settings(self, token: str) -> Any | None:
+        user_id = await self.get_session(token)
         settings = await self.redis_client.get(f"settings:{user_id}")
 
         return settings

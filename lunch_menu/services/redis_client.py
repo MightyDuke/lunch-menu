@@ -1,18 +1,19 @@
 import json
-from typing import Any
-from fastapi import Request
+from typing import Annotated, Any
+from fastapi import Depends
+from fastapi_singleton import singleton
 from redis.asyncio import Redis
+from lunch_menu.models.settings import Settings, get_settings
+from lunch_menu.services.logger import LoggerService
 
 serialize = lambda value: json.dumps(value, ensure_ascii = False)
 deserialize = lambda value: json.loads(value)
 
+@singleton
 class RedisClientService:
-    @staticmethod
-    def create_client(url: str):
-        return Redis.from_url(url)
-
-    def __init__(self, request: Request):
-        self.client = request.app.state.redis_client
+    def __init__(self, settings: Annotated[Settings, Depends(get_settings)], logger: Annotated[LoggerService, Depends(LoggerService)]):
+        self.client =  Redis.from_url(settings.redis_url)
+        logger.info(f"Using redis at \"{settings.redis_url}\"")
 
     async def get(self, key: str, *, expiration: int | None = None) -> Any:
         if expiration is None:

@@ -1,15 +1,21 @@
 from typing import Annotated
 from fastapi import Depends
 from datetime import date, datetime
+from fastapi_singleton import singleton
 from lunch_menu.services.redis_client import RedisClientService
 from lunch_menu.services.user import UserService
 
+@singleton
 class VotingService:
     vote_expiration = 604_800
 
-    def __init__(self, redis_client: Annotated[RedisClientService, Depends()], session_service: Annotated[UserService, Depends()]):
+    def __init__(
+        self, 
+        redis_client: Annotated[RedisClientService, Depends(RedisClientService)], 
+        user_service: Annotated[UserService, Depends(UserService)]
+    ):
         self.redis_client = redis_client
-        self.session_service = session_service
+        self.session_service = user_service
 
     async def get_votes(self, *, target_date: str | None = None):
         result = {}

@@ -1,27 +1,37 @@
 from typing import Annotated
-from logging import getLogger
 from fastapi import Depends
 from bs4 import BeautifulSoup
+from fastapi_singleton import singleton
 from httpx import AsyncClient
 from lunch_menu.models.settings import Settings, get_settings
+from lunch_menu.services.logger import LoggerService
 
-logger = getLogger("uvicorn.error")
-
+@singleton
 class HttpClientService:
-    def __init__(self, settings: Annotated[Settings, Depends(get_settings)]):
+    def __init__(
+        self, 
+        settings: Annotated[Settings, Depends(get_settings)],
+        logger: Annotated[LoggerService, Depends(LoggerService)]
+    ):
+        self.settings = settings
+        self.timeout = self.settings.http_timeout
+        self.logger = logger
+
+    def create_client(self):
         headers = {}
 
-        if settings.user_agent is not None:
-            headers["User-agent"] = settings.user_agent
+        if self.settings.user_agent is not None:
+            headers["User-agent"] = self.settings.user_agent
 
-        self.timeout = settings.http_timeout
-        self.client = AsyncClient(http2 = True, timeout = self.timeout, headers = headers)
+        return AsyncClient(http2 = True, timeout = self.timeout, headers = headers)
 
     async def fetch(self, url: str) -> BeautifulSoup:
-        async with self.client:
-            logger.info(f"fetch {url}")
+        client = self.create_client()
 
-            response = await self.client.get(url)
+        async with client:
+            self.logger.info(f"fetch {url}")
+
+            response = await client.get(url)
             soup = BeautifulSoup(response.text, features = "lxml")
 
         return soup

@@ -1,4 +1,5 @@
 from functools import cache
+from fastapi_singleton import singleton
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -11,6 +12,7 @@ class Settings(BaseSettings):
     user_agent: str | None = None
     oauth2_clients: dict[str, str] = {}
 
+@singleton
 @cache
 def get_settings():
     return Settings()
