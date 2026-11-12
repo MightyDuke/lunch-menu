@@ -47,9 +47,8 @@ class UserService:
         user_id = hash_user_id(claims["iss"], claims["sub"])
         token = token_urlsafe(30)
 
-        async with self.redis_client.pipeline() as pipeline:
-            await pipeline.set(f"session:{token}", user_id, expiration = self.session_expiration)
-            await pipeline.hset("users", user_id, user, expiration = self.user_profile_expiration)
+        await self.redis_client.set(f"session:{token}", user_id, expiration = self.session_expiration)
+        await self.redis_client.hset("users", user_id, user, expiration = self.user_profile_expiration)
 
         return token
 

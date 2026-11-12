@@ -25,13 +25,9 @@ async def vote(
     name = "Get Votes", 
     description = 
         "Get votes for the given day. The date is in the ISO format.",
-    tags = ["MCP"],
     operation_id = "get_votes_for_given_date"
 )
-async def get_votes(
-    date: date,
-    voting_service: Annotated[VotingService, Depends()]
-) -> VoteResponse:
+async def get_votes(date: date, voting_service: Annotated[VotingService, Depends()]) -> VoteResponse:
     votes = await voting_service.get_votes(target_date = str(date))
     return votes
 

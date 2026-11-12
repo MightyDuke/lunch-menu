@@ -10,9 +10,9 @@ router = APIRouter(tags = ["User"])
 @router.post("/user/session", name = "Login", description = "Start a new user session")
 async def login(
     body: SessionRequest, 
-    session_service: Annotated[UserService, Depends()]
+    user_service: Annotated[UserService, Depends()]
 ) -> SessionResponse:
-    token = await session_service.create_session(body.id_token)
+    token = await user_service.create_session(body.id_token)
     return SessionResponse(token = token)
 
 @router.get("/user/profile", name = "User Profile", description = "Get user profile")

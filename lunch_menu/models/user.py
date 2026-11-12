@@ -31,6 +31,7 @@ class UserResponse(BaseModel):
         "json_schema_extra": {
             "examples": [{
                 "name": "Prokop Buben",
+                "id": "b2JzZXJ2ZWZpZWxkbGluZWRyeXNwaXRlbmV3c2RpcnQ=",
                 "picture": "https://example.com/avatar.png"
             }]
         }

@@ -1,5 +1,4 @@
 import json
-from contextlib import asynccontextmanager
 from typing import Any
 from fastapi import Request
 from redis.asyncio import Redis
@@ -12,9 +11,8 @@ class RedisClientService:
     def create_client(url: str):
         return Redis.from_url(url)
 
-    def __init__(self, request: Request, *, client = None):
-        self.request = request
-        self.client = request.app.state.redis_client if client is None else client
+    def __init__(self, request: Request):
+        self.client = request.app.state.redis_client
 
     async def get(self, key: str, *, expiration: int | None = None) -> Any:
         if expiration is None:
@@ -105,10 +103,3 @@ class RedisClientService:
 
             async for message in pubsub.listen():
                 yield deserialize(message["data"])
-
-    @asynccontextmanager
-    async def pipeline(self):
-        async with self.client.pipeline() as pipeline:
-            instance = RedisClientService(self.request, client = pipeline)
-            yield instance
-            await pipeline.execute()

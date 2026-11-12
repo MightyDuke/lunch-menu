@@ -36,4 +36,4 @@ class WebScraperProvider(MenuProvider):
         return menu
 
     def process_site(self, site: BeautifulSoup, add_item: AddMenuItemCallback):
-        raise NotImplementedError()
+        raise NotImplementedError("Establishment doesn't provide a menu")

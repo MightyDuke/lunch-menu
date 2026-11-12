@@ -12,10 +12,14 @@ app.include_router(web_router)
 
 mcp = FastApiMCP(
     app,
-    name = "Lunch Menu MCP",
-    description = "1.2.0",
-    include_tags = [
-        "MCP"
-    ]
+    name = "Kam na oběd MCP",
+    description = "1.2.1",
+    include_operations = [
+        "get_available_establishments",
+        "get_menu_for_establishment",
+        "get_votes_for_given_date"
+    ],
+    describe_all_responses = True
 )
+
 mcp.mount_http(mount_path = "/mcp")
