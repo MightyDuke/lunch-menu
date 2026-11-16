@@ -10,7 +10,7 @@ from lunch_menu.services.voting import VotingService
 security = HTTPBearer()
 router = APIRouter(tags = ["Voting"])
 
-@router.put("/vote", name = "Vote", description = "Cast a vote", status_code = status.HTTP_204_NO_CONTENT)
+@router.put("/votes", name = "Vote", description = "Cast a vote", status_code = status.HTTP_204_NO_CONTENT)
 async def vote(
     body: VoteRequest,
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(security)], 
@@ -31,7 +31,7 @@ async def get_votes(date: date, voting_service: Annotated[VotingService, Depends
     votes = await voting_service.get_votes(target_date = str(date))
     return votes
 
-@router.get("/vote/stream", name = "Vote Stream", description = "SSE stream of votes", response_class = EventSourceResponse)
+@router.get("/votes/stream", name = "Vote Stream", description = "SSE stream of votes", response_class = EventSourceResponse)
 async def vote_stream(
     voting_service: Annotated[VotingService, Depends()]
 ) -> AsyncIterable[VoteResponse]:

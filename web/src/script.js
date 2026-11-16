@@ -65,7 +65,7 @@ document.addEventListener("alpine:init", () => {
 
         async init() {
             this.selectedDate = getIsoDate(new Date);
-            this.voteStream = new EventSource("/api/vote/stream");
+            this.voteStream = new EventSource("/api/votes/stream");
             this.voteStream.onmessage = (event) => this.votes = { ...this.votes, ...JSON.parse(event.data) };
 
             window.sendIdToken = (idToken) => this.startSession(idToken);
@@ -229,7 +229,7 @@ document.addEventListener("alpine:init", () => {
             }
 
             await this.fetch(
-                "PUT", "/vote", 
+                "PUT", "/votes", 
                 { "Authorization": `Bearer ${this.session}`, "Content-Type": "application/json" },
                 { "date": date, "establishment": establishment }
             );

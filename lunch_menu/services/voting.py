@@ -3,23 +3,19 @@ from fastapi import Depends
 from datetime import date, datetime
 from fastapi_singleton import singleton
 from lunch_menu.services.redis_client import RedisClientService
-from lunch_menu.services.user import UserService
 
 @singleton
 class VotingService:
     vote_expiration = 604_800
 
-    def __init__(
-        self, 
-        redis_client: Annotated[RedisClientService, Depends(RedisClientService)], 
-        user_service: Annotated[UserService, Depends(UserService)]
-    ):
+    def __init__(self, redis_client: Annotated[RedisClientService, Depends(RedisClientService)]):
         self.redis_client = redis_client
-        self.session_service = user_service
 
-    async def get_votes(self, *, target_date: str | None = None):
+    async def get_votes(self, *, target_date: str | date | None = None):
         result = {}
         votes, users = await self.redis_client.hgetallm("votes", "users")
+
+        target_date = str(target_date)
 
         if target_date is not None:
             result[target_date] = {}

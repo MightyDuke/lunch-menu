@@ -11,10 +11,6 @@ from lunch_menu.models.settings import Settings, get_settings
 from lunch_menu.services.logger import LoggerService
 from lunch_menu.services.redis_client import RedisClientService
 
-def hash_user_id(iss: str, sub: str, *, digest_length: int = 30):
-    digest = shake_256(f"{iss}:{sub}".encode()).digest(digest_length)
-    return urlsafe_b64encode(digest).decode()
-
 def discover_issuers(allowed_issuers: list[str]) -> dict[str, Issuer]:
     result = []
 
@@ -22,6 +18,10 @@ def discover_issuers(allowed_issuers: list[str]) -> dict[str, Issuer]:
         result.append(Issuer.from_discovery(issuer_url))
 
     return result
+
+def hash_user_id(iss: str, sub: str, *, digest_length: int = 30):
+    digest = shake_256(f"{iss}:{sub}".encode()).digest(digest_length)
+    return urlsafe_b64encode(digest).decode()
 
 @singleton
 class UserService:
