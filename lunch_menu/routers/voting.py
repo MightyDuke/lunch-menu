@@ -20,6 +20,13 @@ async def vote(
     user_id = await session_service.get_session(authorization.credentials)
     await voting_service.vote(user_id, body.date, body.establishment)
 
+@router.get("/votes/stream", name = "Vote Stream", description = "SSE stream of votes", response_class = EventSourceResponse)
+async def vote_stream(
+    voting_service: Annotated[VotingService, Depends()]
+) -> AsyncIterable[VoteResponse]:
+    async for votes in voting_service.listen():
+        yield VoteResponse(votes)
+
 @router.get(
     "/votes/{date}", 
     name = "Get Votes", 
@@ -30,10 +37,3 @@ async def vote(
 async def get_votes(date: date, voting_service: Annotated[VotingService, Depends()]) -> VoteResponse:
     votes = await voting_service.get_votes(target_date = str(date))
     return votes
-
-@router.get("/votes/stream", name = "Vote Stream", description = "SSE stream of votes", response_class = EventSourceResponse)
-async def vote_stream(
-    voting_service: Annotated[VotingService, Depends()]
-) -> AsyncIterable[VoteResponse]:
-    async for votes in voting_service.listen():
-        yield VoteResponse(votes)
