@@ -65,7 +65,7 @@ document.addEventListener("alpine:init", () => {
 
         async init() {
             this.selectedDate = getIsoDate(new Date);
-            this.voteStream = new EventSource("/api/votes/stream");
+            this.voteStream = new EventSource("/api/votes");
             this.voteStream.onmessage = (event) => this.votes = { ...this.votes, ...JSON.parse(event.data) };
 
             window.sendIdToken = (idToken) => this.startSession(idToken);

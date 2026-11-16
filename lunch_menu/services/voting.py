@@ -15,9 +15,8 @@ class VotingService:
         result = {}
         votes, users = await self.redis_client.hgetallm("votes", "users")
 
-        target_date = str(target_date)
-
         if target_date is not None:
+            target_date = str(target_date)
             result[target_date] = {}
 
         for key in sorted(votes.keys(), key = votes.get):
